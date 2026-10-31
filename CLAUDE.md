@@ -41,6 +41,7 @@ Swift 6 · iOS 18+, только iPhone · SwiftUI (приложение) + UIKi
 - UI-проверки идут в iOS Simulator, а не в браузере: eval типа `ui` — сценарий в симуляторе (XCUITest или нажатия и скриншоты через инструмент симулятора), `design` — скриншот симулятора против макета.
 - `accessibilityIdentifier` у ключевых элементов — по ним пишутся UI-тесты (`app.title`, `keyboard.encrypt`, …).
 - Тексты интерфейса — на русском.
+- Временные плашки (toast) — в собственной полосе над таб-баром вне ScrollView, не overlay поверх контента; нажатия сквозь них — `allowsHitTesting(false)`.
 - Идентификаторы: приложение `dev.cipherkeyboard.app`, клавиатура `dev.cipherkeyboard.app.keyboard`, App Group `group.dev.cipherkeyboard`.
 
 ## Не делаем (non-goals)

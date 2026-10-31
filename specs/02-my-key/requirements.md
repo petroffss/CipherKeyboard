@@ -1,7 +1,7 @@
 ---
 feature: 02-my-key
 title: Мой ключ — создание, хранение, показ
-status: building        # draft → in-review → approved → building → verified → done
+status: verified        # draft → in-review → approved → building → verified → done
 risk: high           # low | medium | high — ставит classify-risk
 risk_reason: "если сломается — приватный ключ утечёт с устройства или потеряется, и пользователь не прочитает свои сообщения"
 ui: yes              # yes, если у фичи есть экран; no — API, фоновая задача, CLI

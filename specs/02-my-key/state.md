@@ -1,10 +1,10 @@
 ---
 feature: 02-my-key
-loop: running            # running | needs-human | stopped | done
+loop: done            # running | needs-human | stopped | done
 round: 3
 max_rounds: 5
 base_commit: "6478bdf05087ab57e3eef00f20d37ca20a4d9792"
-last_reviewed_commit: "c8af1e3"
+last_reviewed_commit: "08e25b4"
 ---
 # Цикл сборки: Мой ключ — создание, хранение, показ
 
@@ -13,24 +13,26 @@ last_reviewed_commit: "c8af1e3"
 |---|---|---|---|---|
 | 1 | 25/25 | 1 (R1) | 8c6b889 | раунд 2: исправить R1 |
 | 2 | 24/25 (E22 fail) | 0 | c8af1e3 | раунд 3: R1/E22 — плашка на 375×667 |
+| 3 | 25/25 | 0 | 08e25b4 | финал |
 
 ## Открытые проблемы
 <!-- Источник: eval (E3) или ревью (R2). «Подряд» — сколько раундов подряд проблема на месте.
      Подряд ≥ 3 (появилась и пережила 2 раунда исправлений) → цикл останавливается. -->
 | ID | Источник | Класс | Где | Суть | Впервые | Подряд |
 |---|---|---|---|---|---|---|
-| R1 | ревью | расходится-с-макетом | App/MyKeyView.swift:77-83 | На 375 pt (SE 375×667, mini 375×812) непрокрученный экран: плашка «Ключ скопирован» в overlay внизу ложится на кнопки «Скопировать ключ»/«Поделиться» и перехватывает нажатия (нет allowsHitTesting(false)). Р2: hit-testing исправлен, но авто-прокрутка не поднимает кнопки над плашкой — на SE после нажатия плашка лежит на «Поделиться» (evidence/r2-e22-se-copied-1.png); E22 fail | 1 | 2 |
-| R4 | ревью (Мелочь) | доступность | App/MyKeyView.swift:184-186 | scaledFont(for:) получает уже масштабированный preferredFont(.caption1).pointSize — при крупном Dynamic Type шрифт ключа масштабируется дважды | 2 | 1 |
 
 ## Закрытые
 | ID | Класс | Как исправлено | Раунд |
 |---|---|---|---|
 | R2 | нет-проверки-прав | IdentityStore вынесен в модуль CipherCoreIdentityStore (только приложение); generate/privateKeyData/KeychainSecretStorage — package | 2 |
 | R3 | расходится-с-макетом | строка ключа — UILabel, byCharWrapping, hyphenationFactor 0 | 2 |
+| R1 | расходится-с-макетом | плашка в постоянной полосе под ScrollView (VStack { ScrollView; toastSlot }), allowsHitTesting(false); тест testCopiedToastDoesNotCoverButtons | 3 |
+| R4 | доступность | scaledFont от базового 12 pt | 3 |
 
 ## Было до нас
 <!-- находки «Было до нас»: не чиним в этом цикле, не блокируют -->
 - scripts/sandbox.sh start падает на `open -a Simulator` («Unable to find application named 'Simulator'») до установки приложения; с HEADLESS=1 сразу запускает приложение и создаёт ключ — «пустой» песочницы не получается (verifier, раунд 1).
+- [доступность] App/MyKeyView.swift copyKey(): появление плашки «Ключ скопирован» не объявляется VoiceOver (нет AccessibilityNotification.Announcement) — в требованиях не прописано (reviewer, раунд 3).
 
 ## Кандидаты в выученные правила
 <!-- повторы одного класса; в конце цикла предложить пользователю одной строкой для REVIEW.md -->
@@ -44,6 +46,10 @@ last_reviewed_commit: "c8af1e3"
 - 2026-10-31 · раунд 2 · builder: c8af1e3 [ok] — плашка в safeAreaInset + allowsHitTesting(false) + scrollTo; модуль CipherCoreIdentityStore; UILabel для ключа.
 - 2026-10-31 · раунд 2 · reviewer (только новое, 8c6b889..c8af1e3): R1–R3 закрыты по коду, новых Важно нет, Мелочь R4.
 - 2026-10-31 · раунд 2 · verifier: 0ba78fd — 24/25, E22 fail: на SE 375×667 плашка закрывает «Поделиться» после нажатия на непрокрученном экране. R1 подряд 2. → раунд 3.
+- 2026-10-31 · раунд 3 · builder: 08e25b4 [ok] — плашка в своей полосе, авто-прокрутка удалена; R4.
+- 2026-10-31 · раунд 3 · reviewer (только новое, c8af1e3..08e25b4): R1, R4 закрыты; новых находок нет; 1 «Было до нас».
+- 2026-10-31 · раунд 3 · verifier: a1d39fe — 25/25 pass (SE 375×667 в промежуточном и конечном положении — плашка не на кнопках). → Финал.
+- 2026-10-31 · финал · classify-risk(diff): high, совпадает с плановым. Security review (агент; встроенный /security-review без remote origin не запускается): 0 находок. Выученные правила добавлены в REVIEW.md и CLAUDE.md (одобрил пользователь).
 
 ## Отчёт для человека
 <!-- заполняется при паузе: что сделано, что не проходит, что пробовали, варианты с рекомендацией -->
