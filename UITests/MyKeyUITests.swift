@@ -235,9 +235,9 @@ final class MyKeyUITests: XCTestCase {
 
     // MARK: - E20, E28 (на 402 × 874 весь экран виден без прокрутки)
 
-    /// На экранах от 402 × 874 pt (iPhone 17 и крупнее) при стандартном Dynamic Type весь экран — до строки
-    /// про приватный ключ включительно — виден без прокрутки, как в макете `#state-ready`. На более узких
-    /// экранах прокрутка допустима: там проверяем, что строка до прокрутки может быть скрыта, но докручивается.
+    /// Строка про приватный ключ — в постоянной полосе над таб-баром, видна без прокрутки на любом экране.
+    /// На экранах от 402 × 874 pt (iPhone 17 и крупнее) при стандартном Dynamic Type и обе кнопки целиком видны
+    /// без прокрутки, как в макете `#state-ready`; на более узких кнопки докручиваются.
     @MainActor
     func testWholeScreenVisibleWithoutScrollOnLargePhones() {
         let app = launch(["-keystore", "memory"])
@@ -252,21 +252,69 @@ final class MyKeyUITests: XCTestCase {
 
         let details =
             "окно \(window.size), прокрутка \(scroll.frame), «Поделиться» \(share.frame), строка \(note.frame), таб-бар \(tabBar.frame)"
+        // Строка — под окном прокрутки, над таб-баром, внутри окна: видна без прокрутки на любом экране.
+        XCTAssertGreaterThanOrEqual(note.frame.minY, scroll.frame.maxY, details)
+        XCTAssertLessThanOrEqual(note.frame.maxY, tabBar.frame.minY, details)
+        XCTAssertTrue(window.contains(note.frame), details)
+        XCTAssertTrue(note.isHittable, details)
+
         if window.width >= 402 && window.height >= 874 {
-            // Без прокрутки: строка и обе кнопки целиком внутри окна прокрутки и над таб-баром.
-            for element in [share, note] {
-                XCTAssertTrue(
-                    scroll.frame.contains(element.frame),
-                    "\(element.identifier) не виден целиком без прокрутки: \(details)")
-                XCTAssertLessThanOrEqual(element.frame.maxY, tabBar.frame.minY, details)
-            }
+            XCTAssertTrue(scroll.frame.contains(share.frame), "«Поделиться» не видна целиком без прокрутки: \(details)")
             XCTAssertTrue(share.isHittable, details)
             XCTAssertGreaterThanOrEqual(share.frame.height, 44, details)
         } else {
             scroll.swipeUp()
             scroll.swipeUp()
-            XCTAssertTrue(scroll.frame.contains(note.frame), "строка не докручивается: \(details)")
+            XCTAssertTrue(scroll.frame.contains(share.frame), "«Поделиться» не докручивается: \(details)")
         }
+    }
+
+    // MARK: - E22 (плашка не двигает содержимое)
+
+    /// Появление и исчезновение плашки не меняют окно прокрутки и положение кнопок — в начальном положении
+    /// и в конце прокрутки; повторное нажатие «Скопировать» попадает туда же, а не в «Поделиться».
+    @MainActor
+    func testCopiedToastDoesNotMoveContent() {
+        let app = launch(["-keystore", "memory"])
+        _ = readKey(app)
+        let scroll = app.scrollViews["mykey.scroll"]
+        let copy = app.buttons["mykey.copy"]
+        let share = app.buttons["mykey.share"]
+        let note = app.staticTexts["mykey.privateNote"]
+        let toast = app.descendants(matching: .any).matching(identifier: "mykey.copiedToast").firstMatch
+        let tabBar = app.tabBars.firstMatch
+
+        func check(_ moment: String) {
+            XCTAssertTrue(copy.isHittable, moment)
+            let before = (scroll: scroll.frame, copy: copy.frame, share: share.frame, note: note.frame)
+            let shareWasVisible = before.scroll.contains(before.share)
+            copy.tap()
+            XCTAssertTrue(toast.waitForExistence(timeout: 1), moment)
+            let details = "\(moment): до \(before), плашка \(toast.frame)"
+            XCTAssertEqual(scroll.frame, before.scroll, "окно прокрутки изменилось — \(details)")
+            XCTAssertEqual(copy.frame, before.copy, "«Скопировать» сдвинулась — \(details)")
+            XCTAssertEqual(share.frame, before.share, "«Поделиться» сдвинулась — \(details)")
+            if shareWasVisible {
+                XCTAssertTrue(scroll.frame.contains(share.frame), "«Поделиться» обрезана — \(details)")
+                XCTAssertTrue(share.isHittable, details)
+            }
+            // Плашка занимает место строки в полосе над таб-баром, под окном прокрутки.
+            XCTAssertGreaterThanOrEqual(toast.frame.minY, scroll.frame.maxY, details)
+            XCTAssertLessThanOrEqual(toast.frame.maxY, tabBar.frame.minY, details)
+            XCTAssertLessThanOrEqual(toast.frame.minY, before.note.maxY, details)
+            XCTAssertGreaterThanOrEqual(toast.frame.maxY, before.note.minY, details)
+
+            XCTAssertTrue(toast.waitForNonExistence(timeout: 4), "\(moment): плашка не исчезла")
+            XCTAssertEqual(scroll.frame, before.scroll, "\(moment): окно прокрутки изменилось после плашки")
+            XCTAssertEqual(copy.frame, before.copy, "\(moment): «Скопировать» сдвинулась после плашки")
+            XCTAssertEqual(share.frame, before.share, "\(moment): «Поделиться» сдвинулась после плашки")
+            XCTAssertTrue(note.isHittable, "\(moment): строка про приватный ключ не вернулась")
+        }
+
+        if copy.isHittable { check("без прокрутки") }
+        scroll.swipeUp()
+        scroll.swipeUp()
+        check("в конце прокрутки")
     }
 
     // MARK: - E14

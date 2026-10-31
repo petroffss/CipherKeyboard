@@ -13,33 +13,53 @@ struct MyKeyView: View {
     @State private var copyCount = 0
 
     var body: some View {
-        // Плашка живёт в собственной полосе под прокруткой, а не поверх неё: окно ScrollView кончается над полосой,
-        // поэтому кнопки (они внутри прокрутки и обрезаются её краем) не попадают в зону плашки ни при какой прокрутке.
-        // Пока плашки нет, полоса не занимает высоты — на iPhone 17 (402 × 874) весь экран виден без прокрутки,
-        // как в макете. При появлении плашки окно прокрутки укорачивается снизу, а нижний край содержимого остаётся на месте.
+        // Под прокруткой — постоянная нижняя полоса над таб-баром фиксированной высоты: в ней строка про приватный ключ,
+        // при копировании она на 2 секунды сменяется плашкой. Высота полосы не зависит от плашки, поэтому окно ScrollView
+        // и положение содержимого не меняются при её появлении и исчезновении, а кнопки (внутри прокрутки, обрезаются
+        // её краем) никогда не попадают в зону плашки. Полоса же не даёт ScrollView коснуться нижнего края safe area —
+        // иначе SwiftUI растягивает прокрутку под таб-бар.
         VStack(spacing: 0) {
             content
-            if toastVisible {
-                toastSlot
-                    .transition(.opacity)
-            }
-            // Зазор над таб-баром (нижнее поле экрана). Он же не даёт ScrollView коснуться нижнего края safe area:
-            // иначе SwiftUI растягивает прокрутку под таб-бар и низ экрана уходит под таб-бар и эффект края прокрутки.
-            Color.clear
-                .frame(height: 6)
-                .accessibilityHidden(true)
+            bottomBand
         }
         .background(Color(.systemGroupedBackground))
     }
 
-    /// Полоса над таб-баром с плашкой; высота следует за Dynamic Type. Нажатия сквозь неё не перехватываются.
-    private var toastSlot: some View {
-        CopiedToast()
-            .accessibilityIdentifier("mykey.copiedToast")
-            .allowsHitTesting(false)
-            .padding(.top, 8)
-            .padding(.bottom, 10)
-            .frame(maxWidth: .infinity)
+    /// Полоса над таб-баром: строка «Приватный ключ…» или плашка «Ключ скопирован». Высоту задаёт больший элемент —
+    /// невидимая копия плашки и строка лежат в ZStack всегда, поэтому полоса одинаковой высоты с плашкой и без неё
+    /// (и следует за Dynamic Type). Нажатия сквозь плашку не перехватываются.
+    private var bottomBand: some View {
+        ZStack {
+            CopiedToast()
+                .hidden()
+                .accessibilityHidden(true)
+            privateNote
+                .opacity(toastVisible ? 0 : 1)
+                .accessibilityHidden(toastVisible)
+            if toastVisible {
+                CopiedToast()
+                    .accessibilityIdentifier("mykey.copiedToast")
+                    .allowsHitTesting(false)
+                    .transition(.opacity)
+            }
+        }
+        .padding(.horizontal, 20)
+        .padding(.top, 2)
+        .padding(.bottom, 4)
+        .frame(maxWidth: .infinity)
+    }
+
+    private var privateNote: some View {
+        HStack(spacing: 6) {
+            Image(systemName: "lock.fill")
+                .accessibilityHidden(true)
+            Text("Приватный ключ хранится только на этом iPhone")
+                .accessibilityIdentifier("mykey.privateNote")
+        }
+        .font(.footnote)
+        .foregroundStyle(.secondary)
+        .multilineTextAlignment(.center)
+        .fixedSize(horizontal: false, vertical: true)
     }
 
     private var content: some View {
@@ -49,7 +69,6 @@ struct MyKeyView: View {
                     .font(.largeTitle.bold())
                     .accessibilityAddTraits(.isHeader)
                     .accessibilityIdentifier("mykey.title")
-                    .padding(.top, 2)
                 Text("Покажите QR собеседнику или отправьте ему ключ — тогда он сможет писать вам.")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
@@ -57,7 +76,7 @@ struct MyKeyView: View {
                     .padding(.top, 4)
                 qrCard
                     .frame(maxWidth: .infinity)
-                    .padding(.top, 14)
+                    .padding(.top, 12)
                 Text("Отпечаток")
                     .font(.footnote)
                     .textCase(.uppercase)
@@ -94,23 +113,9 @@ struct MyKeyView: View {
                     .padding(.top, 12)
                 }
                 .padding(.top, 12)
-                HStack(spacing: 6) {
-                    Image(systemName: "lock.fill")
-                        .accessibilityHidden(true)
-                    Text("Приватный ключ хранится только на этом iPhone")
-                        .accessibilityIdentifier("mykey.privateNote")
-                }
-                .font(.footnote)
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
-                .frame(maxWidth: .infinity)
-                .padding(.top, 10)
             }
             .padding(.horizontal, 20)
         }
-        // Появление плашки укорачивает окно прокрутки снизу: держим нижний край содержимого на месте, чтобы кнопки,
-        // видимые у нижнего края, приподнялись над полосой плашки, а не ушли под край прокрутки.
-        .defaultScrollAnchor(.bottom, for: .sizeChanges)
         .accessibilityIdentifier("mykey.scroll")
     }
 
@@ -174,8 +179,8 @@ struct CopiedToast: View {
         }
         .font(.subheadline.weight(.semibold))
         .foregroundStyle(colorScheme == .dark ? Color.black : Color.white)
-        .padding(.vertical, 12)
-        .padding(.horizontal, 20)
+        .padding(.vertical, 6)
+        .padding(.horizontal, 18)
         .background(
             colorScheme == .dark
                 ? Color(red: 242 / 255, green: 242 / 255, blue: 247 / 255).opacity(0.94)
