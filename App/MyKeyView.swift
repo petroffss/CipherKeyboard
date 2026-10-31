@@ -8,6 +8,9 @@ struct MyKeyView: View {
     let info: MyKeyInfo
     @State private var toastVisible = false
     @State private var toastTask: Task<Void, Never>?
+    /// Счётчик нажатий «Скопировать ключ» — триггер тактильного отклика: меняется при каждом нажатии,
+    /// в том числе повторном, пока плашка видна; при появлении экрана и скрытии плашки не меняется.
+    @State private var copyCount = 0
 
     var body: some View {
         // Плашка живёт в собственной полосе под прокруткой, а не поверх неё: окно ScrollView кончается над полосой,
@@ -67,15 +70,20 @@ struct MyKeyView: View {
                     .accessibilityLabel(Text(info.fingerprint))
                     .accessibilityIdentifier("mykey.fingerprint")
                     .padding(.top, 4)
+                Hint(text: "Сверьте отпечаток с собеседником при встрече или по телефону — он должен совпасть.")
+                    .accessibilityIdentifier("mykey.fingerprintHint")
                 PublicKeyText(text: info.publicKey.string)
                     .padding(.vertical, 8)
                     .padding(.horizontal, 10)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 10))
                     .padding(.top, 10)
+                Hint(text: "Это открытый ключ — его можно отправлять кому угодно.")
+                    .accessibilityIdentifier("mykey.publicKeyHint")
                 VStack(spacing: 0) {
                     Button("Скопировать ключ", action: copyKey)
                         .buttonStyle(PrimaryButtonStyle())
+                        .sensoryFeedback(.success, trigger: copyCount)
                         .accessibilityIdentifier("mykey.copy")
                     ShareLink(item: info.publicKey.string) {
                         Text("Поделиться")
@@ -125,6 +133,7 @@ struct MyKeyView: View {
     /// Кладёт в буфер ровно строку открытого ключа; плашка видна 2 секунды после последнего нажатия.
     private func copyKey() {
         UIPasteboard.general.string = info.publicKey.string
+        copyCount &+= 1
         withAnimation(.easeOut(duration: 0.15)) { toastVisible = true }
         toastTask?.cancel()
         toastTask = Task { @MainActor in
@@ -132,6 +141,20 @@ struct MyKeyView: View {
             guard !Task.isCancelled else { return }
             withAnimation(.easeIn(duration: 0.15)) { toastVisible = false }
         }
+    }
+}
+
+/// Пояснение под отпечатком или строкой ключа: 13 pt (footnote), вторичный цвет, переносится.
+private struct Hint: View {
+    let text: String
+
+    var body: some View {
+        Text(text)
+            .font(.footnote)
+            .foregroundStyle(.secondary)
+            .fixedSize(horizontal: false, vertical: true)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.top, 6)
     }
 }
 

@@ -201,6 +201,38 @@ final class MyKeyUITests: XCTestCase {
         XCTAssertTrue(share.isHittable)
     }
 
+    // MARK: - E26 (пояснения к отпечатку и к ключу)
+
+    @MainActor
+    func testFingerprintAndPublicKeyHints() {
+        let app = launch(["-keystore", "memory"])
+        _ = readKey(app)
+        let fingerprint = app.staticTexts["mykey.fingerprint"]
+        let fingerprintHint = app.staticTexts["mykey.fingerprintHint"]
+        let publicKey = app.staticTexts["mykey.publicKey"]
+        let publicKeyHint = app.staticTexts["mykey.publicKeyHint"]
+        let copy = app.buttons["mykey.copy"]
+
+        XCTAssertTrue(fingerprintHint.exists)
+        XCTAssertTrue(publicKeyHint.exists)
+        XCTAssertEqual(
+            fingerprintHint.label, "Сверьте отпечаток с собеседником при встрече или по телефону — он должен совпасть.")
+        XCTAssertEqual(publicKeyHint.label, "Это открытый ключ — его можно отправлять кому угодно.")
+        XCTAssertFalse(fingerprintHint.label.contains("ckpub1:"))
+        XCTAssertFalse(publicKeyHint.label.contains("ckpub1:"))
+        // Строка ключа — только сам ключ, без подмешанного пояснения.
+        XCTAssertNotNil(publicKey.label.range(of: publicKeyPattern, options: .regularExpression), publicKey.label)
+
+        let order = [fingerprint, fingerprintHint, publicKey, publicKeyHint, copy]
+        XCTAssertTrue(order.allSatisfy(\.exists))
+        let tops = order.map(\.frame.minY)
+        for index in 1..<tops.count {
+            XCTAssertLessThan(
+                tops[index - 1], tops[index],
+                "порядок сверху вниз нарушен: \(order[index - 1].identifier) не выше \(order[index].identifier)")
+        }
+    }
+
     // MARK: - E14
 
     @MainActor
