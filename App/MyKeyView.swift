@@ -8,38 +8,35 @@ struct MyKeyView: View {
     let info: MyKeyInfo
     @State private var toastVisible = false
     @State private var toastTask: Task<Void, Never>?
-    /// Верх плашки и низ блока кнопок в координатах экрана — чтобы плашка не легла на кнопки.
-    @State private var toastTop: CGFloat?
-    @State private var actionsBottom: CGFloat = 0
 
     var body: some View {
-        ScrollViewReader { proxy in
+        // Плашка живёт в собственной полосе под прокруткой, а не поверх неё: окно ScrollView кончается над полосой,
+        // поэтому кнопки (они внутри прокрутки и обрезаются её краем) не попадают в зону плашки ни при какой прокрутке.
+        VStack(spacing: 0) {
             content
-                // Плашка — в нижней вставке над таб-баром: контент прокручивается с её учётом, касания она не перехватывает.
-                .safeAreaInset(edge: .bottom, spacing: 0) {
-                    if toastVisible {
-                        CopiedToast()
-                            .allowsHitTesting(false)
-                            .padding(.top, 8)
-                            .padding(.bottom, 16)
-                            .frame(maxWidth: .infinity)
-                            .onGeometryChange(for: CGFloat.self) {
-                                $0.frame(in: .global).minY
-                            } action: {
-                                toastTop = $0
-                            }
-                            .transition(.opacity)
-                    }
-                }
-                .onChange(of: toastTop) { _, top in
-                    // Кнопки оказались под плашкой (узкий непрокрученный экран) — прокручиваем их над ней.
-                    guard let top, actionsBottom > top else { return }
-                    withAnimation(.easeOut(duration: 0.2)) { proxy.scrollTo(Self.actionsID, anchor: .bottom) }
-                }
+            toastSlot
         }
+        .background(Color(.systemGroupedBackground))
     }
 
-    private static let actionsID = "mykey.actions"
+    /// Полоса над таб-баром высотой с плашку. Место занято всегда — невидимой копией плашки, —
+    /// чтобы появление плашки ничего не сдвигало, а высота следовала за Dynamic Type.
+    private var toastSlot: some View {
+        ZStack {
+            CopiedToast()
+                .hidden()
+                .accessibilityHidden(true)
+            if toastVisible {
+                CopiedToast()
+                    .accessibilityIdentifier("mykey.copiedToast")
+                    .transition(.opacity)
+            }
+        }
+        .allowsHitTesting(false)
+        .padding(.top, 8)
+        .padding(.bottom, 16)
+        .frame(maxWidth: .infinity)
+    }
 
     private var content: some View {
         ScrollView {
@@ -87,12 +84,6 @@ struct MyKeyView: View {
                     .accessibilityIdentifier("mykey.share")
                     .padding(.top, 12)
                 }
-                .id(Self.actionsID)
-                .onGeometryChange(for: CGFloat.self) {
-                    $0.frame(in: .global).maxY
-                } action: {
-                    actionsBottom = $0
-                }
                 .padding(.top, 16)
                 HStack(spacing: 6) {
                     Image(systemName: "lock.fill")
@@ -106,9 +97,9 @@ struct MyKeyView: View {
                 .padding(.top, 14)
             }
             .padding(.horizontal, 20)
-            .padding(.bottom, 72)
+            .padding(.bottom, 8)
         }
-        .background(Color(.systemGroupedBackground))
+        .accessibilityIdentifier("mykey.scroll")
     }
 
     private var qrCard: some View {
@@ -140,7 +131,6 @@ struct MyKeyView: View {
             try? await Task.sleep(for: .seconds(2))
             guard !Task.isCancelled else { return }
             withAnimation(.easeIn(duration: 0.15)) { toastVisible = false }
-            toastTop = nil
         }
     }
 }
@@ -167,7 +157,6 @@ struct CopiedToast: View {
         )
         .shadow(color: .black.opacity(0.2), radius: 8, y: 4)
         .accessibilityElement(children: .combine)
-        .accessibilityIdentifier("mykey.copiedToast")
     }
 }
 
@@ -181,9 +170,9 @@ struct PublicKeyText: UIViewRepresentable {
         label.numberOfLines = 0
         label.lineBreakMode = .byCharWrapping
         label.adjustsFontForContentSizeCategory = true
+        // Базовый размер 12 pt (caption1 при стандартном Dynamic Type); масштабирует только UIFontMetrics.
         label.font = UIFontMetrics(forTextStyle: .caption1).scaledFont(
-            for: .monospacedSystemFont(
-                ofSize: UIFont.preferredFont(forTextStyle: .caption1).pointSize, weight: .regular))
+            for: .monospacedSystemFont(ofSize: 12, weight: .regular))
         label.textColor = .secondaryLabel
         label.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         label.accessibilityIdentifier = "mykey.publicKey"

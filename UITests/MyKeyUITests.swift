@@ -136,6 +136,10 @@ final class MyKeyUITests: XCTestCase {
         let copy = app.buttons["mykey.copy"]
         let toasts = app.descendants(matching: .any).matching(identifier: "mykey.copiedToast")
         let toast = toasts.firstMatch
+        // На 375 × 667 кнопка под краем прокрутки: докручиваем заранее, чтобы автопрокрутка XCUITest
+        // при нажатии не съедала время, отсчитываемое от первого нажатия.
+        if !copy.isHittable { app.scrollViews["mykey.scroll"].swipeUp() }
+        XCTAssertTrue(copy.isHittable)
 
         let start = Date()
         copy.tap()
@@ -151,6 +155,50 @@ final class MyKeyUITests: XCTestCase {
 
         wait(until: start.addingTimeInterval(4.5))
         XCTAssertFalse(toast.exists, "плашка должна исчезнуть")
+    }
+
+    // MARK: - E22 (плашка не перекрывает кнопки)
+
+    /// Плашка лежит ниже окна прокрутки, а видимые части кнопок — внутри него: пересечения нет
+    /// ни в начальном положении, ни после прокрутки (важно на 375 × 667, где кнопки уходят под прокрутку).
+    @MainActor
+    func testCopiedToastDoesNotCoverButtons() {
+        let app = launch(["-keystore", "memory"])
+        _ = readKey(app)
+        let scroll = app.scrollViews["mykey.scroll"]
+        let copy = app.buttons["mykey.copy"]
+        let share = app.buttons["mykey.share"]
+        let toast = app.descendants(matching: .any).matching(identifier: "mykey.copiedToast").firstMatch
+        let tabBar = app.tabBars.firstMatch
+        XCTAssertTrue(scroll.exists)
+
+        func assertToastClear(_ moment: String) {
+            XCTAssertTrue(toast.waitForExistence(timeout: 1), moment)
+            let toastFrame = toast.frame
+            XCTAssertGreaterThanOrEqual(toastFrame.minY, scroll.frame.maxY, "\(moment): плашка заходит в прокрутку")
+            XCTAssertLessThanOrEqual(toastFrame.maxY, tabBar.frame.minY, "\(moment): плашка не над таб-баром")
+            for button in [copy, share] {
+                let visible = button.frame.intersection(scroll.frame)
+                XCTAssertFalse(visible.intersects(toastFrame), "\(moment): плашка перекрывает «\(button.label)»")
+            }
+        }
+
+        // Окно прокрутки неподвижно и кончается над плашкой, поэтому проверка верна при любом смещении;
+        // прогоняем её после нажатия (XCUITest при необходимости докручивает кнопку), в середине и в конце.
+        copy.tap()
+        assertToastClear("после нажатия")
+
+        scroll.swipeUp(velocity: .slow)
+        XCTAssertTrue(copy.isHittable)
+        copy.tap()
+        assertToastClear("промежуточная прокрутка")
+
+        scroll.swipeUp()
+        scroll.swipeUp()
+        XCTAssertTrue(copy.isHittable)
+        copy.tap()
+        assertToastClear("в конце прокрутки")
+        XCTAssertTrue(share.isHittable)
     }
 
     // MARK: - E14
