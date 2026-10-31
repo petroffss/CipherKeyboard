@@ -13,3 +13,10 @@ specs/**/evidence/
 Thumbs.db
 
 # ниже — под стек (дополнит /kickoff)
+# Xcode / Swift
+.build/
+DerivedData/
+xcuserdata/
+*.xcuserstate
+.swiftpm/
+*.xcresult
