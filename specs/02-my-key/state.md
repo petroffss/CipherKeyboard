@@ -34,6 +34,7 @@ last_reviewed_commit: "6ced9a12ef50198b88d046aef37977e80c70e8a6"
 
 ## Было до нас
 <!-- находки «Было до нас»: не чиним в этом цикле, не блокируют -->
+- [слабый-тест] testFirstLaunchShowsMyKey изредка не находит tab.myKey (≈1 из 3 на SE, был и на 2f59ed5): accessibilityIdentifier у Label в .tabItem переносится не всегда (App/RootView.swift tabLabel) — builder ц2·2; кандидат в /fix-a-bug.
 - scripts/sandbox.sh start падает на `open -a Simulator` («Unable to find application named 'Simulator'») до установки приложения; с HEADLESS=1 сразу запускает приложение и создаёт ключ — «пустой» песочницы не получается (verifier, раунд 1).
 - [доступность] App/MyKeyView.swift copyKey(): появление плашки «Ключ скопирован» не объявляется VoiceOver (нет AccessibilityNotification.Announcement) — в требованиях не прописано (reviewer, раунд 3).
 
@@ -57,6 +58,7 @@ last_reviewed_commit: "6ced9a12ef50198b88d046aef37977e80c70e8a6"
 - 2026-10-31 · цикл 2 · раунд 1 · builder: d5d2f46 [ok] — пояснения (Hint .footnote), sensoryFeedback(.success, trigger: copyCount), testFingerprintAndPublicKeyHints; ядро 121, UI 9/9 на iPhone 17 и SE 375, линтер OK.
 - 2026-10-31 · цикл 2 · раунд 1 · verifier: 26/28 — E20, E28 fail (R5). E16–18, E23 на экране не перепроверены (Keyboard/ не менялся, доказательство r3).
 - 2026-10-31 · цикл 2 · раунд 1 · reviewer (6ced9a1..d5d2f46): 0 находок. → раунд 2.
+- 2026-10-31 · цикл 2 · раунд 2 · builder: 1e05ea5 [ok] — полоса плашки только пока плашка видна + defaultScrollAnchor(.bottom, for: .sizeChanges), зазор 6 pt под прокруткой, отступы −14 pt, mykey.privateNote, testWholeScreenVisibleWithoutScrollOnLargePhones. Ядро 121; UI 10/10 в повторах, testFirstLaunchShowsMyKey изредка падает (было до нас). Побочный эффект: на 402 pt содержимое на 2 с сдвигается вверх ~60 pt, пока видна плашка.
 
 ## Отчёт для человека
 <!-- заполняется при паузе: что сделано, что не проходит, что пробовали, варианты с рекомендацией -->
