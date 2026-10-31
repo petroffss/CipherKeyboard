@@ -41,7 +41,8 @@ Swift 6 · iOS 18+, только iPhone · SwiftUI (приложение) + UIKi
 - UI-проверки идут в iOS Simulator, а не в браузере: eval типа `ui` — сценарий в симуляторе (XCUITest или нажатия и скриншоты через инструмент симулятора), `design` — скриншот симулятора против макета.
 - `accessibilityIdentifier` у ключевых элементов — по ним пишутся UI-тесты (`app.title`, `keyboard.encrypt`, …).
 - Тексты интерфейса — на русском.
-- Временные плашки (toast) — в собственной полосе над таб-баром вне ScrollView, не overlay поверх контента; нажатия сквозь них — `allowsHitTesting(false)`.
+- Временные плашки (toast) — в собственной полосе над таб-баром вне ScrollView, не overlay поверх контента; полоса постоянной высоты (плашка в ZStack сменяет постоянный элемент) и не появляется/не исчезает вместе с плашкой; нажатия сквозь неё — `allowsHitTesting(false)`.
+- `accessibilityIdentifier` вкладок таб-бара ставится через `TabBarIdentifiers` (App/RootView.swift): из `.tabItem`/`Tab` SwiftUI переносит его не всегда.
 - Идентификаторы: приложение `dev.cipherkeyboard.app`, клавиатура `dev.cipherkeyboard.app.keyboard`, App Group `group.dev.cipherkeyboard`.
 
 ## Не делаем (non-goals)
