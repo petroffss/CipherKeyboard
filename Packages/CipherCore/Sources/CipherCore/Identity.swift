@@ -8,8 +8,8 @@ public struct Identity: Sendable, CustomStringConvertible, CustomDebugStringConv
     private let secret: [UInt8]
     public let publicKey: PublicKey
 
-    /// Новая случайная личность.
-    public static func generate() -> Identity {
+    /// Новая случайная личность. `package`: создаётся только через `IdentityStore` (или в тестах ядра).
+    package static func generate() -> Identity {
         let agreement = Curve25519.KeyAgreement.PrivateKey()
         let signing = Curve25519.Signing.PrivateKey()
         return Identity(agreement: agreement, signing: signing)
@@ -35,7 +35,8 @@ public struct Identity: Sendable, CustomStringConvertible, CustomDebugStringConv
     }
 
     /// 64 байта: приватный X25519 (32) + приватный Ed25519 (32). Только для хранения в Keychain.
-    public func privateKeyData() -> Data {
+    /// `package`: приложению и клавиатуре приватные байты недоступны — их пишет в Keychain только `IdentityStore`.
+    package func privateKeyData() -> Data {
         Data(secret)
     }
 

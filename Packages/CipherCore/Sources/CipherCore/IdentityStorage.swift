@@ -1,8 +1,9 @@
 import Foundation
 import Security
 
-// Хранение своей личности. Приватные 64 байта трогает только этот файл (и `Identity.swift`):
-// приложение и клавиатура получают готовую `Identity` или ошибку и Keychain напрямую не вызывают.
+// Хранение своей личности: только чтение. Создание и запись (`IdentityStore`) — в отдельном модуле
+// `CipherCoreIdentityStore`, который линкует только приложение: клавиатура не может создать ключ — это не скомпилируется.
+// Приложение и клавиатура получают готовую `Identity` или ошибку и Keychain напрямую не вызывают.
 
 /// Хранилище одной секретной записи. Только чтение и добавление: обновления и удаления нет намеренно —
 /// существующую личность нельзя перезаписать или стереть (иначе пользователь потеряет свои сообщения).
@@ -59,47 +60,8 @@ public struct IdentityReader: Sendable {
     }
 }
 
-/// Личность приложения: прочитать из хранилища, а если записи нет — создать и записать одной операцией.
-public struct IdentityStore: Sendable {
-    private let storage: any SecretStorage
-
-    public init(storage: any SecretStorage) {
-        self.storage = storage
-    }
-
-    /// Хранилище приложения в общем Keychain.
-    public static var keychain: IdentityStore { IdentityStore(storage: KeychainSecretStorage.identity) }
-
-    /// Читает личность; новую создаёт **только** если Keychain ответил «записи нет».
-    /// Любой другой ответ — `IdentityStorageError`, запись не удаляется и не перезаписывается.
-    public func loadOrCreate() throws(IdentityStorageError) -> Identity {
-        let first = storage.read()
-        switch first.status {
-        case errSecSuccess:
-            return try decodeIdentity(first.data)
-        case errSecItemNotFound:
-            break
-        default:
-            throw .unavailable(status: first.status)
-        }
-
-        let created = Identity.generate()
-        let status = storage.add(created.privateKeyData())
-        switch status {
-        case errSecSuccess:
-            return created
-        case errSecDuplicateItem:
-            // Запись успел создать другой запуск — используем её, а свою новую личность выбрасываем.
-            let existing = storage.read()
-            guard existing.status == errSecSuccess else { throw .unavailable(status: existing.status) }
-            return try decodeIdentity(existing.data)
-        default:
-            throw .unavailable(status: status)
-        }
-    }
-}
-
-private func decodeIdentity(_ data: Data?) throws(IdentityStorageError) -> Identity {
+/// Разбор записи личности. `package`: нужен `IdentityStore` из `CipherCoreIdentityStore`, снаружи пакета не виден.
+package func decodeIdentity(_ data: Data?) throws(IdentityStorageError) -> Identity {
     guard let data else { throw .corruptedRecord(byteCount: 0) }
     guard data.count == 64, let identity = try? Identity(privateKeyData: data) else {
         throw .corruptedRecord(byteCount: data.count)
@@ -108,19 +70,21 @@ private func decodeIdentity(_ data: Data?) throws(IdentityStorageError) -> Ident
 }
 
 /// Запись личности в Keychain, общем для приложения и клавиатуры (access group = App Group).
-public struct KeychainSecretStorage: SecretStorage {
-    public let service: String
-    public let account: String
-    public let accessGroup: String
+/// `package`: снаружи пакета тип не виден — клавиатура получает только `IdentityReader.keychain`,
+/// а `add` в настоящий Keychain доступен лишь `IdentityStore.keychain` (модуль `CipherCoreIdentityStore`).
+package struct KeychainSecretStorage: SecretStorage {
+    package let service: String
+    package let account: String
+    package let accessGroup: String
 
-    public init(service: String, account: String, accessGroup: String) {
+    package init(service: String, account: String, accessGroup: String) {
         self.service = service
         self.account = account
         self.accessGroup = accessGroup
     }
 
     /// Единственная запись личности: 64 байта приватных ключей.
-    public static let identity = KeychainSecretStorage(
+    package static let identity = KeychainSecretStorage(
         service: "dev.cipherkeyboard.identity", account: "identity.v1", accessGroup: "group.dev.cipherkeyboard")
 
     /// Атрибуты, по которым запись находится: класс, сервис, аккаунт, группа доступа.
@@ -150,14 +114,14 @@ public struct KeychainSecretStorage: SecretStorage {
         return query
     }
 
-    public func read() -> (status: OSStatus, data: Data?) {
+    package func read() -> (status: OSStatus, data: Data?) {
         var result: CFTypeRef?
         let status = SecItemCopyMatching(readQuery() as CFDictionary, &result)
         guard status == errSecSuccess else { return (status, nil) }
         return (status, result as? Data)
     }
 
-    public func add(_ data: Data) -> OSStatus {
+    package func add(_ data: Data) -> OSStatus {
         SecItemAdd(addQuery(data: data) as CFDictionary, nil)
     }
 }

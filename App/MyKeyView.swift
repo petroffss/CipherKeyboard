@@ -8,8 +8,40 @@ struct MyKeyView: View {
     let info: MyKeyInfo
     @State private var toastVisible = false
     @State private var toastTask: Task<Void, Never>?
+    /// Верх плашки и низ блока кнопок в координатах экрана — чтобы плашка не легла на кнопки.
+    @State private var toastTop: CGFloat?
+    @State private var actionsBottom: CGFloat = 0
 
     var body: some View {
+        ScrollViewReader { proxy in
+            content
+                // Плашка — в нижней вставке над таб-баром: контент прокручивается с её учётом, касания она не перехватывает.
+                .safeAreaInset(edge: .bottom, spacing: 0) {
+                    if toastVisible {
+                        CopiedToast()
+                            .allowsHitTesting(false)
+                            .padding(.top, 8)
+                            .padding(.bottom, 16)
+                            .frame(maxWidth: .infinity)
+                            .onGeometryChange(for: CGFloat.self) {
+                                $0.frame(in: .global).minY
+                            } action: {
+                                toastTop = $0
+                            }
+                            .transition(.opacity)
+                    }
+                }
+                .onChange(of: toastTop) { _, top in
+                    // Кнопки оказались под плашкой (узкий непрокрученный экран) — прокручиваем их над ней.
+                    guard let top, actionsBottom > top else { return }
+                    withAnimation(.easeOut(duration: 0.2)) { proxy.scrollTo(Self.actionsID, anchor: .bottom) }
+                }
+        }
+    }
+
+    private static let actionsID = "mykey.actions"
+
+    private var content: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
                 Text("Мой ключ")
@@ -38,27 +70,30 @@ struct MyKeyView: View {
                     .accessibilityLabel(Text(info.fingerprint))
                     .accessibilityIdentifier("mykey.fingerprint")
                     .padding(.top, 4)
-                Text(info.publicKey.string)
-                    .font(.caption.monospaced())
-                    .foregroundStyle(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .textSelection(.enabled)
+                PublicKeyText(text: info.publicKey.string)
                     .padding(.vertical, 8)
                     .padding(.horizontal, 10)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 10))
-                    .accessibilityIdentifier("mykey.publicKey")
                     .padding(.top, 10)
-                Button("Скопировать ключ", action: copyKey)
-                    .buttonStyle(PrimaryButtonStyle())
-                    .accessibilityIdentifier("mykey.copy")
-                    .padding(.top, 16)
-                ShareLink(item: info.publicKey.string) {
-                    Text("Поделиться")
+                VStack(spacing: 0) {
+                    Button("Скопировать ключ", action: copyKey)
+                        .buttonStyle(PrimaryButtonStyle())
+                        .accessibilityIdentifier("mykey.copy")
+                    ShareLink(item: info.publicKey.string) {
+                        Text("Поделиться")
+                    }
+                    .buttonStyle(SecondaryButtonStyle())
+                    .accessibilityIdentifier("mykey.share")
+                    .padding(.top, 12)
                 }
-                .buttonStyle(SecondaryButtonStyle())
-                .accessibilityIdentifier("mykey.share")
-                .padding(.top, 12)
+                .id(Self.actionsID)
+                .onGeometryChange(for: CGFloat.self) {
+                    $0.frame(in: .global).maxY
+                } action: {
+                    actionsBottom = $0
+                }
+                .padding(.top, 16)
                 HStack(spacing: 6) {
                     Image(systemName: "lock.fill")
                         .accessibilityHidden(true)
@@ -74,13 +109,6 @@ struct MyKeyView: View {
             .padding(.bottom, 72)
         }
         .background(Color(.systemGroupedBackground))
-        .overlay(alignment: .bottom) {
-            if toastVisible {
-                CopiedToast()
-                    .padding(.bottom, 16)
-                    .transition(.opacity)
-            }
-        }
     }
 
     private var qrCard: some View {
@@ -112,6 +140,7 @@ struct MyKeyView: View {
             try? await Task.sleep(for: .seconds(2))
             guard !Task.isCancelled else { return }
             withAnimation(.easeIn(duration: 0.15)) { toastVisible = false }
+            toastTop = nil
         }
     }
 }
@@ -139,5 +168,39 @@ struct CopiedToast: View {
         .shadow(color: .black.opacity(0.2), radius: 8, y: 4)
         .accessibilityElement(children: .combine)
         .accessibilityIdentifier("mykey.copiedToast")
+    }
+}
+
+/// Строка открытого ключа. UILabel вместо `Text`: перенос строго посимвольный, без автоматического дефиса —
+/// дефис можно принять за символ ключа (в base64url есть настоящие «-»).
+struct PublicKeyText: UIViewRepresentable {
+    let text: String
+
+    func makeUIView(context: Context) -> UILabel {
+        let label = UILabel()
+        label.numberOfLines = 0
+        label.lineBreakMode = .byCharWrapping
+        label.adjustsFontForContentSizeCategory = true
+        label.font = UIFontMetrics(forTextStyle: .caption1).scaledFont(
+            for: .monospacedSystemFont(
+                ofSize: UIFont.preferredFont(forTextStyle: .caption1).pointSize, weight: .regular))
+        label.textColor = .secondaryLabel
+        label.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        label.accessibilityIdentifier = "mykey.publicKey"
+        return label
+    }
+
+    func updateUIView(_ label: UILabel, context: Context) {
+        let paragraph = NSMutableParagraphStyle()
+        paragraph.lineBreakMode = .byCharWrapping
+        paragraph.hyphenationFactor = 0
+        label.attributedText = NSAttributedString(string: text, attributes: [.paragraphStyle: paragraph])
+        label.accessibilityLabel = text
+    }
+
+    func sizeThatFits(_ proposal: ProposedViewSize, uiView label: UILabel, context: Context) -> CGSize? {
+        let width = proposal.width ?? label.intrinsicContentSize.width
+        let fitted = label.sizeThatFits(CGSize(width: width, height: .greatestFiniteMagnitude))
+        return CGSize(width: width, height: ceil(fitted.height))
     }
 }

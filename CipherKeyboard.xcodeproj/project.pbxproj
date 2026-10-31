@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		CA000000000000000000010C /* CipherCore in Frameworks */ = {isa = PBXBuildFile; productRef = CA000000000000000000010B /* CipherCore */; };
+		CA000000000000000000011C /* CipherCoreIdentityStore in Frameworks */ = {isa = PBXBuildFile; productRef = CA000000000000000000011B /* CipherCoreIdentityStore */; };
 		CA000000000000000000010F /* CipherKeyboardExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = CA0000000000000000000202 /* CipherKeyboardExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		CA000000000000000000020C /* CipherCore in Frameworks */ = {isa = PBXBuildFile; productRef = CA000000000000000000020B /* CipherCore */; };
 /* End PBXBuildFile section */
@@ -86,6 +87,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CA000000000000000000010C /* CipherCore in Frameworks */,
+				CA000000000000000000011C /* CipherCoreIdentityStore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -150,6 +152,7 @@
 			name = CipherKeyboard;
 			packageProductDependencies = (
 				CA000000000000000000010B /* CipherCore */,
+				CA000000000000000000011B /* CipherCoreIdentityStore */,
 			);
 			productName = CipherKeyboard;
 			productReference = CA0000000000000000000102 /* CipherKeyboard.app */;
@@ -522,6 +525,10 @@
 		CA000000000000000000020B /* CipherCore */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = CipherCore;
+		};
+		CA000000000000000000011B /* CipherCoreIdentityStore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = CipherCoreIdentityStore;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

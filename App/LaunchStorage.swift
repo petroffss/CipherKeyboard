@@ -1,4 +1,5 @@
 import CipherCore
+import CipherCoreIdentityStore
 import Foundation
 
 #if DEBUG
