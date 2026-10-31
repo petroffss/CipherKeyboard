@@ -1,5 +1,8 @@
-import CipherCore
+import CryptoKit
 import Foundation
+import Testing
+
+@testable import CipherCore
 
 // Вспомогательные функции тестов. base64 здесь — через Foundation, независимо от кодировщика ядра.
 
@@ -89,4 +92,72 @@ enum SmallOrderEd25519 {
         "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
         "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
     ]
+}
+
+/// Сборка сообщений `ckmsg1` из полей формата — для подделок злонамеренного отправителя, который подписывает
+/// их своим настоящим ключом. Производные ключа сообщения и дополнение посчитаны здесь по FORMAT.md,
+/// независимо от функций ядра.
+enum Forge {
+    static let domain = Array("CipherKeyboard v1".utf8)
+
+    /// Запись получателя: ключ сообщения, завёрнутый для `recipient` эфемерным ключом `ephemeral`.
+    static func entry(
+        _ messageKey: [UInt8], ephemeral: Curve25519.KeyAgreement.PrivateKey, to recipient: PublicKey
+    ) throws -> [UInt8] {
+        let recipientRaw = Array(try #require(rawKey(recipient))[0..<32])
+        let ephemeralRaw = Array(ephemeral.publicKey.rawRepresentation)
+        let secret = try ephemeral.sharedSecretFromKeyAgreement(
+            with: Curve25519.KeyAgreement.PublicKey(rawRepresentation: recipientRaw))
+        let wrapKey = secret.hkdfDerivedSymmetricKey(
+            using: SHA256.self, salt: [UInt8](), sharedInfo: domain + ephemeralRaw + recipientRaw,
+            outputByteCount: 32)
+        let box = try ChaChaPoly.seal(
+            messageKey, using: wrapKey, nonce: ChaChaPoly.Nonce(data: [UInt8](repeating: 0, count: 12)))
+        return Array(box.ciphertext) + Array(box.tag)
+    }
+
+    private static func derived(_ messageKey: [UInt8], _ label: String) -> SymmetricKey {
+        HKDF<SHA256>.deriveKey(
+            inputKeyMaterial: SymmetricKey(data: messageKey), salt: [UInt8](), info: domain + Array(label.utf8),
+            outputByteCount: 32)
+    }
+
+    /// Ключ шифрования текста: HKDF-SHA256(K, info = домен ‖ "text").
+    static func textKey(_ messageKey: [UInt8]) -> SymmetricKey { derived(messageKey, "text") }
+
+    /// Обязательство на ключ сообщения: HKDF-SHA256(K, info = домен ‖ "commit").
+    static func commitment(_ messageKey: [UInt8]) -> [UInt8] {
+        derived(messageKey, "commit").withUnsafeBytes { Array($0) }
+    }
+
+    /// Честная открытая часть: настоящая длина (UInt16 BE) ‖ текст ‖ нули до кратного 32.
+    static func padded(_ text: [UInt8]) -> [UInt8] {
+        let paddedCount = (text.count + 31) / 32 * 32
+        return [UInt8(text.count >> 8), UInt8(text.count & 0xFF)] + text
+            + [UInt8](repeating: 0, count: paddedCount - text.count)
+    }
+
+    static func randomKey() -> [UInt8] {
+        SymmetricKey(size: .bits256).withUnsafeBytes { Array($0) }
+    }
+
+    /// Сообщение от `sender`: записи как есть, обязательство как есть, открытая часть `plain` (уже с длиной
+    /// и дополнением) зашифрована ключом текста от `textMessageKey`; подпись — настоящим ключом `sender`.
+    static func message(
+        from sender: Identity, ephemeral: Curve25519.KeyAgreement.PrivateKey, entries: [[UInt8]],
+        commitment: [UInt8], textMessageKey: [UInt8], plain: [UInt8]
+    ) throws -> Envelope {
+        var envelope = Envelope(
+            senderKey: try #require(rawKey(sender.publicKey)),
+            ephemeralKey: Array(ephemeral.publicKey.rawRepresentation),
+            entries: entries, commitment: commitment, nonce: Array(ChaChaPoly.Nonce()),
+            ciphertext: [UInt8](repeating: 0, count: plain.count + 16), signature: [])
+        // AAD — байты до nonce; длина шифротекста уже верная, поэтому заголовок совпадает с итоговым.
+        let box = try ChaChaPoly.seal(
+            plain, using: textKey(textMessageKey), nonce: ChaChaPoly.Nonce(data: envelope.nonce),
+            authenticating: envelope.textAAD)
+        envelope.ciphertext = Array(box.ciphertext) + Array(box.tag)
+        envelope.signature = Array(try sender.signingKey().signature(for: envelope.signedBytes))
+        return envelope
+    }
 }

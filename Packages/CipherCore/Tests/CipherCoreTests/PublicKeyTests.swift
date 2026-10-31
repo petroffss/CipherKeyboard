@@ -191,6 +191,49 @@ struct InvalidPublicKeyTests {
         }
     }
 
+    @Test("Часть X25519 с выставленным старшим битом байта 31 → invalidKey")
+    func nonCanonicalHighBit() throws {
+        let raw = try #require(rawKey(key))
+        var part = Array(raw[0..<32])
+        #expect(part[31] & 0x80 == 0, "у честного ключа старший бит снят")
+        part[31] |= 0x80
+        let text = try keyString(agreementPart: part)
+        #expect(text.wholeMatch(of: /ckpub1:[A-Za-z0-9_-]{86}/) != nil)
+        #expect(text != key.string)
+        #expect(throws: CipherError.invalidKey) { _ = try PublicKey(string: text) }
+    }
+
+    @Test("Часть X25519 ≥ p (неканоническая запись 0…18) → invalidKey; каноническая 9 разбирается")
+    func agreementPartAbovePrime() throws {
+        for k in 0...18 {
+            let part = [UInt8(0xED + k)] + [UInt8](repeating: 0xFF, count: 30) + [0x7F]
+            #expect(throws: CipherError.invalidKey, "p + \(k)") {
+                _ = try PublicKey(string: try keyString(agreementPart: part))
+            }
+        }
+        let nine = [UInt8(9)] + [UInt8](repeating: 0, count: 31)
+        #expect(
+            try PublicKey(string: try keyString(agreementPart: nine)).string == (try keyString(agreementPart: nine)))
+    }
+
+    @Test("Часть Ed25519 с y ≥ p (вторая запись точки y = 3) → invalidKey; каноническая y = 3 разбирается")
+    func signingPartAbovePrime() throws {
+        let canonical = [UInt8(3)] + [UInt8](repeating: 0, count: 31)
+        let nonCanonical = [UInt8(0xED + 3)] + [UInt8](repeating: 0xFF, count: 30) + [0x7F]
+        #expect(
+            try PublicKey(string: try keyString(signingPart: canonical)).string
+                == (try keyString(signingPart: canonical)))
+        #expect(throws: CipherError.invalidKey) { _ = try PublicKey(string: try keyString(signingPart: nonCanonical)) }
+    }
+
+    @Test("200 ключей из Identity.generate() разбираются из своих строк без отказа")
+    func honestKeysAccepted() throws {
+        for _ in 0..<200 {
+            let honest = Identity.generate().publicKey
+            #expect(try PublicKey(string: honest.string) == honest)
+        }
+    }
+
     @Test("Контроль: та же сборка с настоящей частью Ed25519 разбирается")
     func realSigningPartAccepted() throws {
         let raw = try #require(rawKey(key))

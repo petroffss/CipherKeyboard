@@ -17,7 +17,7 @@ public struct PublicKey: Hashable, Sendable, Codable, CustomStringConvertible {
         self.raw = raw
     }
 
-    /// Ключ из сырых байт чужого происхождения: длина 64, ни часть X25519, ни часть Ed25519 — не точка малого порядка.
+    /// Ключ из сырых байт чужого происхождения: длина 64, обе части в канонической записи и не точки малого порядка.
     init(validatingRaw raw: [UInt8]) throws(CipherError) {
         guard raw.count == Self.rawCount else { throw .invalidKey }
         guard Self.isUsableAgreementKey(Array(raw[0..<32])) else { throw .invalidKey }
@@ -76,9 +76,22 @@ public struct PublicKey: Hashable, Sendable, Codable, CustomStringConvertible {
     /// CryptoKit такое согласование отвергает.
     private static let probeScalar: [UInt8] = Array(repeating: 0x5A, count: 32)
 
-    /// Можно ли согласовывать ключ с этой точкой X25519 (не нулевая и не малого порядка).
+    /// Меньше ли 32 байта little-endian простого `p = 2^255 − 19` (`ED FF…FF 7F`). Старший бит должен быть уже снят.
+    /// Значения `p … 2^255 − 1` — неканонические записи чисел `0 … 18`: второй вариант строки того же ключа.
+    static func isBelowFieldPrime(_ raw: [UInt8]) -> Bool {
+        guard raw.count == 32 else { return false }
+        return !(raw[31] == 0x7F && raw[1...30].allSatisfy { $0 == 0xFF } && raw[0] >= 0xED)
+    }
+
+    /// Каноническая ли запись координаты X25519: старший бит последнего байта — 0 (X25519 его игнорирует,
+    /// поэтому с ним у того же ключа была бы вторая строка `ckpub1`), значение меньше `p`.
+    static func isCanonicalAgreementKey(_ raw: [UInt8]) -> Bool {
+        raw.count == 32 && raw[31] & 0x80 == 0 && isBelowFieldPrime(raw)
+    }
+
+    /// Можно ли согласовывать ключ с этой точкой X25519: каноническая запись, не нулевая и не малого порядка.
     static func isUsableAgreementKey(_ raw: [UInt8]) -> Bool {
-        guard raw.count == 32,
+        guard isCanonicalAgreementKey(raw),
             let point = try? Curve25519.KeyAgreement.PublicKey(rawRepresentation: raw),
             let probe = try? Curve25519.KeyAgreement.PrivateKey(rawRepresentation: probeScalar),
             let secret = try? probe.sharedSecretFromKeyAgreement(with: point)
@@ -114,11 +127,12 @@ public struct PublicKey: Hashable, Sendable, Codable, CustomStringConvertible {
 
     /// Можно ли проверять подписи этим ключом Ed25519: 32 байта и не точка малого порядка
     /// (сравниваются 31 байт и последний байт без знакового бита).
+    /// Координата `y` (без знакового бита) должна быть меньше `p`: иначе это вторая запись той же точки.
     static func isUsableSigningKey(_ raw: [UInt8]) -> Bool {
         guard raw.count == 32, (try? Curve25519.Signing.PublicKey(rawRepresentation: raw)) != nil else { return false }
         var masked = raw
         masked[31] &= 0x7F
-        return !smallOrderSigningPoints.contains(masked)
+        return isBelowFieldPrime(masked) && !smallOrderSigningPoints.contains(masked)
     }
 }
 

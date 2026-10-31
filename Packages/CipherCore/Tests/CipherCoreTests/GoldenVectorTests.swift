@@ -15,13 +15,15 @@ enum GoldenVector {
         "ckpub1:fVntxqkaxIr0CmIZRdL01DK0sMzDpAnXftE9HqmQiWbsmOpXeFBjdjTH_wWUhMO_LXfxblAJL-QvZK06itB6ew"
     static let publicKeyB =
         "ckpub1:NJOEnWGGyDoHykLBDlCD7URnjVE9tZbVWjeCYzUz_2Kcw55wrHm0NeQ2cCen_kX3viIwGRPwDfhpeV2HiOQq0g"
-    /// От A для B (и для самого A). Две записи получателей.
+    /// От A для B (и для самого A). Две записи получателей, текст 62 байта дополнен до 64.
+    /// Перегенерирован один раз в раунде 3 (обязательство на ключ, дополнение) — формат ещё не был у пользователей.
     static let message =
-        "ckmsg1:AQIAPn1Z7capGsSK9ApiGUXS9NQytLDMw6QJ137RPR6pkIlm7JjqV3hQY3Y0x_8FlITDvy138W5QCS_kL2StOorQentL4q91"
-        + "BpRbj87cB1McKK_Z0OjjsfQxMzJXz93e9xhNIpvEfZ7R-2ZHwJVR0OYKL3Cp6ICiSTobBo33la9AGE9Wrp0zSMp2WNK0HZKIs3YXFDsq"
-        + "o0C9bu4O-cvMxVI_OCOlWFM58RA0KCYk4mmkD3tnXX4nRw7JNUTJqg4GS-YOIjSapCUqVztbBgK1Go6c2iaUPQ0uSL50SGZ6fzNFo-sa"
-        + "xvnDdsGh_WQAbXsS3S_hPRngMvXaFVEMyIGzT8cBjH8qe_qgVH70LaK_Zbwav1FqgpHx-pyL7zAMvETlB0RnwY7K_kLbQZr2gk50HVMa"
-        + "2G_qM6oU36iUSMPKAlt6dfDYaSj708Ah1CnCcfX53UyD9h-jKrb7CjoTxAY"
+        "ckmsg1:AQIAQH1Z7capGsSK9ApiGUXS9NQytLDMw6QJ137RPR6pkIlm7JjqV3hQY3Y0x_8FlITDvy138W5QCS_kL2StOorQens6pe1yQ"
+        + "IuORYZbz4yOVyP6FqEHARfT4YTlBh5445bhHIWkZjliw0AY0H6QkeTKxp9ewdWQACO0z5po91a5kYfk4tqSMSM0vuwduki3UhWxn-lhS"
+        + "0KW-vfhdGAQEowFMhH8DGebdxXIomCCr_qn31S8lLc6nri0UmxpM-GO-ymy4FhUq8Zvt3zbUa7WyG7dhZ9Yhnf4suX0erGrT5A_qkp_O"
+        + "KDU0VHA-xN_pS4Yx3lrwB8-A0_uY25wWyPKdEmQyCYXLUprepY4fsSRmoipXkxcg1t4qgYcjiSCavSgKEAY8-yXxavU_7YzG3t3S3q9E"
+        + "nGR7QNeK-06Tft0cIcGz-aipRBfTgEocVhAB_3-wDczvXDVhNXscSYI4pJRSRc3IBnO7uAUrtyhNk-mD_YCX1FCeHMWcbF7JZIgzGdum"
+        + "QE"
     static let text = "Золотой вектор CipherKeyboard 🔐\nстрока 2"
 }
 
