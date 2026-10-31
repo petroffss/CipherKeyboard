@@ -1,0 +1,15 @@
+# шаблон проекта
+.claude/.cache/
+.claude/settings.local.json
+specs/**/evidence/
+
+# секреты
+.env
+.env.*
+!.env.example
+
+# система
+.DS_Store
+Thumbs.db
+
+# ниже — под стек (дополнит /kickoff)
