@@ -110,7 +110,7 @@ def post(data, root):
     if name == "requirements.md":
         problems += sl.lint_requirements(feature["fm"], feature["req_text"], strict)
     if name == "evals.md" or strict:
-        problems += sl.lint_evals(feature["evals"], feature["risk"], feature["ui"], strict)
+        problems += sl.lint_evals(feature["evals"], feature["risk"], feature["ui"], strict, sl.project_platform(root))
     if feature["status"] in ("verified", "done") and sl.failing_evals(feature):
         problems.append("статус %s, но не все evals pass — верни статус building" % feature["status"])
     if problems:

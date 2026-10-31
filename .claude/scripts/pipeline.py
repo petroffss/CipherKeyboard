@@ -84,7 +84,7 @@ def cmd_show(name):
 
 def cmd_check(name):
     f = get_feature(name)
-    problems = sl.check_feature(f)
+    problems = sl.check_feature(f, sl.project_platform(ROOT))
     if problems:
         fail("%s: %d проблем(ы):\n- %s" % (f["id"], len(problems), "\n- ".join(problems)))
     print("%s: проверка пройдена (%d evals, риск %s)." % (f["id"], len(f["evals"]), f["risk"]))
@@ -96,7 +96,7 @@ def cmd_set_status(name, status):
     f = get_feature(name)
     current = f["status"]
     if status in ("in-review", "approved"):
-        problems = sl.check_feature(f)
+        problems = sl.check_feature(f, sl.project_platform(ROOT))
         if problems:
             fail("Нельзя перевести %s в %s — сначала исправь:\n- %s" % (f["id"], status, "\n- ".join(problems)))
     if status == "approved" and current != "in-review":

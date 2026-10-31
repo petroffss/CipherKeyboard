@@ -13,7 +13,10 @@ from pathlib import Path
 
 STATUSES = ["draft", "in-review", "approved", "building", "verified", "done"]
 RISKS = ["low", "medium", "high"]
-EVAL_TYPES = ["browser", "test", "command", "design", "api"]
+PLATFORMS = ["web", "ios", "android", "desktop", "cli", "api"]
+# ui — сценарий в интерфейсе: браузер для web, симулятор/эмулятор для мобильных, окно для desktop
+EVAL_TYPES = ["ui", "test", "command", "design", "api"]
+EVAL_TYPE_ALIASES = {"browser": "ui", "simulator": "ui", "emulator": "ui", "e2e": "ui"}
 EVAL_STATUSES = ["pending", "pass", "fail"]
 
 # Минимум evals и обязательных тегов по риску: чем дороже ошибка, тем строже контракт.
@@ -40,6 +43,7 @@ REQUIRED_FIELDS = [
     ("status", "Статус"),
 ]
 
+PLATFORM_RE = re.compile(r"^[ \t>*-]*\**Платформа\**[ \t]*:?\**[ \t]*:?[ \t]*`?([A-Za-z]+)", re.M)
 FRONTMATTER_RE = re.compile(r"\A---[ \t]*\n(.*?)\n---[ \t]*(?:\n|\Z)", re.S)
 EVAL_HEAD_RE = re.compile(r"^##[ \t]+(E\d+)\b(.*)$", re.M)
 FIELD_RE = re.compile(r"^[ \t]*[-*][ \t]*\*\*([^*]+?)\*\*[ \t]*:?[ \t]*(.*)$")
@@ -56,6 +60,13 @@ def read_text(path):
         return Path(path).read_text(encoding="utf-8")
     except (OSError, UnicodeDecodeError):
         return ""
+
+
+def project_platform(root):
+    """Платформа из строки `Платформа: ios` в CLAUDE.md; web, если не указана."""
+    m = PLATFORM_RE.search(read_text(Path(root) / "CLAUDE.md"))
+    platform = m.group(1).lower() if m else ""
+    return platform if platform in PLATFORMS else "web"
 
 
 # ---------- frontmatter ----------
@@ -125,19 +136,21 @@ def parse_evals(text):
         tags = {t.lower() for t in TAG_RE.findall(head.group(2))}
         tags |= {t.lower() for t in TAG_RE.findall(fields.get("tags", ""))}
         tags |= {t.strip().lower() for t in re.split(r"[,\s]+", fields.get("tags", "")) if re.fullmatch(r"[A-Za-z_-]+", t.strip())}
+        eval_type = _first_word(fields.get("type"))
         evals.append({
             "id": head.group(1),
             "title": TAG_RE.sub("", head.group(2)).strip(" ·-—:\t"),
             "fields": fields,
             "tags": tags,
-            "type": _first_word(fields.get("type")),
+            "type": EVAL_TYPE_ALIASES.get(eval_type, eval_type),
             "status": _first_word(fields.get("status")),
         })
     return evals
 
 
-def lint_evals(evals, risk=None, ui=False, strict=True):
-    """Список проблем evals.md. strict=False — только структура (пока фича в draft)."""
+def lint_evals(evals, risk=None, ui=False, strict=True, platform="web"):
+    """Список проблем evals.md. strict=False — только структура (пока фича в draft).
+    [mobile] обязателен только для web: там одна вёрстка на два размера экрана."""
     if not evals:
         return ["нет ни одного eval — заголовок каждого должен выглядеть так: `## E1 · Название [теги]`"]
     problems, seen = [], set()
@@ -169,8 +182,8 @@ def lint_evals(evals, risk=None, ui=False, strict=True):
     if ui:
         if not any("design" in e["tags"] or e["type"] == "design" for e in evals):
             problems.append("у фичи есть интерфейс (ui: yes) — нужен eval сравнения с макетом: тег [design]")
-        if not any("mobile" in e["tags"] for e in evals):
-            problems.append("у фичи есть интерфейс (ui: yes) — нужен eval мобильного вида: тег [mobile]")
+        if platform == "web" and not any("mobile" in e["tags"] for e in evals):
+            problems.append("веб-фича с интерфейсом — нужен eval мобильного вида: тег [mobile]")
     return problems
 
 
@@ -265,10 +278,10 @@ def failing_evals(feature):
     return [e for e in feature["evals"] if e["status"] != "pass"]
 
 
-def check_feature(feature):
+def check_feature(feature, platform="web"):
     """Полная проверка перед ревью/одобрением."""
     problems = lint_requirements(feature["fm"], feature["req_text"], strict=True)
-    problems += lint_evals(feature["evals"], feature["risk"], feature["ui"], strict=True)
+    problems += lint_evals(feature["evals"], feature["risk"], feature["ui"], strict=True, platform=platform)
     if feature["ui"] and not feature["has_mockup"]:
         problems.append("ui: yes, но нет mockup.html — эталона дизайна")
     return problems

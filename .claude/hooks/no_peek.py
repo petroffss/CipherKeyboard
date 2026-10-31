@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """PreToolUse-хук агента first-time-user: агент видит приложение только так, как его видит человек.
 
-Разрешено: браузерные MCP-инструменты (встроенный браузер, Claude in Chrome, Playwright и т.п.)
-и ToolSearch для их загрузки. Запрещено всё остальное: чтение файлов, поиск, терминал, правки,
-а внутри браузера — выполнение JavaScript, консоль/сеть/логи, загрузка файлов и адреса file:// / view-source:.
+Разрешено: MCP-инструменты интерфейса — браузер (встроенный, Claude in Chrome, Playwright…),
+iOS Simulator, Android-эмулятор — и ToolSearch для их загрузки. Запрещено всё остальное: чтение файлов,
+поиск, терминал, правки. Внутри инструментов интерфейса запрещены JavaScript, консоль/сеть/логи,
+загрузка файлов, сборка и установка приложения, адреса file:// / view-source:.
 Работает по белому списку, поэтому обойти его «через терминал» нельзя.
 """
 import json
@@ -12,8 +13,9 @@ import re
 import sys
 
 ALLOWED_BUILTIN = {"ToolSearch", "TodoWrite"}
-BROWSER_SERVER = re.compile(r"(browser|chrome|playwright|puppeteer)", re.I)
-FORBIDDEN_IN_BROWSER = re.compile(r"(javascript|evaluate|run_code|console|network|logs|upload|preview_start|preview_stop)", re.I)
+UI_SERVER = re.compile(r"(browser|chrome|playwright|puppeteer|simulator|emulator)", re.I)
+FORBIDDEN_TOOL = re.compile(r"(javascript|evaluate|run_code|console|network|logs|upload|preview_start|preview_stop|build|install)", re.I)
+FORBIDDEN_ACTION = {"launch", "build", "install"}  # приложение запускает оркестратор, а не «пользователь»
 FORBIDDEN_URL = re.compile(r"^\s*(file:|view-source:|chrome:|about:|devtools:)", re.I)
 
 
@@ -49,12 +51,13 @@ def main():
     if tool in ALLOWED_BUILTIN:
         return
     parts = tool.split("__")
-    is_browser = len(parts) >= 3 and parts[0] == "mcp" and BROWSER_SERVER.search(parts[1])
-    if not is_browser:
-        deny("Ты первый пользователь: у тебя есть только браузер. Код, файлы и терминал недоступны (%s)." % tool)
-    if FORBIDDEN_IN_BROWSER.search(parts[-1]):
-        deny("Обычный пользователь не запускает JavaScript и не смотрит консоль, сеть или логи (%s). "
-             "Пользуйся только тем, что видно на экране." % tool)
+    is_ui = len(parts) >= 3 and parts[0] == "mcp" and UI_SERVER.search(parts[1])
+    if not is_ui:
+        deny("Ты первый пользователь: у тебя есть только экран приложения (браузер или симулятор). "
+             "Код, файлы и терминал недоступны (%s)." % tool)
+    if FORBIDDEN_TOOL.search(parts[-1]) or str(tool_input.get("action", "")).lower() in FORBIDDEN_ACTION:
+        deny("Обычный пользователь не запускает JavaScript, не смотрит консоль, сеть или логи и не собирает "
+             "приложение (%s). Пользуйся только тем, что видно на экране." % tool)
     for value in strings(tool_input):
         if FORBIDDEN_URL.match(value) or (project and project in value):
             deny("Этот адрес недоступен первому пользователю: открывай только адрес приложения, который тебе дали.")
