@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 /// Корень приложения: создание ключа → вкладки, или экран ошибки хранилища. Таб-бар — только когда ключ готов.
 struct RootView: View {
@@ -39,11 +40,45 @@ struct MainTabs: View {
                 .tabItem { tabLabel("Настройка", systemImage: "gearshape", id: "tab.setup") }
                 .tag(AppTab.setup)
         }
+        .task { await TabBarIdentifiers.apply(byTitle: Self.identifiers) }
     }
+
+    private static let identifiers = [
+        "Мой ключ": "tab.myKey", "Контакты": "tab.contacts", "Расшифровать": "tab.decrypt", "Настройка": "tab.setup",
+    ]
 
     private func tabLabel(_ title: String, systemImage: String, id: String) -> some View {
         Label(title, systemImage: systemImage)
             .accessibilityIdentifier(id)
+    }
+}
+
+/// Идентификаторы кнопок таб-бара для UI-тестов. SwiftUI переносит `accessibilityIdentifier` из `.tabItem`
+/// (и из `Tab`) на кнопки таб-бара не при каждом запуске: в части запусков у `UITabBarItem` идентификатор пуст,
+/// и кнопки видны в дереве доступности только с подписями. Поэтому идентификатор ставится прямо на `UITabBarItem`.
+enum TabBarIdentifiers {
+    @MainActor static func apply(byTitle identifiers: [String: String]) async {
+        // Таб-бар появляется в иерархии окна после первого прохода раскладки — ждём его до ~2 с.
+        for _ in 0..<40 {
+            let bars = UIApplication.shared.connectedScenes
+                .compactMap { $0 as? UIWindowScene }
+                .flatMap(\.windows)
+                .flatMap(tabBars(in:))
+            var applied = false
+            for item in bars.flatMap({ $0.items ?? [] }) {
+                if let title = item.title, let id = identifiers[title] {
+                    item.accessibilityIdentifier = id
+                    applied = true
+                }
+            }
+            if applied { return }
+            try? await Task.sleep(for: .milliseconds(50))
+        }
+    }
+
+    @MainActor private static func tabBars(in view: UIView) -> [UITabBar] {
+        if let bar = view as? UITabBar { return [bar] }
+        return view.subviews.flatMap(tabBars(in:))
     }
 }
 
