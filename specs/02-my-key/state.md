@@ -1,6 +1,6 @@
 ---
 feature: 02-my-key
-loop: running            # running | needs-human | stopped | done
+loop: done            # running | needs-human | stopped | done
 round: 4
 max_rounds: 5
 base_commit: "6ced9a12ef50198b88d046aef37977e80c70e8a6"
@@ -18,13 +18,13 @@ last_reviewed_commit: "6ced9a12ef50198b88d046aef37977e80c70e8a6"
 | ц2·1 | 26/28 (E20, E28 fail) | 0 | d5d2f46 | раунд 2: R5 — на 402×874 без прокрутки «Поделиться» обрезана |
 | ц2·2 | 27/28 (E22 fail) | 0 новых (R5 остался) | 1e05ea5 | раунд 3: R5 — плашка всё ещё меняет высоту прокрутки |
 | ц2·3 | 28/28 | 0 (R5 закрыт); R6 от оркестратора | f60c68f | раунд 4: R6 — тест вкладок на SE падает чаще |
+| ц2·4 | 28/28 | 0 | 532f045 | финал цикла 2 |
 
 ## Открытые проблемы
 <!-- Источник: eval (E3) или ревью (R2). «Подряд» — сколько раундов подряд проблема на месте.
      Подряд ≥ 3 (появилась и пережила 2 раунда исправлений) → цикл останавливается. -->
 | ID | Источник | Класс | Где | Суть | Впервые | Подряд |
 |---|---|---|---|---|---|---|
-| R6 | оркестратор (E8) | слабый-тест / регресс? | UITests/MyKeyUITests.swift:18 testFirstLaunchShowsMyKey, App/RootView.swift | на iPhone SE 375×667 «нет вкладки Мой ключ» (tabBars.buttons[tab.myKey]): f60c68f — 2 из 5 у оркестратора, 4 из 4 у verifier; до цикла 2 (26e7bfd) — 0 из 5. На iPhone 17 проходит | ц2·3 | 1 |
 
 ## Закрытые
 | ID | Класс | Как исправлено | Раунд |
@@ -33,16 +33,19 @@ last_reviewed_commit: "6ced9a12ef50198b88d046aef37977e80c70e8a6"
 | R3 | расходится-с-макетом | строка ключа — UILabel, byCharWrapping, hyphenationFactor 0 | 2 |
 | R1 | расходится-с-макетом | плашка в постоянной полосе под ScrollView (VStack { ScrollView; toastSlot }), allowsHitTesting(false); тест testCopiedToastDoesNotCoverButtons | 3 |
 | R4 | доступность | scaledFont от базового 12 pt | 3 |
+| R6 | слабый-тест | identifier tab.* ставится на UITabBarItem (TabBarIdentifiers); SE 6/6 и 10/10 | ц2·4 |
 | R5 | расходится-с-макетом | строка про приватный ключ и плашка в постоянной нижней полосе (ZStack) фиксированной высоты; testCopiedToastDoesNotMoveContent | ц2·3 |
 
 ## Было до нас
 <!-- находки «Было до нас»: не чиним в этом цикле, не блокируют -->
-- (переоценено в R6) [слабый-тест] testFirstLaunchShowsMyKey изредка не находит tab.myKey (≈1 из 3 на SE, был и на 2f59ed5): accessibilityIdentifier у Label в .tabItem переносится не всегда (App/RootView.swift tabLabel) — builder ц2·2; кандидат в /fix-a-bug.
+- (закрыто в R6, ц2·4) [слабый-тест] testFirstLaunchShowsMyKey изредка не находит tab.myKey (≈1 из 3 на SE, был и на 2f59ed5): accessibilityIdentifier у Label в .tabItem переносится не всегда (App/RootView.swift tabLabel) — builder ц2·2; кандидат в /fix-a-bug.
 - scripts/sandbox.sh start падает на `open -a Simulator` («Unable to find application named 'Simulator'») до установки приложения; с HEADLESS=1 сразу запускает приложение и создаёт ключ — «пустой» песочницы не получается (verifier, раунд 1).
 - [доступность] App/MyKeyView.swift copyKey(): появление плашки «Ключ скопирован» не объявляется VoiceOver (нет AccessibilityNotification.Announcement) — в требованиях не прописано (reviewer, раунд 3).
 
 ## Кандидаты в выученные правила
 <!-- повторы одного класса; в конце цикла предложить пользователю одной строкой для REVIEW.md -->
+- (цикл 2) [расходится-с-макетом] появление плашки не должно менять высоту окна прокрутки и положение кнопок — R5 два раунда.
+- (цикл 2) [слабый-тест] accessibilityIdentifier внутри .tabItem / Tab переносится на кнопку таб-бара не всегда — R6.
 - [расходится-с-макетом] плавающие плашки/оверлеи над прокручиваемым контентом проверять на самом маленьком экране (375×667) в непрокрученном и прокрученном состоянии — R1 дважды.
 
 ## Журнал
@@ -69,6 +72,9 @@ last_reviewed_commit: "6ced9a12ef50198b88d046aef37977e80c70e8a6"
 - 2026-10-31 · цикл 2 · раунд 3 · verifier: 28/28 pass; E5, E7, E13, E16–19, E23 не перепроверены на экране (код не менялся). testFirstLaunchShowsMyKey на SE упал 4/4.
 - 2026-10-31 · цикл 2 · оркестратор: тот же тест на временном SE — f60c68f 2/5 fail, 26e7bfd 0/5 → R6, раунд 4.
 - 2026-10-31 · цикл 2 · раунд 4 · builder: 532f045 [ok] — первопричина R6: у кнопок таб-бара пустой identifier в части запусков (SwiftUI не переносит его из .tabItem; xcresult ui-20261031-210139 — TabBar с 4 кнопками без id); Tab(...) API хуже (6/10 fail). Исправление: TabBarIdentifiers ставит id прямо на UITabBarItem по заголовку. SE 10/10, iPhone 17 10/10, полный test.sh зелёный.
+- 2026-10-31 · цикл 2 · раунд 4 · reviewer (f60c68f..532f045): Важно 0, Мелочь 2 (заголовки вкладок дважды; try? глушит отмену sleep).
+- 2026-10-31 · цикл 2 · раунд 4 · verifier: 28/28 pass; E8 на SE 6/6, полный UI 11/11 на iPhone 17 и SE. → Финал.
+- 2026-10-31 · цикл 2 · финал · риск по диффу 6ced9a1..532f045: только App/MyKeyView.swift и App/RootView.swift (UI), новых зон риска нет — high без изменений. Безопасность: в новых строках нет UIPasteboard/логов/UserDefaults/FileManager/Keychain/сети; E6, E7 перепроверены verifier; ревьюер каждого раунда утечек не нашёл. Отдельный /security-review не запускался — дифф цикла чисто интерфейсный.
 
 ## Отчёт для человека
 <!-- заполняется при паузе: что сделано, что не проходит, что пробовали, варианты с рекомендацией -->
