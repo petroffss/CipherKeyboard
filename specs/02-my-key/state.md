@@ -1,7 +1,7 @@
 ---
 feature: 02-my-key
 loop: running            # running | needs-human | stopped | done
-round: 3
+round: 4
 max_rounds: 5
 base_commit: "6ced9a12ef50198b88d046aef37977e80c70e8a6"
 last_reviewed_commit: "6ced9a12ef50198b88d046aef37977e80c70e8a6"
@@ -17,13 +17,14 @@ last_reviewed_commit: "6ced9a12ef50198b88d046aef37977e80c70e8a6"
 | — | — | — | 6ced9a1 | новый цикл после теста первого пользователя: E26–E28; раунды считаются заново (цикл 2) |
 | ц2·1 | 26/28 (E20, E28 fail) | 0 | d5d2f46 | раунд 2: R5 — на 402×874 без прокрутки «Поделиться» обрезана |
 | ц2·2 | 27/28 (E22 fail) | 0 новых (R5 остался) | 1e05ea5 | раунд 3: R5 — плашка всё ещё меняет высоту прокрутки |
+| ц2·3 | 28/28 | 0 (R5 закрыт); R6 от оркестратора | f60c68f | раунд 4: R6 — тест вкладок на SE падает чаще |
 
 ## Открытые проблемы
 <!-- Источник: eval (E3) или ревью (R2). «Подряд» — сколько раундов подряд проблема на месте.
      Подряд ≥ 3 (появилась и пережила 2 раунда исправлений) → цикл останавливается. -->
 | ID | Источник | Класс | Где | Суть | Впервые | Подряд |
 |---|---|---|---|---|---|---|
-| R5 | eval E20, E28 | расходится-с-макетом | App/MyKeyView.swift (пояснения + полоса toastSlot) | на 402×874 «Поделиться» обрезана краем прокрутки: ц2·1 — всегда (постоянная полоса), ц2·2 — пока видна плашка (полоса появляется и сжимает окно; на 375 в конце прокрутки содержимое прыгает на ~60 pt) | ц2·1 | 2 |
+| R6 | оркестратор (E8) | слабый-тест / регресс? | UITests/MyKeyUITests.swift:18 testFirstLaunchShowsMyKey, App/RootView.swift | на iPhone SE 375×667 «нет вкладки Мой ключ» (tabBars.buttons[tab.myKey]): f60c68f — 2 из 5 у оркестратора, 4 из 4 у verifier; до цикла 2 (26e7bfd) — 0 из 5. На iPhone 17 проходит | ц2·3 | 1 |
 
 ## Закрытые
 | ID | Класс | Как исправлено | Раунд |
@@ -32,10 +33,11 @@ last_reviewed_commit: "6ced9a12ef50198b88d046aef37977e80c70e8a6"
 | R3 | расходится-с-макетом | строка ключа — UILabel, byCharWrapping, hyphenationFactor 0 | 2 |
 | R1 | расходится-с-макетом | плашка в постоянной полосе под ScrollView (VStack { ScrollView; toastSlot }), allowsHitTesting(false); тест testCopiedToastDoesNotCoverButtons | 3 |
 | R4 | доступность | scaledFont от базового 12 pt | 3 |
+| R5 | расходится-с-макетом | строка про приватный ключ и плашка в постоянной нижней полосе (ZStack) фиксированной высоты; testCopiedToastDoesNotMoveContent | ц2·3 |
 
 ## Было до нас
 <!-- находки «Было до нас»: не чиним в этом цикле, не блокируют -->
-- [слабый-тест] testFirstLaunchShowsMyKey изредка не находит tab.myKey (≈1 из 3 на SE, был и на 2f59ed5): accessibilityIdentifier у Label в .tabItem переносится не всегда (App/RootView.swift tabLabel) — builder ц2·2; кандидат в /fix-a-bug.
+- (переоценено в R6) [слабый-тест] testFirstLaunchShowsMyKey изредка не находит tab.myKey (≈1 из 3 на SE, был и на 2f59ed5): accessibilityIdentifier у Label в .tabItem переносится не всегда (App/RootView.swift tabLabel) — builder ц2·2; кандидат в /fix-a-bug.
 - scripts/sandbox.sh start падает на `open -a Simulator` («Unable to find application named 'Simulator'») до установки приложения; с HEADLESS=1 сразу запускает приложение и создаёт ключ — «пустой» песочницы не получается (verifier, раунд 1).
 - [доступность] App/MyKeyView.swift copyKey(): появление плашки «Ключ скопирован» не объявляется VoiceOver (нет AccessibilityNotification.Announcement) — в требованиях не прописано (reviewer, раунд 3).
 
@@ -63,6 +65,9 @@ last_reviewed_commit: "6ced9a12ef50198b88d046aef37977e80c70e8a6"
 - 2026-10-31 · цикл 2 · раунд 2 · reviewer (d5d2f46..1e05ea5): Важно 1 — тот же R5 при видимой плашке (подряд 2); Мелочь — тест без плашки покрыт только на 402+. Предложено: строку «Приватный ключ…» в постоянную нижнюю полосу вместе с плашкой (ZStack), высота окна прокрутки не меняется.
 - 2026-10-31 · цикл 2 · раунд 2 · verifier: 27/28 — E20, E28 pass; E22 fail (R5 при плашке). UI 10/10 после чистого повтора. E16–18, E23 на экране не перепроверены (Keyboard/ не менялся). → раунд 3.
 - 2026-10-31 · цикл 2 · раунд 3 · builder: f60c68f [ok] — mykey.privateNote и плашка в постоянной нижней полосе (ZStack, высота по скрытой копии плашки), плашка компактнее; defaultScrollAnchor и условная полоса убраны; testCopiedToastDoesNotMoveContent. Ядро 121, UI 11/11 на iPhone 17; на SE testFirstLaunchShowsMyKey снова флакнул (было до нас), повтор зелёный.
+- 2026-10-31 · цикл 2 · раунд 3 · reviewer (1e05ea5..f60c68f): R5 закрыт, Важно 0, Мелочь 2 (нет нижнего отступа у прокрутки на 375; полоса растёт при AX-шрифтах).
+- 2026-10-31 · цикл 2 · раунд 3 · verifier: 28/28 pass; E5, E7, E13, E16–19, E23 не перепроверены на экране (код не менялся). testFirstLaunchShowsMyKey на SE упал 4/4.
+- 2026-10-31 · цикл 2 · оркестратор: тот же тест на временном SE — f60c68f 2/5 fail, 26e7bfd 0/5 → R6, раунд 4.
 
 ## Отчёт для человека
 <!-- заполняется при паузе: что сделано, что не проходит, что пробовали, варианты с рекомендацией -->
