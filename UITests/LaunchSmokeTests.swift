@@ -1,13 +1,13 @@
 import XCTest
 
-/// Смоук: приложение запускается и показывает стартовый экран.
+/// Смоук: приложение запускается и показывает первый экран — вкладку «Мой ключ».
 final class LaunchSmokeTests: XCTestCase {
     @MainActor
-    func testAppLaunchesAndShowsTitle() {
+    func testAppLaunchesAndShowsMyKey() {
         let app = XCUIApplication()
         app.launch()
-        let title = app.staticTexts["app.title"]
+        let title = app.staticTexts["mykey.title"]
         XCTAssertTrue(title.waitForExistence(timeout: 10))
-        XCTAssertEqual(title.label, "CipherKeyboard")
+        XCTAssertEqual(title.label, "Мой ключ")
     }
 }
