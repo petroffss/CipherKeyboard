@@ -1,7 +1,7 @@
 ---
 feature: 01-crypto-core
 title: Крипто-ядро — ключи, шифрование, подпись
-status: in-review        # draft → in-review → approved → building → verified → done
+status: building        # draft → in-review → approved → building → verified → done
 risk: high           # low | medium | high — ставит classify-risk
 risk_reason: "если сломается — сообщение прочитает не тот, подделка пройдёт как подлинная или собеседник не сможет расшифровать"
 ui: no               # yes, если у фичи есть экран; no — API, фоновая задача, CLI

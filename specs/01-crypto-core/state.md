@@ -1,7 +1,7 @@
 ---
 feature: 01-crypto-core
-loop: needs-human            # running | needs-human | stopped | done
-round: 2
+loop: running            # running | needs-human | stopped | done
+round: 3
 max_rounds: 5
 base_commit: 67dd926973450fbff4997cc59fa3a690ec68819f
 last_reviewed_commit: ea97eb5
@@ -37,6 +37,7 @@ last_reviewed_commit: ea97eb5
 - нет-валидации, 2 места (Ed25519 в ckpub1/ключе отправителя, эфемерный X25519): каждый открытый ключ из недоверенного ввода проверять на точки малого порядка — и X25519, и Ed25519.
 
 ## Журнал
+- Пользователь одобрил дополненный контракт (22 evals) → approved → building, раунд 3.
 - Решение пользователя: «Починить сейчас» (S1, S2 + неканонический X25519). Контракт дополнен: AC23–AC25, E20–E22; фича → in-review, ждём /approve; затем раунд 3 (builder: S1, S2, S3).
 - Финал: classify-risk diff → high (совпадает). /security-review не запустился (нет origin) — проведён агентом на `git diff main...HEAD -- Packages/`: S1, S2 (Low, оба меняют формат) + замечания: неканонический старший бит X25519 даёт второй «ключ» того же собеседника (обходит проверку дублей в 03); short-отпечаток 32 бита — не для сверки; вход open не ограничен по размеру (безопасно). Решение меняет требования → нужен человек.
 - Р2 verifier: 19/19 pass; дополнительно независимая проверка подписи и расшифровки золотого вектора на чистом Python.
