@@ -75,6 +75,7 @@ last_reviewed_commit: "6ced9a12ef50198b88d046aef37977e80c70e8a6"
 - 2026-10-31 · цикл 2 · раунд 4 · reviewer (f60c68f..532f045): Важно 0, Мелочь 2 (заголовки вкладок дважды; try? глушит отмену sleep).
 - 2026-10-31 · цикл 2 · раунд 4 · verifier: 28/28 pass; E8 на SE 6/6, полный UI 11/11 на iPhone 17 и SE. → Финал.
 - 2026-10-31 · цикл 2 · финал · риск по диффу 6ced9a1..532f045: только App/MyKeyView.swift и App/RootView.swift (UI), новых зон риска нет — high без изменений. Безопасность: в новых строках нет UIPasteboard/логов/UserDefaults/FileManager/Keychain/сети; E6, E7 перепроверены verifier; ревьюер каждого раунда утечек не нашёл. Отдельный /security-review не запускался — дифф цикла чисто интерфейсный.
+- 2026-10-31 · security-review всей ветки (6478bdf..eb38100, агент-ревьюер по запросу пользователя; встроенный /security-review без origin не запускается): 0 находок. Проверено: нет SecItemDelete/Update; создание только при errSecItemNotFound; Synchronizable=false, ThisDeviceOnly; единственный UIPasteboard и ShareLink — PublicKey.string; Identity.description/customMirror без секрета; клавиатура линкует только CipherCore (без IdentityStore), Keychain не читает без hasFullAccess; -keystore только под #if DEBUG и без подстановки данных ключа; entitlements обоих таргетов — только application-groups. lint OK, core 121 passed.
 
 ## Отчёт для человека
 <!-- заполняется при паузе: что сделано, что не проходит, что пробовали, варианты с рекомендацией -->
