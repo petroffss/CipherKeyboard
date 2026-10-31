@@ -112,6 +112,36 @@ struct MalformedInputTests {
         #expect(elapsed < .seconds(1), "заняло \(elapsed)")
     }
 
+    @Test("Верный заголовок настоящего сообщения + 1 000 000 «A» → ошибка быстрее 1 секунды")
+    func realHeaderThenMegabyte() throws {
+        let m = try message()
+        let header = m.dropFirst("ckmsg1:".count).prefix(8)
+        let garbage = "ckmsg1:" + header + String(repeating: "A", count: 1_000_000)
+        let clock = ContinuousClock()
+        let elapsed = clock.measure {
+            do {
+                _ = try open(garbage)
+                Issue.record("огромное тело открылось")
+            } catch let error as CipherError {
+                #expect(error == .malformed || error == .tampered, "\(error)")
+            } catch {
+                Issue.record("не CipherError: \(error)")
+            }
+        }
+        #expect(elapsed < .seconds(1), "заняло \(elapsed)")
+    }
+
+    @Test("Эфемерный ключ — точка малого порядка, подпись пересчитана отправителем → malformed")
+    func smallOrderEphemeralKey() throws {
+        let honest = try Envelope(bytes: try #require(decodedMessage(try message())))
+        for point in [[UInt8](repeating: 0, count: 32), [1] + [UInt8](repeating: 0, count: 31)] {
+            var forged = honest
+            forged.ephemeralKey = point
+            forged.signature = Array(try a.signingKey().signature(for: forged.signedBytes))
+            #expect(throws: CipherError.malformed, "\(hex(point))") { try open(forged.string) }
+        }
+    }
+
     @Test("17 записей получателей в заголовке → malformed")
     func seventeenEntries() throws {
         let honest = try Envelope(bytes: try #require(decodedMessage(try message())))

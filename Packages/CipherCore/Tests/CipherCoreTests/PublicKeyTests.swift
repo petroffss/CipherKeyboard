@@ -98,6 +98,12 @@ struct InvalidPublicKeyTests {
         return "ckpub1:" + base64url(agreementPart + raw[32..<64])
     }
 
+    /// Строка ключа с настоящей частью X25519 и заданной частью Ed25519, в корректном base64url.
+    private func keyString(signingPart: [UInt8]) throws -> String {
+        let raw = try #require(rawKey(key))
+        return "ckpub1:" + base64url(Array(raw[0..<32]) + signingPart)
+    }
+
     @Test("Пустая строка → invalidKey")
     func empty() {
         #expect(throws: CipherError.invalidKey) { _ = try PublicKey(string: "") }
@@ -161,6 +167,34 @@ struct InvalidPublicKeyTests {
         #expect(text.wholeMatch(of: /ckpub1:[A-Za-z0-9_-]{86}/) != nil)
         // Ключ, который не разбирается, нельзя получить и передать в seal: у PublicKey нет других публичных init.
         #expect(throws: CipherError.invalidKey) { _ = try PublicKey(string: text) }
+    }
+
+    @Test("Часть Ed25519 — нейтральная точка 01 00…00 → invalidKey")
+    func identitySigningKey() throws {
+        let text = try keyString(signingPart: [1] + [UInt8](repeating: 0, count: 31))
+        #expect(text.wholeMatch(of: /ckpub1:[A-Za-z0-9_-]{86}/) != nil)
+        #expect(throws: CipherError.invalidKey) { _ = try PublicKey(string: text) }
+    }
+
+    @Test(
+        "Часть Ed25519 — любая точка малого порядка (и со знаковым битом) → invalidKey",
+        arguments: SmallOrderEd25519.encodings)
+    func smallOrderSigningKey(point: String) throws {
+        let part = try #require(bytes(hex: point))
+        #expect(part.count == 32)
+        var signed = part
+        signed[31] |= 0x80
+        for variant in [part, signed] {
+            let text = try keyString(signingPart: variant)
+            #expect(text.wholeMatch(of: /ckpub1:[A-Za-z0-9_-]{86}/) != nil)
+            #expect(throws: CipherError.invalidKey, "\(hex(variant))") { _ = try PublicKey(string: text) }
+        }
+    }
+
+    @Test("Контроль: та же сборка с настоящей частью Ed25519 разбирается")
+    func realSigningPartAccepted() throws {
+        let raw = try #require(rawKey(key))
+        #expect(try PublicKey(string: try keyString(signingPart: Array(raw[32..<64]))) == key)
     }
 
     @Test("Другая версия ckpub2 → unsupportedVersion")

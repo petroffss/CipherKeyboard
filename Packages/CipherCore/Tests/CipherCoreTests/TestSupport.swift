@@ -75,3 +75,18 @@ func replacingCharacter(in text: String, at offset: Int, with character: Charact
     chars[offset] = character
     return String(chars)
 }
+
+/// Кодировки точек малого порядка Ed25519 (8-кручение), little-endian `y`, знаковый бит 0.
+/// Посчитаны независимо (python3: все 8 точек кручения через l·P для случайной P) и сверены
+/// со списком `ge25519_has_small_order` в libsodium; последние две — неканонические `y = p` и `y = p + 1`.
+enum SmallOrderEd25519 {
+    static let encodings = [
+        "0000000000000000000000000000000000000000000000000000000000000000",
+        "0100000000000000000000000000000000000000000000000000000000000000",
+        "26e8958fc2b227b045c3f489f2ef98f0d5dfac05d3c63339b13802886d53fc05",
+        "c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac037a",
+        "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+        "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+        "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+    ]
+}

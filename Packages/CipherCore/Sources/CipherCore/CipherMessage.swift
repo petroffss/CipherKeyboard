@@ -89,6 +89,8 @@ public enum CipherMessage: Sendable {
         } catch {
             throw CipherError.malformed
         }
+        // Эфемерный ключ малого порядка дал бы всем записям известный общий секрет.
+        guard PublicKey.isUsableAgreementKey(envelope.ephemeralKey) else { throw CipherError.malformed }
 
         // 2. Подпись ключом отправителя из сообщения — до любых попыток расшифровки.
         guard let verifier = try? Curve25519.Signing.PublicKey(rawRepresentation: senderKey.signingRaw),

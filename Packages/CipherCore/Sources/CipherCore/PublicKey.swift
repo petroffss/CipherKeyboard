@@ -17,10 +17,11 @@ public struct PublicKey: Hashable, Sendable, Codable, CustomStringConvertible {
         self.raw = raw
     }
 
-    /// Ключ из сырых байт чужого происхождения: длина 64, часть X25519 — не точка малого порядка.
+    /// Ключ из сырых байт чужого происхождения: длина 64, ни часть X25519, ни часть Ed25519 — не точка малого порядка.
     init(validatingRaw raw: [UInt8]) throws(CipherError) {
         guard raw.count == Self.rawCount else { throw .invalidKey }
         guard Self.isUsableAgreementKey(Array(raw[0..<32])) else { throw .invalidKey }
+        guard Self.isUsableSigningKey(Array(raw[32..<64])) else { throw .invalidKey }
         self.raw = raw
     }
 
@@ -83,6 +84,41 @@ public struct PublicKey: Hashable, Sendable, Codable, CustomStringConvertible {
             let secret = try? probe.sharedSecretFromKeyAgreement(with: point)
         else { return false }
         return secret.withUnsafeBytes { buffer in buffer.contains { $0 != 0 } }
+    }
+
+    /// Кодировки всех 8 точек кручения Ed25519 (порядок 1, 2, 4, 8) с обнулённым знаковым битом,
+    /// плюс неканонические `y = p` и `y = p + 1`. Тот же список, что `ge25519_has_small_order` в libsodium.
+    /// С таким ключом подпись `R = 01 00…00, S = 0` (и подобные) верна для любых байт — подделать может кто угодно.
+    private static let smallOrderSigningPoints: [[UInt8]] = [
+        // 0 (порядок 4)
+        [UInt8](repeating: 0x00, count: 32),
+        // 1 — нейтральная точка (порядок 1)
+        [0x01] + [UInt8](repeating: 0x00, count: 31),
+        // порядок 8
+        [
+            0x26, 0xE8, 0x95, 0x8F, 0xC2, 0xB2, 0x27, 0xB0, 0x45, 0xC3, 0xF4, 0x89, 0xF2, 0xEF, 0x98, 0xF0,
+            0xD5, 0xDF, 0xAC, 0x05, 0xD3, 0xC6, 0x33, 0x39, 0xB1, 0x38, 0x02, 0x88, 0x6D, 0x53, 0xFC, 0x05,
+        ],
+        // порядок 8
+        [
+            0xC7, 0x17, 0x6A, 0x70, 0x3D, 0x4D, 0xD8, 0x4F, 0xBA, 0x3C, 0x0B, 0x76, 0x0D, 0x10, 0x67, 0x0F,
+            0x2A, 0x20, 0x53, 0xFA, 0x2C, 0x39, 0xCC, 0xC6, 0x4E, 0xC7, 0xFD, 0x77, 0x92, 0xAC, 0x03, 0x7A,
+        ],
+        // p − 1 (порядок 2)
+        [0xEC] + [UInt8](repeating: 0xFF, count: 30) + [0x7F],
+        // p, неканоническая 0 (порядок 4)
+        [0xED] + [UInt8](repeating: 0xFF, count: 30) + [0x7F],
+        // p + 1, неканоническая 1 (порядок 1)
+        [0xEE] + [UInt8](repeating: 0xFF, count: 30) + [0x7F],
+    ]
+
+    /// Можно ли проверять подписи этим ключом Ed25519: 32 байта и не точка малого порядка
+    /// (сравниваются 31 байт и последний байт без знакового бита).
+    static func isUsableSigningKey(_ raw: [UInt8]) -> Bool {
+        guard raw.count == 32, (try? Curve25519.Signing.PublicKey(rawRepresentation: raw)) != nil else { return false }
+        var masked = raw
+        masked[31] &= 0x7F
+        return !smallOrderSigningPoints.contains(masked)
     }
 }
 
