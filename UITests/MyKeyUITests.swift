@@ -233,6 +233,42 @@ final class MyKeyUITests: XCTestCase {
         }
     }
 
+    // MARK: - E20, E28 (на 402 × 874 весь экран виден без прокрутки)
+
+    /// На экранах от 402 × 874 pt (iPhone 17 и крупнее) при стандартном Dynamic Type весь экран — до строки
+    /// про приватный ключ включительно — виден без прокрутки, как в макете `#state-ready`. На более узких
+    /// экранах прокрутка допустима: там проверяем, что строка до прокрутки может быть скрыта, но докручивается.
+    @MainActor
+    func testWholeScreenVisibleWithoutScrollOnLargePhones() {
+        let app = launch(["-keystore", "memory"])
+        _ = readKey(app)
+        let window = app.windows.firstMatch.frame
+        let scroll = app.scrollViews["mykey.scroll"]
+        let note = app.staticTexts["mykey.privateNote"]
+        let share = app.buttons["mykey.share"]
+        let tabBar = app.tabBars.firstMatch
+        XCTAssertTrue(note.exists)
+        XCTAssertEqual(note.label, "Приватный ключ хранится только на этом iPhone")
+
+        let details =
+            "окно \(window.size), прокрутка \(scroll.frame), «Поделиться» \(share.frame), строка \(note.frame), таб-бар \(tabBar.frame)"
+        if window.width >= 402 && window.height >= 874 {
+            // Без прокрутки: строка и обе кнопки целиком внутри окна прокрутки и над таб-баром.
+            for element in [share, note] {
+                XCTAssertTrue(
+                    scroll.frame.contains(element.frame),
+                    "\(element.identifier) не виден целиком без прокрутки: \(details)")
+                XCTAssertLessThanOrEqual(element.frame.maxY, tabBar.frame.minY, details)
+            }
+            XCTAssertTrue(share.isHittable, details)
+            XCTAssertGreaterThanOrEqual(share.frame.height, 44, details)
+        } else {
+            scroll.swipeUp()
+            scroll.swipeUp()
+            XCTAssertTrue(scroll.frame.contains(note.frame), "строка не докручивается: \(details)")
+        }
+    }
+
     // MARK: - E14
 
     @MainActor

@@ -15,30 +15,31 @@ struct MyKeyView: View {
     var body: some View {
         // Плашка живёт в собственной полосе под прокруткой, а не поверх неё: окно ScrollView кончается над полосой,
         // поэтому кнопки (они внутри прокрутки и обрезаются её краем) не попадают в зону плашки ни при какой прокрутке.
+        // Пока плашки нет, полоса не занимает высоты — на iPhone 17 (402 × 874) весь экран виден без прокрутки,
+        // как в макете. При появлении плашки окно прокрутки укорачивается снизу, а нижний край содержимого остаётся на месте.
         VStack(spacing: 0) {
             content
-            toastSlot
+            if toastVisible {
+                toastSlot
+                    .transition(.opacity)
+            }
+            // Зазор над таб-баром (нижнее поле экрана). Он же не даёт ScrollView коснуться нижнего края safe area:
+            // иначе SwiftUI растягивает прокрутку под таб-бар и низ экрана уходит под таб-бар и эффект края прокрутки.
+            Color.clear
+                .frame(height: 6)
+                .accessibilityHidden(true)
         }
         .background(Color(.systemGroupedBackground))
     }
 
-    /// Полоса над таб-баром высотой с плашку. Место занято всегда — невидимой копией плашки, —
-    /// чтобы появление плашки ничего не сдвигало, а высота следовала за Dynamic Type.
+    /// Полоса над таб-баром с плашкой; высота следует за Dynamic Type. Нажатия сквозь неё не перехватываются.
     private var toastSlot: some View {
-        ZStack {
-            CopiedToast()
-                .hidden()
-                .accessibilityHidden(true)
-            if toastVisible {
-                CopiedToast()
-                    .accessibilityIdentifier("mykey.copiedToast")
-                    .transition(.opacity)
-            }
-        }
-        .allowsHitTesting(false)
-        .padding(.top, 8)
-        .padding(.bottom, 16)
-        .frame(maxWidth: .infinity)
+        CopiedToast()
+            .accessibilityIdentifier("mykey.copiedToast")
+            .allowsHitTesting(false)
+            .padding(.top, 8)
+            .padding(.bottom, 10)
+            .frame(maxWidth: .infinity)
     }
 
     private var content: some View {
@@ -48,20 +49,20 @@ struct MyKeyView: View {
                     .font(.largeTitle.bold())
                     .accessibilityAddTraits(.isHeader)
                     .accessibilityIdentifier("mykey.title")
-                    .padding(.top, 4)
+                    .padding(.top, 2)
                 Text("Покажите QR собеседнику или отправьте ему ключ — тогда он сможет писать вам.")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
-                    .padding(.top, 6)
+                    .padding(.top, 4)
                 qrCard
                     .frame(maxWidth: .infinity)
-                    .padding(.top, 16)
+                    .padding(.top, 14)
                 Text("Отпечаток")
                     .font(.footnote)
                     .textCase(.uppercase)
                     .foregroundStyle(.secondary)
-                    .padding(.top, 16)
+                    .padding(.top, 12)
                 Text(info.fingerprintTwoLines)
                     .font(.body.monospaced().weight(.semibold))
                     .tracking(0.5)
@@ -92,21 +93,24 @@ struct MyKeyView: View {
                     .accessibilityIdentifier("mykey.share")
                     .padding(.top, 12)
                 }
-                .padding(.top, 16)
+                .padding(.top, 12)
                 HStack(spacing: 6) {
                     Image(systemName: "lock.fill")
                         .accessibilityHidden(true)
                     Text("Приватный ключ хранится только на этом iPhone")
+                        .accessibilityIdentifier("mykey.privateNote")
                 }
                 .font(.footnote)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: .infinity)
-                .padding(.top, 14)
+                .padding(.top, 10)
             }
             .padding(.horizontal, 20)
-            .padding(.bottom, 8)
         }
+        // Появление плашки укорачивает окно прокрутки снизу: держим нижний край содержимого на месте, чтобы кнопки,
+        // видимые у нижнего края, приподнялись над полосой плашки, а не ушли под край прокрутки.
+        .defaultScrollAnchor(.bottom, for: .sizeChanges)
         .accessibilityIdentifier("mykey.scroll")
     }
 
