@@ -61,16 +61,31 @@ public struct ContactStore: Sendable {
 }
 
 extension FileContactStorage: ContactStorageWriting {
-    /// Запись целиком во временный файл с заменой, защита до первой разблокировки (клавиатура читает контакты
-    /// и до неё), без резервной копии (контакты без приватного ключа бесполезны, а в чужой копии — лишнее).
+    /// Замена файла одним шагом: байты и все атрибуты (защита до первой разблокировки — клавиатура читает контакты
+    /// и до неё; исключение из резервной копии — контакты без приватного ключа бесполезны, а в чужой копии лишние)
+    /// ставятся на промежуточный файл рядом, и только потом он переименованием `rename(2)` встаёт на место прежнего.
+    /// Любая ошибка до переименования — прежний файл не тронут ни одним байтом, промежуточный удаляется;
+    /// после переименования шагов, которые могут упасть, нет. Атрибуты и класс защиты при переименовании
+    /// остаются на файле (они принадлежат файлу, а не имени).
     public func write(_ data: Data) throws {
-        guard var url else { throw CocoaError(.fileWriteUnknown) }
-        try data.write(to: url, options: [.atomic])
-        try FileManager.default.setAttributes(
-            [.protectionKey: FileProtectionType.completeUntilFirstUserAuthentication], ofItemAtPath: url.path)
-        var values = URLResourceValues()
-        values.isExcludedFromBackup = true
-        try url.setResourceValues(values)
+        guard let url else { throw CocoaError(.fileWriteUnknown) }
+        // Имя без «contact»: если процесс оборвётся между шагами, остаток не спутать с файлом контактов.
+        var staging = url.deletingLastPathComponent()
+            .appendingPathComponent(".\(UUID().uuidString).tmp", isDirectory: false)
+        do {
+            try data.write(to: staging, options: [.atomic])
+            try FileManager.default.setAttributes(
+                [.protectionKey: FileProtectionType.completeUntilFirstUserAuthentication], ofItemAtPath: staging.path)
+            var values = URLResourceValues()
+            values.isExcludedFromBackup = true
+            try staging.setResourceValues(values)
+            guard Darwin.rename(staging.path, url.path) == 0 else {
+                throw POSIXError(POSIXErrorCode(rawValue: errno) ?? .EIO)
+            }
+        } catch {
+            try? FileManager.default.removeItem(at: staging)
+            throw error
+        }
     }
 }
 

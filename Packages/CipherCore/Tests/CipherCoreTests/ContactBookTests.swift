@@ -235,4 +235,136 @@ struct ContactBookTests {
         #expect(throws: ContactError.notFound) { try book.remove(id: anna.id) }
         #expect(book == before)
     }
+
+    // MARK: - Сбой записи и нечитаемый файл при переименовании и удалении
+
+    /// Хранилище, у которого чтение работает, а запись всегда падает; байты не меняются.
+    private final class FailingWriteStorage: ContactStorageWriting, @unchecked Sendable {
+        let stored: Data?
+        private(set) var writeAttempts = 0
+        init(data: Data?) { stored = data }
+        func read() throws -> Data? { stored }
+        func write(_ data: Data) throws {
+            writeAttempts += 1
+            throw CocoaError(.fileWriteNoPermission)
+        }
+    }
+
+    /// Книга из двух контактов и её байты файла.
+    private func twoContacts() throws -> (book: ContactBook, data: Data) {
+        var book = ContactBook()
+        try book.add(name: "Анна", key: newKey(), own: nil)
+        try book.add(name: "Борис", key: newKey(), own: nil)
+        return (book, try encodeContactsFile(book))
+    }
+
+    @Test func writeFailureLeavesBookUnchanged() throws {
+        let (book, original) = try twoContacts()
+        let anna = try #require(book.contacts.first)
+        let storage = FailingWriteStorage(data: original)
+        let store = ContactStore(storage: storage)
+
+        #expect(throws: ContactError.writeFailed) { try store.add(name: "Вера", key: newKey(), own: nil) }
+        #expect(throws: ContactError.writeFailed) { try store.rename(id: anna.id, to: "Аня") }
+        #expect(throws: ContactError.writeFailed) { try store.remove(id: anna.id) }
+        #expect(storage.writeAttempts == 3)
+
+        // После сбоя книга читается та же: никто не пропал, не задвоился и не переименован.
+        #expect(store.read() == .contacts(book.contacts))
+        #expect(ContactsReader(storage: storage).read() == .contacts(book.contacts))
+        #expect(storage.stored == original)
+    }
+
+    @Test func fileWriteFailureKeepsOriginalFileByteForByte() throws {
+        let directory = FileManager.default.temporaryDirectory
+            .appendingPathComponent("contacts-\(UUID().uuidString)", isDirectory: true)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: false)
+        defer {
+            try? FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: directory.path)
+            try? FileManager.default.removeItem(at: directory)
+        }
+        let url = directory.appendingPathComponent(FileContactStorage.fileName)
+        let store = ContactStore(storage: FileContactStorage(url: url))
+
+        // Успешная запись: файл на месте, читается, исключён из резервной копии, промежуточных файлов нет.
+        let saved = try store.add(name: "Анна", key: newKey(), own: nil)
+        let original = try Data(contentsOf: url)
+        #expect(try FileManager.default.contentsOfDirectory(atPath: directory.path) == [FileContactStorage.fileName])
+        #expect(try url.resourceValues(forKeys: [.isExcludedFromBackupKey]).isExcludedFromBackup == true)
+        #expect(store.read() == .contacts(saved.contacts))
+        let anna = try #require(saved.contacts.first)
+
+        // Папка только для чтения: промежуточный файл не создать — каждая операция падает writeFailed.
+        try FileManager.default.setAttributes([.posixPermissions: 0o555], ofItemAtPath: directory.path)
+        #expect(throws: ContactError.writeFailed) { try store.add(name: "Борис", key: newKey(), own: nil) }
+        #expect(throws: ContactError.writeFailed) { try store.rename(id: anna.id, to: "Аня") }
+        #expect(throws: ContactError.writeFailed) { try store.remove(id: anna.id) }
+        try FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: directory.path)
+
+        #expect(try Data(contentsOf: url) == original)
+        #expect(try FileManager.default.contentsOfDirectory(atPath: directory.path) == [FileContactStorage.fileName])
+        #expect(store.read() == .contacts(saved.contacts))
+
+        // После сбоя запись снова работает и даёт ровно два контакта.
+        let after = try store.add(name: "Борис", key: newKey(), own: nil)
+        #expect(names(after) == ["Анна", "Борис"])
+        #expect(ContactsReader(storage: FileContactStorage(url: url)).read() == .contacts(after.contacts))
+        #expect(try url.resourceValues(forKeys: [.isExcludedFromBackupKey]).isExcludedFromBackup == true)
+        #expect(try FileManager.default.contentsOfDirectory(atPath: directory.path) == [FileContactStorage.fileName])
+    }
+
+    @Test func renameAndRemoveNeverOverwriteUnreadableFile() throws {
+        let (book, valid) = try twoContacts()
+        let ids = book.contacts.map(\.id)
+        let anna = ids[0]
+        // Валидный файл, испорченный по-разному: обрезан, версия 2, повтор id, плохой ключ, 0 байт, мусор.
+        let validText = try #require(String(data: valid, encoding: .utf8))
+        let corrupt: [(String, Data)] = [
+            ("обрезан", valid.prefix(valid.count / 2)),
+            ("версия 2", Data(validText.replacingOccurrences(of: #""version":1"#, with: #""version":2"#).utf8)),
+            ("повтор id", Data(validText.replacingOccurrences(of: ids[1].uuidString, with: anna.uuidString).utf8)),
+            (
+                "плохой ключ",
+                Data(
+                    validText.replacingOccurrences(
+                        of: book.contacts[1].publicKey.string, with: "ckpub1:AAAA"
+                    ).utf8)
+            ),
+            ("0 байт", Data()),
+            ("не json", Data("не json".utf8)),
+        ]
+        for (label, original) in corrupt {
+            #expect(original != valid, "испорчен: \(label)")
+
+            let memory = InMemoryContactStorage(data: original)
+            let memoryStore = ContactStore(storage: memory)
+            #expect(throws: ContactError.storeUnreadable, "rename: \(label)") {
+                try memoryStore.rename(id: anna, to: "Аня")
+            }
+            #expect(throws: ContactError.storeUnreadable, "remove: \(label)") { try memoryStore.remove(id: anna) }
+            #expect(memory.data == original, "байты в памяти: \(label)")
+            #expect(memoryStore.read() == .unreadable, "после попытки: \(label)")
+
+            // То же на настоящем файле: ни байта не изменилось, время изменения прежнее, рядом ничего не появилось.
+            let directory = FileManager.default.temporaryDirectory
+                .appendingPathComponent("contacts-\(UUID().uuidString)", isDirectory: true)
+            try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: false)
+            defer { try? FileManager.default.removeItem(at: directory) }
+            let url = directory.appendingPathComponent(FileContactStorage.fileName)
+            try original.write(to: url)
+            let modified = try FileManager.default.attributesOfItem(atPath: url.path)[.modificationDate] as? Date
+            let fileStore = ContactStore(storage: FileContactStorage(url: url))
+            #expect(throws: ContactError.storeUnreadable, "rename, файл: \(label)") {
+                try fileStore.rename(id: anna, to: "Аня")
+            }
+            #expect(throws: ContactError.storeUnreadable, "remove, файл: \(label)") { try fileStore.remove(id: anna) }
+            #expect(try Data(contentsOf: url) == original, "байты файла: \(label)")
+            #expect(
+                try FileManager.default.attributesOfItem(atPath: url.path)[.modificationDate] as? Date == modified,
+                "время изменения: \(label)")
+            #expect(
+                try FileManager.default.contentsOfDirectory(atPath: directory.path) == [FileContactStorage.fileName],
+                "лишние файлы: \(label)")
+        }
+    }
 }

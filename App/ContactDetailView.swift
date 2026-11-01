@@ -62,8 +62,10 @@ struct ContactDetailView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 10))
                     .padding(.top, 6)
+                // Пока идёт удаление, переименовать нечего: обе кнопки выключены.
                 Button("Переименовать") { showingRename = true }
                     .buttonStyle(SecondaryButtonStyle())
+                    .disabled(isDeleting)
                     .accessibilityIdentifier("contact.rename")
                     .padding(.top, 20)
                 Button("Удалить") { confirmingDelete = true }
@@ -150,7 +152,9 @@ struct RenameSheet: View {
             }
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
+                    // Пока идёт запись, лист не закрыть (как и жестом): новое имя либо сохранится, либо будет ошибка.
                     Button("Отмена") { dismiss() }
+                        .disabled(isSaving)
                         .accessibilityIdentifier("rename.cancel")
                 }
                 ToolbarItem(placement: .principal) {

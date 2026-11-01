@@ -77,11 +77,13 @@ struct AddContactSheet: View {
                         .buttonBorderShape(.roundedRectangle(radius: 14))
                         .tint(Color.accentColor)
                         .frame(maxWidth: .infinity, minHeight: 44)
+                        .disabled(isSaving)
                         .accessibilityIdentifier("addcontact.paste")
                         Button("Сканировать QR") {
                             showingScanner = true
                         }
                         .buttonStyle(SecondaryButtonStyle(minHeight: 44, font: .subheadline.weight(.semibold)))
+                        .disabled(isSaving)
                         .accessibilityIdentifier("addcontact.scan")
                     }
                     .padding(.top, 12)
@@ -101,7 +103,10 @@ struct AddContactSheet: View {
             .safeAreaInset(edge: .bottom) { footer }
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
+                    // Пока идёт запись, лист не закрыть: контакт либо сохранится и лист закроется сам,
+                    // либо будет ошибка на месте — а не «закрыли, но контакт всё равно появился».
                     Button("Отмена") { dismiss() }
+                        .disabled(isSaving)
                         .accessibilityIdentifier("addcontact.cancel")
                 }
                 ToolbarItem(placement: .principal) {

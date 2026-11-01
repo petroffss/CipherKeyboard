@@ -82,7 +82,8 @@ final class ContactsModel {
     }
 
     /// Выполняет операцию стора не на главном потоке (файл) и обновляет книгу.
-    /// `storeUnreadable` переводит вкладку в состояние ошибки чтения.
+    /// После любой ошибки книга перечитывается с диска: список на экране всегда совпадает с файлом, даже если
+    /// запись не удалась или файл изменился. Нечитаемый файл переводит вкладку в состояние ошибки чтения.
     private func perform(
         _ operation: @Sendable @escaping (ContactStore, PublicKey) -> Result<ContactBook, ContactError>
     ) async throws(ContactError) {
@@ -93,7 +94,13 @@ final class ContactsModel {
         case .success(let book):
             state = .ready(book)
         case .failure(let error):
-            if error == .storeUnreadable { state = .unreadable }
+            let fresh = await Task.detached { store.read() }.value
+            switch fresh {
+            case .contacts(let contacts):
+                state = .ready(ContactBook(contacts: contacts))
+            case .unreadable:
+                state = .unreadable
+            }
             throw error
         }
     }
