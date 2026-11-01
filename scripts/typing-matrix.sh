@@ -11,10 +11,14 @@ for udid in "$@"; do
     # Settings and actual extension activation are a separate, retained preflight.
     TYPING_SIMULATOR="$udid" TYPING_RESULT="$output/$udid-preflight.xcresult" scripts/typing-integration.sh \
         -only-testing:TypingIntegrationTests/KeyboardRuntimeTests/testFullAccessPreflight > "$output/$udid-preflight.log" 2>&1
-    result="$output/$udid.xcresult"
-    TYPING_SIMULATOR="$udid" TYPING_RESULT="$result" scripts/typing-integration.sh \
-        -only-testing:TypingIntegrationTests/KeyboardMatrixTests/testCaptureAllCurrentProfile > "$output/$udid.log" 2>&1
-    results+=("$result")
+    for theme in light dark; do
+        method=Light
+        [ "$theme" = dark ] && method=Dark
+        result="$output/$udid-$theme.xcresult"
+        TYPING_SIMULATOR="$udid" TYPING_APPEARANCE="$theme" TYPING_RESULT="$result" scripts/typing-integration.sh \
+            "-only-testing:TypingIntegrationTests/KeyboardMatrixTests/testCapture${method}CurrentProfile" > "$output/$udid-$theme.log" 2>&1
+        results+=("$result")
+    done
     xcrun simctl shutdown "$udid"
 done
 python3 scripts/typing-matrix-export.py "$output/frames" "${results[@]}" --complete

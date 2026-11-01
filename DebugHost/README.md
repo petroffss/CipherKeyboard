@@ -31,7 +31,19 @@ DERIVED="$PWD/.build/TypingFinal" TYPING_MATRIX_OUTPUT="$PWD/.build/TypingFinalM
   scripts/typing-matrix.sh <UDID375> <UDID402> <UDID440>
 ```
 
-The script runs a retained actual Settings Full Access/identity preflight separately from capture on each profile, installs and byte-compares the extension, and checks the runtime revision. The exporter requires exactly186 unique named screenshot/geometry pairs (180 extension +6 preview). A manifest is a capture inventory, not visual acceptance: independently open every original image and compare its matching approved reference. Montages assist navigation only.
+The script runs a retained actual Settings Full Access/identity preflight separately from capture on each profile, installs and byte-compares the extension, and checks the runtime revision. On the explicitly disposable UDID, the runner disables and reads back `com.apple.keyboard.preferences/AutomaticMinimizationEnabled`: a CoreDevice hardware-keyboard reconnect must not hide the software keyboard during verification. Host/global Simulator preferences and the main device are untouched. Each profile uses two31-frame batches: `testCaptureLightCurrentProfile` and `testCaptureDarkCurrentProfile`. The runner sets actual Simulator OS appearance through `TYPING_APPEARANCE=light|dark`, checks its readback, and each frame separately checks the production panel's resolved UIKit trait; a launch argument or filename cannot establish the theme.
+
+Every extension capture checks the actual editable48pt `host.editor` (value, hittability and full visible intersection above the panel), not its diagnostic duplicate. The host anchors that field to `keyboardLayoutGuide` and keeps the controls/diagnostic accessibility IDs in a compact header. Render metadata also checks visible draft caret, warning primary color and12pt/15pt portrait or10pt/12pt landscape text, and the lowercase multiline/limit fixtures. Those fixtures explicitly switch Shift off with the cursor at the visible beginning of the exact approved excerpt; the limit keeps4096bytes and a rejected insertion/error/counter.
+
+For a full app UI regression, use a brand-new separate device without enabling the extension or Full Access. Before launching its tests, set/read the same software-keyboard precondition on that explicit disposable UDID; this does not install or activate CipherKeyboard:
+
+```sh
+xcrun simctl spawn "$REGRESSION_SIMULATOR" defaults write com.apple.keyboard.preferences AutomaticMinimizationEnabled -bool false
+test "$(xcrun simctl spawn "$REGRESSION_SIMULATOR" defaults read com.apple.keyboard.preferences AutomaticMinimizationEnabled)" = 0
+DEVICE=CipherKeyboard-Typing-Regression scripts/test.sh ui
+```
+
+The exporter requires exactly186 unique named screenshot/geometry pairs (180 extension +6 preview) from one loaded source revision and rejects actual-theme/style/host-visibility mismatches. A manifest is a capture inventory, not visual acceptance: independently open every original image and compare its matching approved reference. Montages assist navigation only.
 
 For isolated persistence/clipboard audit (no other clipboard/UI tests concurrently):
 

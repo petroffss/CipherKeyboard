@@ -90,6 +90,11 @@
             }
         }
         var needsScrollToCaret = true
+        #if DEBUG
+            var debugCaretVisible: Bool {
+                bounds.insetBy(dx: -0.5, dy: -0.5).contains(caret.frame)
+            }
+        #endif
         @objc private func tapped(_ gesture: UITapGestureRecognizer) {
             guard !draft.isEmpty else { cursorTapped?(0); return }
             var point = gesture.location(in: self)
@@ -160,6 +165,7 @@
         public var heightChanged: ((CGFloat) -> Void)?
         public var statusText = "" { didSet { refresh() } }
         public var contactsText: String? { didSet { refresh() } }
+        public var statusIsWarning = false { didSet { setNeedsLayout() } }
         public var showsNextKeyboard = false { didSet { if oldValue != showsNextKeyboard { rebuildKeys() } } }
         public var landscape = false { didSet { if oldValue != landscape { adapter.rotate(); setNeedsLayout() } } }
         public private(set) var panelHeight: CGFloat = 319
@@ -207,6 +213,22 @@
             private func updateDebugMetadata() {
                 status.accessibilityValue = "build=\(debugBuild);" + debugFixture
                 debugFixtureButton.accessibilityLabel = "Debug fixtures;build=\(debugBuild);" + debugFixture
+            }
+            private func updateCaptureMetadata(lineHeight: CGFloat) {
+                editor.layoutIfNeeded()
+                var red: CGFloat = 0, green: CGFloat = 0, blue: CGFloat = 0, alpha: CGFloat = 0
+                status.textColor.resolvedColor(with: traitCollection).getRed(
+                    &red, green: &green, blue: &blue, alpha: &alpha)
+                let values: [String: Any] = [
+                    "resolvedTheme": traitCollection.userInterfaceStyle == .dark ? "dark" : "light",
+                    "warning": statusIsWarning, "statusFont": status.font.pointSize,
+                    "statusLineHeight": lineHeight, "statusColor": [red, green, blue, alpha],
+                    "caretVisible": editor.debugCaretVisible, "cursor": adapter.input.cursor,
+                    "byteCount": adapter.input.byteCount,
+                ]
+                if let data = try? JSONSerialization.data(withJSONObject: values, options: [.sortedKeys]) {
+                    debugFixtureButton.accessibilityValue = String(data: data, encoding: .utf8)
+                }
             }
         #endif
         private let status = UILabel()
@@ -380,7 +402,26 @@
             let gap: CGFloat = landscape ? 3 : 7
             let keyHeight: CGFloat = landscape ? 32 : 44
             var y: CGFloat = landscape ? 4 : 7
-            status.font = .systemFont(ofSize: landscape ? 10 : 11)
+            let statusFont = UIFont.systemFont(ofSize: landscape ? 10 : (statusIsWarning ? 12 : 11))
+            let statusColor: UIColor = statusIsWarning ? .label : .secondaryLabel
+            status.font = statusFont
+            status.textColor = statusColor
+            let statusLineHeight: CGFloat = landscape ? 12 : 15
+            if statusIsWarning {
+                let paragraph = NSMutableParagraphStyle()
+                paragraph.minimumLineHeight = statusLineHeight
+                paragraph.maximumLineHeight = statusLineHeight
+                status.attributedText = NSAttributedString(
+                    string: status.text ?? "",
+                    attributes: [
+                        .font: statusFont, .foregroundColor: statusColor,
+                        .paragraphStyle: paragraph,
+                    ])
+            } else {
+                status.attributedText = nil
+                status.text = ([statusText] + [contactsText].compactMap { $0 }).filter { !$0.isEmpty }.joined(
+                    separator: " · ")
+            }
             let statusHeight = max(
                 landscape ? 14 : 18, status.sizeThatFits(CGSize(width: width - 10, height: 40)).height)
             status.frame = CGRect(x: side + 5, y: y, width: width - 10, height: statusHeight)
@@ -447,6 +488,9 @@
             #endif
             let height = y + (landscape ? 3 : 8)
             if abs(height - panelHeight) > 0.5 { panelHeight = height; heightChanged?(height) }
+            #if DEBUG
+                updateCaptureMetadata(lineHeight: statusIsWarning ? statusLineHeight : status.font.lineHeight)
+            #endif
         }
     }
 #endif

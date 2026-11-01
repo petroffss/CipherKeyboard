@@ -40,6 +40,7 @@ private struct KeyboardPreviewPanel: UIViewRepresentable {
         let status = KeyboardSharedStatus.read(hasFullAccess: true)
         panel.statusText = status.identity
         panel.contactsText = status.contacts
+        panel.statusIsWarning = status.isWarning
         #if DEBUG
             if let fixture = ProcessInfo.processInfo.environment["CIPHER_TYPING_FIXTURE"] {
                 KeyboardDebugFixture.apply(to: panel, name: fixture)

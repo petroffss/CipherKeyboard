@@ -16,6 +16,7 @@
             adapter.seedForTesting(name == "ru-empty" ? "" : "Привет, Анна!")
             panel.statusText = "Ключ A1B2 C3D4"
             panel.contactsText = "Контактов: 2"
+            panel.statusIsWarning = false
             var identityReads = 0
             var contactsReads = 0
             if ["no-access", "no-key", "key-error", "contacts-error"].contains(name) {
@@ -31,6 +32,7 @@
                     })
                 panel.statusText = name == "contacts-error" ? "Ключ A1B2 C3D4" : status.identity
                 panel.contactsText = name == "contacts-error" ? status.contacts : nil
+                panel.statusIsWarning = status.isWarning
             }
             panel.debugFixture = "fixture=\(name);identityReads=\(identityReads);contactsReads=\(contactsReads)"
             switch name {
@@ -44,9 +46,12 @@
             case "alternate-softsign": adapter.seedForTesting("Под"); adapter.press(.character("ь"))
             case "multiline":
                 adapter.seedForTesting(referenceExcerpt, cursor: 0)
+                // The reference shows lowercase keys; explicit Shift-off preserves the visible start caret.
+                adapter.activate(.shift)
             case "limit":
                 let padding = String(repeating: "x", count: 4096 - referenceExcerpt.utf8.count)
                 adapter.seedForTesting(referenceExcerpt + padding, cursor: 0)
+                adapter.activate(.shift)
                 adapter.activate(.character("я"))
             default: break
             }
