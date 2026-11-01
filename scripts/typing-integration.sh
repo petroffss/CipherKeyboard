@@ -14,4 +14,5 @@ installed="$(xcrun simctl get_app_container "$TYPING_SIMULATOR" dev.cipherkeyboa
 relative='PlugIns/CipherKeyboardExtension.appex/CipherKeyboardExtension.debug.dylib'
 cmp "$APP_PATH/$relative" "$installed/$relative"
 echo "Verified installed extension SHA256: $(shasum -a 256 "$installed/$relative")"
+echo "Runtime source revision: $(typing_revision); simulator: $TYPING_SIMULATOR; installed: $installed"
 xcodebuild test-without-building "${args[@]}" -resultBundlePath "$result" "$@"

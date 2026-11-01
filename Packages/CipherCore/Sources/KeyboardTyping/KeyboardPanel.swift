@@ -15,6 +15,15 @@
             storage.addLayoutManager(manager)
             manager.addTextContainer(container)
             super.init(frame: .zero, textContainer: container)
+            // This private editor has no bar covering its content. iOS 26's automatic
+            // scroll-edge material otherwise fades the top line of a short text view.
+            if #available(iOS 26.0, *) {
+                topEdgeEffect.isHidden = true
+                bottomEdgeEffect.isHidden = true
+                leftEdgeEffect.isHidden = true
+                rightEdgeEffect.isHidden = true
+            }
+            contentInsetAdjustmentBehavior = .never
             isEditable = false
             isSelectable = false
             textDragInteraction?.isEnabled = false
@@ -158,6 +167,43 @@
             public var debugFixture = "" { didSet { updateDebugMetadata() } }
             public var debugBuild = "unversioned" { didSet { updateDebugMetadata() } }
             private let debugFixtureButton = UIButton(type: .system)
+            private var debugPicker: UIView?
+            private var debugChoices: [UIButton] = []
+            @objc private func showDebugFixtures() {
+                guard debugPicker == nil else { dismissDebugFixtures(); return }
+                adapter.cancelGesture()
+                let picker = UIView()
+                picker.backgroundColor = .secondarySystemGroupedBackground
+                picker.accessibilityIdentifier = "keyboard.fixtureGrid"
+                let names = [
+                    "ru-empty", "ru-text", "shift", "caps", "en", "numbers", "symbols", "alternate-e",
+                    "alternate-softsign", "multiline", "limit", "preview", "no-access", "no-key",
+                    "key-error", "contacts-error", "clear", "canary",
+                ]
+                debugChoices = names.map { name in
+                    let button = UIButton(type: .system)
+                    button.setTitle(name, for: .normal)
+                    button.titleLabel?.font = .systemFont(ofSize: 12)
+                    button.accessibilityIdentifier = "keyboard.fixture." + name
+                    button.addAction(
+                        UIAction { [weak self] _ in
+                            guard let self else { return }
+                            // Remove the entire picker before applying a fixture or starting a timer.
+                            self.dismissDebugFixtures()
+                            KeyboardDebugFixture.apply(to: self, name: name)
+                        }, for: .touchUpInside)
+                    picker.addSubview(button)
+                    return button
+                }
+                debugPicker = picker
+                addSubview(picker)
+                setNeedsLayout()
+            }
+            private func dismissDebugFixtures() {
+                debugPicker?.removeFromSuperview()
+                debugPicker = nil
+                debugChoices.removeAll()
+            }
             private func updateDebugMetadata() {
                 status.accessibilityValue = "build=\(debugBuild);" + debugFixture
                 debugFixtureButton.accessibilityLabel = "Debug fixtures;build=\(debugBuild);" + debugFixture
@@ -225,25 +271,7 @@
                 debugFixtureButton.accessibilityTraits = .button
                 debugFixtureButton.accessibilityIdentifier = "keyboard.debugFixtures"
                 updateDebugMetadata()
-                debugFixtureButton.showsMenuAsPrimaryAction = true
-                let groups = [
-                    ("Макет", ["ru-empty", "ru-text", "shift", "caps", "en", "numbers", "symbols"]),
-                    (
-                        "Состояния",
-                        ["alternate-e", "alternate-softsign", "multiline", "limit", "preview", "clear", "canary"]
-                    ), ("Статусы", ["no-access", "no-key", "key-error", "contacts-error"]),
-                ]
-                debugFixtureButton.menu = UIMenu(
-                    children: groups.map { title, names in
-                        UIMenu(
-                            title: title,
-                            children: names.map { name in
-                                UIAction(title: name) { [weak self] _ in
-                                    guard let self else { return }
-                                    KeyboardDebugFixture.apply(to: self, name: name)
-                                }
-                            })
-                    })
+                debugFixtureButton.addTarget(self, action: #selector(showDebugFixtures), for: .touchUpInside)
                 addSubview(debugFixtureButton)
             #endif
             editor.cursorTapped = { [weak adapter] in adapter?.moveCursor(to: $0) }
@@ -251,7 +279,12 @@
             rebuildKeys()
         }
         required init?(coder: NSCoder) { nil }
-        public func clearSession() { adapter.hide() }
+        public func clearSession() {
+            #if DEBUG
+                dismissDebugFixtures()
+            #endif
+            adapter.hide()
+        }
         private func rebuildKeys() {
             for key in rows.flatMap({ $0 }) { key.removeFromSuperview() }
             let input = adapter.input
@@ -397,6 +430,21 @@
                         y: max(0, key.frame.minY - 46), width: 52, height: 44)
                 }
             }
+            #if DEBUG
+                if let picker = debugPicker {
+                    picker.frame = bounds
+                    let columns = landscape ? 6 : 3
+                    let count = (debugChoices.count + columns - 1) / columns
+                    let cellWidth = bounds.width / CGFloat(columns)
+                    let cellHeight = bounds.height / CGFloat(count)
+                    for (index, button) in debugChoices.enumerated() {
+                        button.frame = CGRect(
+                            x: CGFloat(index % columns) * cellWidth, y: CGFloat(index / columns) * cellHeight,
+                            width: cellWidth, height: cellHeight)
+                    }
+                    bringSubviewToFront(picker)
+                }
+            #endif
             let height = y + (landscape ? 3 : 8)
             if abs(height - panelHeight) > 0.5 { panelHeight = height; heightChanged?(height) }
         }

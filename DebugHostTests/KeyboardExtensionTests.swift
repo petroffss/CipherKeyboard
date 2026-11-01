@@ -71,7 +71,7 @@ final class KeyboardExtensionTests: XCTestCase {
             "Не удалось прочитать контакты", "Контактов: 2",
         ]
         for (name, warning) in zip(states, warnings) {
-            try fixture(name, in: host)
+            TypingTestSupport.fixture(name, in: host)
             XCTAssertTrue(host.staticTexts["keyboard.identityStatus"].label.contains(warning))
             if name == "no-access" {
                 XCTAssertTrue(
@@ -85,20 +85,5 @@ final class KeyboardExtensionTests: XCTestCase {
             XCTAssertEqual(editor.value as? String, before)
             XCTAssertEqual(host.staticTexts["host.diagnostics"].label, unchanged)
         }
-    }
-    @MainActor private func fixture(_ name: String, in host: XCUIApplication) throws {
-        let group =
-            ["no-access", "no-key", "key-error", "contacts-error"].contains(name)
-            ? "Статусы"
-            : (["alternate-e", "alternate-softsign", "multiline", "limit", "preview", "clear", "canary"].contains(name)
-                ? "Состояния" : "Макет")
-        host.buttons["keyboard.debugFixtures"].tap()
-        host.buttons[group].tap()
-        host.buttons[name].tap()
-        let status = host.buttons["keyboard.debugFixtures"]
-        let received = XCTNSPredicateExpectation(
-            predicate: NSPredicate(format: "label CONTAINS %@", "fixture=" + name), object: status)
-        XCTAssertEqual(
-            XCTWaiter.wait(for: [received], timeout: 5), .completed, "Real extension must acknowledge fixture command")
     }
 }

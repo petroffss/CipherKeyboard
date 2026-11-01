@@ -12,8 +12,11 @@ import Foundation
             if back.exists { back.tap() } else { break }
         }
         XCTAssertTrue(general.waitForExistence(timeout: 5), settings.debugDescription)
-        general.tap()
-        settings.buttons["com.apple.settings.general.keyboard"].tap()
+        navigateSettings(
+            settings, row: general, destination: settings.buttons["com.apple.settings.general.keyboard"])
+        navigateSettings(
+            settings, row: settings.buttons["com.apple.settings.general.keyboard"],
+            destination: settings.buttons["KEYBOARDS"])
         settings.buttons["KEYBOARDS"].tap()
         var cipher = settings.descendants(matching: .any).matching(
             NSPredicate(format: "label BEGINSWITH %@", "CipherKeyboard")
@@ -59,6 +62,26 @@ import Foundation
         }
     }
 
+    /// Settings' SwiftUI rows can report Button in modern AX and Other in legacy AX.
+    /// A coordinate tap on the visible row avoids a silent AX activation no-op.
+    /// Arrival at the actual next screen remains mandatory; do not continue on a stale hierarchy.
+    private static func navigateSettings(_ app: XCUIApplication, row: XCUIElement, destination: XCUIElement) {
+        for _ in 0..<2 {
+            if destination.exists && !row.exists { return }
+            XCTAssertTrue(row.waitForExistence(timeout: 5), app.debugDescription)
+            for _ in 0..<4 {
+                let visible = app.frame.insetBy(dx: 8, dy: 80)
+                if row.isHittable && visible.contains(CGPoint(x: row.frame.midX, y: row.frame.midY)) { break }
+                app.swipeUp()
+            }
+            XCTAssertTrue(row.isHittable, app.debugDescription)
+            row.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+            if destination.waitForExistence(timeout: 3) { return }
+        }
+        XCTAssertTrue(
+            destination.exists, "Settings row did not navigate to its required destination: " + app.debugDescription)
+    }
+
     static func openCipher(in host: XCUIApplication) {
         host.buttons["Открыть"].tap()
         let introduction = host.buttons["Continue"]
@@ -96,22 +119,13 @@ import Foundation
     }
 
     static func fixture(_ name: String, in app: XCUIApplication) {
-        let group =
-            ["no-access", "no-key", "key-error", "contacts-error"].contains(name)
-            ? "Статусы"
-            : (["alternate-e", "alternate-softsign", "multiline", "limit", "preview", "clear", "canary"].contains(name)
-                ? "Состояния" : "Макет")
         app.buttons["keyboard.debugFixtures"].tap()
-        app.buttons[group].tap()
-        let item = app.buttons[name]
-        let menu = app.collectionViews.containing(.button, identifier: group).firstMatch
-        for _ in 0..<3 {
-            if item.exists && item.isHittable { break }
-            XCTAssertTrue(menu.exists, app.debugDescription)
-            menu.swipeUp()
-        }
+        let grid = app.otherElements["keyboard.fixtureGrid"]
+        XCTAssertTrue(grid.waitForExistence(timeout: 3), app.debugDescription)
+        let item = app.buttons["keyboard.fixture." + name]
         XCTAssertTrue(item.exists && item.isHittable, app.debugDescription)
         item.tap()
+        XCTAssertTrue(grid.waitForNonExistence(timeout: 3), "Fixture picker must disappear before capture")
         let status = app.buttons["keyboard.debugFixtures"]
         let received = XCTNSPredicateExpectation(
             predicate: NSPredicate(format: "label CONTAINS %@", "fixture=" + name), object: status)

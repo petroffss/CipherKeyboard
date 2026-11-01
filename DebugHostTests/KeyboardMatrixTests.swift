@@ -11,11 +11,11 @@ final class KeyboardMatrixTests: XCTestCase {
 
     @MainActor func testMatrixSmoke() throws {
         try capture(
-            states: ["ru-empty", "alternate-e", "limit", "no-key"], themes: ["light"], includePreview: true,
+            states: states, themes: ["light"],
+            includePreview: true,
             prefix: "smoke")
     }
     @MainActor func testCaptureAllCurrentProfile() throws {
-        try TypingTestSupport.configureKeyboard(fullAccess: true)
         try capture(states: states, themes: ["light", "dark"], includePreview: true, prefix: "typing")
     }
     @MainActor private func capture(states: [String], themes: [String], includePreview: Bool, prefix: String) throws {
@@ -60,6 +60,27 @@ final class KeyboardMatrixTests: XCTestCase {
         app: XCUIApplication, kind: String, width: CGFloat, landscape: Bool, theme: String, state: String,
         prefix: String
     ) throws {
+        TypingTestSupport.verifyBuild(in: app)
+        XCTAssertFalse(app.otherElements["keyboard.fixtureGrid"].exists)
+        XCTAssertTrue(app.buttons["keyboard.debugFixtures"].label.contains("fixture=" + state + ";"))
+        XCTAssertEqual(XCUIDevice.shared.orientation.isLandscape, landscape)
+        let expectedWidth = landscape ? [375.0: 667.0, 402.0: 874.0, 440.0: 956.0][width]! : width
+        let expectedHeight = landscape ? width : [375.0: 667.0, 402.0: 874.0, 440.0: 956.0][width]!
+        var last: [CGRect] = []
+        var stable = 0
+        let settled = XCTNSPredicateExpectation(
+            predicate: NSPredicate { _, _ in
+                let current = [
+                    app.frame, TypingTestSupport.draft(in: app).frame,
+                    app.descendants(matching: .any)["keyboard.panel"].firstMatch.frame,
+                    app.buttons["keyboard.return"].frame,
+                ]
+                guard current[0].width == expectedWidth, current[0].height == expectedHeight else { return false }
+                stable = current == last ? stable + 1 : 0
+                last = current
+                return stable >= 2
+            }, object: nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [settled], timeout: 8), .completed, "Unsettled frame geometry")
         let panel = app.descendants(matching: .any)["keyboard.panel"].firstMatch
         XCTAssertTrue(panel.exists)
         let panelFrame = panel.frame

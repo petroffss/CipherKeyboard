@@ -30,6 +30,7 @@
         private let diagnostics = UILabel()
         private let focus = UILabel()
         private let geometry = UILabel()
+        private let auditClipboard = UILabel()
         private var controls: [String: UIButton] = [:]
         private weak var controlsStack: UIStackView?
         override var supportedInterfaceOrientations: UIInterfaceOrientationMask { .allButUpsideDown }
@@ -72,6 +73,21 @@
             geometry.font = .systemFont(ofSize: 8)
             let stack = UIStackView(arrangedSubviews: [title, buttons, diagnostics, focus, geometry, field])
             stack.axis = .vertical
+            if args.contains("-typing-audit-setup") {
+                let sentinel = UIButton(type: .system)
+                sentinel.setTitle("Установить тестовый sentinel", for: .normal)
+                sentinel.accessibilityIdentifier = "host.setSentinel"
+                sentinel.addAction(
+                    UIAction { [weak self] _ in
+                        // Explicit audit setup, never transports the keyboard draft.
+                        UIPasteboard.general.string = "TypingClipboardSentinel05-20261101"
+                        self?.auditClipboard.text =
+                            "sentinel=\(UIPasteboard.general.string == "TypingClipboardSentinel05-20261101")"
+                    }, for: .touchUpInside)
+                auditClipboard.accessibilityIdentifier = "host.sentinelStatus"
+                stack.insertArrangedSubview(sentinel, at: 1)
+                stack.insertArrangedSubview(auditClipboard, at: 2)
+            }
             stack.spacing = 8
             stack.translatesAutoresizingMaskIntoConstraints = false
             view.addSubview(stack)

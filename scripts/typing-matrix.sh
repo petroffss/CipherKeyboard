@@ -8,10 +8,14 @@ results=()
 for udid in "$@"; do
     xcrun simctl bootstatus "$udid" -b >/dev/null
     TYPING_SIMULATOR="$udid" scripts/typing-host.sh
+    # Settings and actual extension activation are a separate, retained preflight.
+    TYPING_SIMULATOR="$udid" TYPING_RESULT="$output/$udid-preflight.xcresult" scripts/typing-integration.sh \
+        -only-testing:TypingIntegrationTests/KeyboardRuntimeTests/testFullAccessPreflight > "$output/$udid-preflight.log" 2>&1
     result="$output/$udid.xcresult"
     TYPING_SIMULATOR="$udid" TYPING_RESULT="$result" scripts/typing-integration.sh \
         -only-testing:TypingIntegrationTests/KeyboardMatrixTests/testCaptureAllCurrentProfile > "$output/$udid.log" 2>&1
     results+=("$result")
+    xcrun simctl shutdown "$udid"
 done
 python3 scripts/typing-matrix-export.py "$output/frames" "${results[@]}" --complete
 xcrun swiftc -D DEBUG -parse-as-library DebugHost/MatrixMontage.swift -o "$output/montage"

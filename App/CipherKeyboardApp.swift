@@ -10,6 +10,8 @@ struct CipherKeyboardApp: App {
             #if DEBUG
                 if ProcessInfo.processInfo.arguments.contains("-typing-isolation") {
                     Text(KeyboardIsolationProbe.run()).accessibilityIdentifier("typing.isolationResult")
+                } else if ProcessInfo.processInfo.arguments.contains("-typing-identity-metadata") {
+                    Text(KeyboardIdentityMetadataProbe.run()).accessibilityIdentifier("typing.identityMetadata")
                 } else {
                     RootView(model: model).task { model.loadIfNeeded() }
                 }

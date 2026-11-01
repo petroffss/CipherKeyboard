@@ -3,6 +3,46 @@ import XCTest
 final class KeyboardRuntimeTests: XCTestCase {
     override func setUp() { continueAfterFailure = false }
 
+    /// Setup is intentionally separate from captures and before/after persistence snapshots.
+    @MainActor func testFullAccessPreflight() throws {
+        XCUIDevice.shared.orientation = .portrait
+        let app = XCUIApplication(bundleIdentifier: "dev.cipherkeyboard.app")
+        app.launchArguments = []
+        app.launch()
+        XCTAssertTrue(app.staticTexts["mykey.fingerprint"].waitForExistence(timeout: 15))
+        XCTAssertFalse(app.staticTexts["mykey.fingerprint"].label.isEmpty)
+        app.terminate()
+        app.launchArguments = ["-typing-identity-metadata"]
+        app.launch()
+        XCTAssertEqual(
+            app.staticTexts["typing.identityMetadata"].label,
+            "PASS: real identity.v1; attributes only; rows=1")
+        let identityProof = XCTAttachment(string: app.staticTexts["typing.identityMetadata"].label)
+        identityProof.name = "real-identity-attribute-query-precondition"; identityProof.lifetime = .keepAlways
+        add(identityProof)
+        app.terminate()
+        try TypingTestSupport.configureKeyboard(fullAccess: true)
+        let host = XCUIApplication(bundleIdentifier: "dev.cipherkeyboard.typinghost")
+        host.launch(); TypingTestSupport.openCipher(in: host)
+        XCTAssertTrue(host.staticTexts["keyboard.identityStatus"].label.hasPrefix("Ваш ключ: "))
+        try TypingTestSupport.tapHostControl("Скрыть", in: host)
+        XCTAssertTrue(TypingTestSupport.draft(in: host).waitForNonExistence(timeout: 5))
+        XCUIDevice.shared.press(.home)
+        host.terminate()
+    }
+
+    @MainActor func testClipboardSentinelSetup() {
+        let host = XCUIApplication(bundleIdentifier: "dev.cipherkeyboard.typinghost")
+        host.launchArguments = ["-typing-audit-setup"]
+        host.launch()
+        host.buttons["host.setSentinel"].tap()
+        XCTAssertEqual(host.staticTexts["host.sentinelStatus"].label, "sentinel=true")
+        let proof = XCTAttachment(screenshot: host.screenshot())
+        proof.name = "actual-in-process-clipboard-sentinel-readback"; proof.lifetime = .keepAlways; add(proof)
+        XCUIDevice.shared.press(.home)
+        host.terminate()
+    }
+
     @MainActor func testEditingMatrixWithoutFullAccess() throws { try editingMatrix(fullAccess: false) }
     @MainActor func testEditingMatrixWithFullAccess() throws { try editingMatrix(fullAccess: true) }
     @MainActor private func editingMatrix(fullAccess: Bool) throws {

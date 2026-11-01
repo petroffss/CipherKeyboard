@@ -71,11 +71,13 @@ def snapshot(udid, output):
     metadata = []
     with sqlite3.connect("file:" + str(keychain) + "?mode=ro", uri=True) as db:
         columns = {r[1] for r in db.execute("PRAGMA table_info(genp)")}
-        selected = [name for name in ["agrp", "svce", "acct", "cdat", "mdat"] if name in columns]
+        selected = [name for name in ["agrp", "svce", "acct", "cdat", "mdat", "UUID", "persistref"] if name in columns]
         if not {"agrp", "svce", "acct"}.issubset(columns):
             raise SystemExit("Unexpected Keychain schema; do not silently skip metadata audit")
         # Only identifying metadata is selected. Secret/value columns are never queried.
-        for row in db.execute("SELECT " + ",".join(selected) + " FROM genp WHERE CAST(svce AS TEXT) LIKE '%cipherkeyboard%'"):
+        # Simulator indexes svce/acct as opaque 20-byte blobs: casting them to TEXT
+        # silently matched zero rows. The real identity uses this explicit access group.
+        for row in db.execute("SELECT " + ",".join(selected) + " FROM genp WHERE agrp = ? ORDER BY rowid", ("group.dev.cipherkeyboard",)):
             metadata.append({name: hashlib.sha256(str(value).encode()).hexdigest() for name, value in zip(selected, row)})
     clipboard = run("xcrun", "simctl", "pbpaste", udid)
     result = {
@@ -83,9 +85,15 @@ def snapshot(udid, output):
         "roots": {key: str(value) for key, value in roots.items()}, "files": files,
         "defaults": defaults, "keychainMetadataHashes": metadata, "canaryMatches": matches,
         "clipboardSha256": hashlib.sha256(clipboard).hexdigest(),
-        "clipboardIsSentinel": clipboard.decode() == SENTINEL,
+        "clipboardIsSentinel": clipboard == SENTINEL.encode(),
     }
+    result["setupFailures"] = []
+    if not result["clipboardIsSentinel"]: result["setupFailures"].append("clipboard sentinel not installed")
+    if len(metadata) != 1: result["setupFailures"].append("expected one real identity metadata entry, got " + str(len(metadata)))
+    if matches: result["setupFailures"].append("canary already present in baseline files")
     output.write_text(json.dumps(result, indent=2, ensure_ascii=False))
+    print(json.dumps({"snapshot": str(output), "identityMetadataRows": len(metadata), "setupFailures": result["setupFailures"]}))
+    return bool(result["setupFailures"])
 
 
 def compare(before_path, after_path, output):
@@ -105,10 +113,15 @@ def compare(before_path, after_path, output):
     logs_path = output.with_suffix(".log")
     logs_path.write_bytes(logs.stdout + logs.stderr)
     failures = []
+    if before.get("setupFailures"): failures.append("invalid before setup: " + "; ".join(before["setupFailures"]))
+    if not before["keychainMetadataHashes"] or not after["keychainMetadataHashes"]:
+        failures.append("empty identity metadata coverage")
     if logs.returncode: failures.append("log capture failed")
     if CANARY.encode() in logs.stdout: failures.append("canary found in scoped logs")
     if after["canaryMatches"]: failures.append("canary found in files")
-    if not before["clipboardIsSentinel"] or not after["clipboardIsSentinel"]: failures.append("clipboard sentinel changed")
+    if not before["clipboardIsSentinel"]: failures.append("clipboard sentinel missing before test")
+    if before["clipboardSha256"] != after["clipboardSha256"] or not after["clipboardIsSentinel"]:
+        failures.append("clipboard sentinel changed during test")
     if before["keychainMetadataHashes"] != after["keychainMetadataHashes"]: failures.append("keychain metadata changed")
     if before["defaults"] != after["defaults"]: failures.append("defaults changed")
     if unexpected: failures.append("unexpected file changes require investigation")
@@ -123,11 +136,17 @@ def compare(before_path, after_path, output):
 parser = argparse.ArgumentParser()
 sub = parser.add_subparsers(dest="action", required=True)
 s = sub.add_parser("snapshot"); s.add_argument("udid"); s.add_argument("output", type=pathlib.Path)
-t = sub.add_parser("set-sentinel"); t.add_argument("udid")
+t = sub.add_parser("set-sentinel"); t.add_argument("udid"); t.add_argument("output", type=pathlib.Path)
 c = sub.add_parser("compare"); c.add_argument("before", type=pathlib.Path); c.add_argument("after", type=pathlib.Path); c.add_argument("output", type=pathlib.Path)
 a = parser.parse_args()
-if a.action == "snapshot": snapshot(a.udid, a.output)
+if a.action == "snapshot": sys.exit(snapshot(a.udid, a.output))
 elif a.action == "set-sentinel":
     device_guard(a.udid)
     subprocess.run(["xcrun", "simctl", "pbcopy", a.udid], input=SENTINEL.encode(), check=True)
+    actual = run("xcrun", "simctl", "pbpaste", a.udid)
+    result = {"udid": a.udid, "clipboardIsSentinel": actual == SENTINEL.encode(),
+              "clipboardSha256": hashlib.sha256(actual).hexdigest(), "size": len(actual)}
+    a.output.write_text(json.dumps(result, indent=2))
+    print(json.dumps(result))
+    sys.exit(0 if result["clipboardIsSentinel"] else "Sentinel setup invalid; preserve evidence and do not run audit UI")
 else: sys.exit(compare(a.before, a.after, a.output))
