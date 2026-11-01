@@ -1,12 +1,13 @@
 ---
 feature: 04-keyboard-setup
 title: Подключение клавиатуры
-status: verified        # draft → in-review → approved → building → verified → done
+status: done        # draft → in-review → approved → building → verified → done
 risk: high         # low | medium | high — ставит classify-risk
 risk_reason: "изменяется обмен состоянием через App Group и проверка разрешений расширения"
 ui: yes              # yes, если у фичи есть экран; no — API, фоновая задача, CLI
 depends_on: [02-my-key, 03-contacts]
 approved_at: 2026-11-01
+done_at: 2026-11-01
 ---
 
 # Подключение клавиатуры
