@@ -1,7 +1,7 @@
 ---
 feature: 03-contacts
 title: Контакты — ключи собеседников
-status: approved        # draft → in-review → approved → building → verified → done
+status: building        # draft → in-review → approved → building → verified → done
 risk: high           # low | medium | high — ставит classify-risk
 risk_reason: "если сломается — сообщение зашифруется чужому ключу под знакомым именем или контакты пропадут"
 ui: yes              # yes, если у фичи есть экран; no — API, фоновая задача, CLI
