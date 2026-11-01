@@ -36,6 +36,7 @@ final class KeyboardViewController: UIInputViewController {
 
         nextKeyboardButton.setImage(UIImage(systemName: "globe"), for: .normal)
         nextKeyboardButton.accessibilityLabel = "Следующая клавиатура"
+        nextKeyboardButton.accessibilityIdentifier = "keyboard.next"
         nextKeyboardButton.addTarget(self, action: #selector(handleInputModeList(from:with:)), for: .allTouchEvents)
         nextKeyboardButton.translatesAutoresizingMaskIntoConstraints = false
 
@@ -57,8 +58,10 @@ final class KeyboardViewController: UIInputViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         // Перечитываем при каждом показе: ключ и контакты могли измениться в приложении, пока клавиатура была скрыта.
-        statusLabel.text = Self.statusText(hasFullAccess: hasFullAccess)
-        let contactsText = Self.contactsText(hasFullAccess: hasFullAccess)
+        let permitted = hasFullAccess
+        KeyboardAccessRecorder.record(hasFullAccess: permitted) { FileKeyboardSetupStorage.appGroup }
+        statusLabel.text = Self.statusText(hasFullAccess: permitted)
+        let contactsText = Self.contactsText(hasFullAccess: permitted)
         contactsLabel.text = contactsText
         contactsLabel.isHidden = contactsText == nil
     }
