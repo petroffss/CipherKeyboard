@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>03 · Контакты — макет</title>
+<style>:root {
+  --color-bg: #F2F2F7; --color-surface: #FFFFFF; --color-text: #000000; --color-text-2: #6C6C70;
+  --color-separator: #C6C6C8; --color-accent: #2F5BEA; --color-accent-text: #FFFFFF;
+  --color-danger: #D92D20; --color-success: #1F9D55; --color-toast-bg: rgba(28,28,30,.92); --color-toast-text: #FFFFFF;
+  --color-kb: #D1D3D9; --color-bubble-in: #FFFFFF; --color-bubble-out: #2F5BEA;
+  --radius-card: 16px; --radius-button: 14px; --space: 16px; --gutter: 20px;
+  --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+  --mono: ui-monospace, "SF Mono", Menlo, monospace;
+}
+.dark {
+  --color-bg: #000000; --color-surface: #1C1C1E; --color-text: #FFFFFF; --color-text-2: #98989F;
+  --color-separator: #38383A; --color-accent: #5B8CFF; --color-accent-text: #FFFFFF;
+  --color-danger: #FF6961; --color-toast-bg: rgba(242,242,247,.94); --color-toast-text: #000000;
+  --color-kb: #2C2C2E; --color-bubble-in: #262628; --color-bubble-out: #3D6BF0;
+}
+* { box-sizing: border-box; }
+body { margin: 0; padding: 24px; background: #E5E5EA; font-family: var(--font); color: #111; }
+header.page h1 { margin: 0 0 6px; font-size: 22px; }
+header.page p, header.page nav { margin: 4px 0; font-size: 14px; color: #444; }
+header.page a { color: #2F5BEA; }
+section { margin-top: 36px; }
+h2.st { font-size: 18px; margin: 0; }
+p.sd { font-size: 13px; color: #555; margin: 4px 0 12px; max-width: 900px; }
+.row { display: flex; gap: 28px; flex-wrap: wrap; align-items: flex-start; }
+figure { margin: 0; }
+figcaption { font-size: 12px; color: #555; margin-top: 6px; text-align: center; }
+
+.phone { box-sizing: content-box; position: relative; overflow: hidden; border-radius: 48px; border: 10px solid #111;
+  background: var(--color-bg); color: var(--color-text); display: flex; flex-direction: column; }
+.sb { height: 54px; flex: none; display: flex; justify-content: space-between; align-items: center;
+  padding: 14px 32px 0; font-weight: 600; font-size: 16px; }
+.sbi { font-size: 11px; letter-spacing: 1px; }
+.home { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); width: 134px; height: 5px;
+  border-radius: 3px; background: var(--color-text); opacity: .85; }
+
+.content { flex: 1; overflow: hidden; padding: 4px var(--gutter) 100px; display: flex; flex-direction: column; }
+.content h1 { font-size: 34px; font-weight: 700; margin: 4px 0 6px; letter-spacing: .3px; }
+.sub { font-size: 15px; line-height: 20px; color: var(--color-text-2); margin: 0 0 var(--space); }
+.qrcard { align-self: center; background: #FFFFFF; border-radius: var(--radius-card); padding: 14px;
+  box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+.qr { width: 220px; height: 220px; display: block; }
+.label { margin-top: var(--space); font-size: 13px; color: var(--color-text-2); text-transform: uppercase; letter-spacing: .4px; }
+.fp { font-family: var(--mono); font-size: 17px; line-height: 24px; white-space: pre; font-weight: 600; letter-spacing: .5px; margin-top: 4px; }
+.key { margin-top: 10px; font-family: var(--mono); font-size: 12px; line-height: 16px; color: var(--color-text-2);
+  word-break: break-all; background: var(--color-surface); border-radius: 10px; padding: 8px 10px; }
+.btn { font: 600 17px var(--font); height: 50px; border-radius: var(--radius-button); width: 100%; margin-top: 12px;
+  border: 1.5px solid var(--color-accent); }
+.btn.primary { background: var(--color-accent); color: var(--color-accent-text); }
+.btn.secondary { background: transparent; color: var(--color-accent); }
+.btn.narrow { width: auto; padding: 0 36px; }
+.content .btn.primary { margin-top: var(--space); }
+.hint { font-size: 13px; line-height: 18px; color: var(--color-text-2); margin: 6px 0 0; }
+.note { font-size: 13px; color: var(--color-text-2); text-align: center; margin: 14px 0 0; }
+
+.tabbar { position: absolute; left: 0; right: 0; bottom: 0; height: 83px; padding-top: 7px;
+  background: var(--color-surface); border-top: .5px solid var(--color-separator); display: flex; }
+.tab { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 10px; color: var(--color-text-2); }
+.tab .ti { font-size: 22px; height: 26px; filter: grayscale(1); opacity: .7; }
+.tab.on { color: var(--color-accent); }
+.tab.on .ti { filter: none; opacity: 1; }
+.toast { position: absolute; left: 50%; transform: translateX(-50%); bottom: 99px; background: var(--color-toast-bg);
+  color: var(--color-toast-text); font-size: 15px; font-weight: 600; padding: 12px 20px; border-radius: 22px; white-space: nowrap;
+  box-shadow: 0 4px 16px rgba(0,0,0,.2); }
+
+.center { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0 32px 80px; text-align: center; }
+.spinner { width: 36px; height: 36px; border-radius: 50%; border: 3px solid var(--color-separator); border-top-color: var(--color-text-2); }
+.lt { font-size: 17px; color: var(--color-text-2); margin-top: 16px; }
+.erricon { font-size: 52px; color: var(--color-danger); line-height: 1; }
+.center h2 { font-size: 22px; margin: 14px 0 8px; }
+.et { font-size: 15px; line-height: 20px; color: var(--color-text-2); margin: 0 0 12px; }
+
+.chat { flex: 1; display: flex; flex-direction: column; }
+.chathead { display: flex; align-items: center; gap: 12px; padding: 6px 16px 10px; border-bottom: .5px solid var(--color-separator); background: var(--color-surface); }
+.chathead .back { font-size: 32px; color: var(--color-accent); line-height: 1; }
+.chathead small { display: block; font-size: 12px; color: var(--color-text-2); }
+.msgs { flex: 1; padding: 12px; display: flex; flex-direction: column; gap: 8px; justify-content: flex-end; }
+.bubble { max-width: 75%; padding: 8px 12px; border-radius: 18px; font-size: 16px; line-height: 21px; }
+.bubble.in { background: var(--color-bubble-in); align-self: flex-start; }
+.bubble.out { background: var(--color-bubble-out); color: #fff; align-self: flex-end; }
+.inputbar { padding: 8px 12px; background: var(--color-surface); }
+.field { border: 1px solid var(--color-separator); border-radius: 18px; padding: 7px 14px; color: var(--color-text-2); font-size: 16px; }
+.kb { position: relative; height: 216px; background: var(--color-kb); display: flex; align-items: center; justify-content: center; padding: 0 48px; }
+.kbstatus { font-size: 17px; font-weight: 600; text-align: center; line-height: 22px; }
+.globe { position: absolute; left: 12px; bottom: 12px; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
+.kbbottom { position: relative; height: 34px; background: var(--color-kb); }
+
+.navrow { height: 44px; display: flex; align-items: center; justify-content: space-between; padding: 0 var(--gutter); font-size: 17px; }
+.navrow .act { color: var(--color-accent); }
+.navrow .plus { font-size: 28px; line-height: 1; color: var(--color-accent); width: 44px; text-align: right; }
+.navrow .ttl { font-weight: 600; }
+.navrow .back { color: var(--color-accent); display: flex; align-items: center; gap: 4px; }
+.navrow .back b { font-size: 28px; font-weight: 400; line-height: 1; }
+.pad { padding: 0 var(--gutter); }
+.pad h1 { font-size: 34px; font-weight: 700; margin: 2px 0 10px; letter-spacing: .3px; }
+.list { background: var(--color-surface); border-radius: 10px; overflow: hidden; margin: 0 var(--gutter); }
+.lrow { display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 9px 16px; border-bottom: .5px solid var(--color-separator); }
+.lrow:last-child { border-bottom: none; }
+.lrow .lt2 { flex: 1; min-width: 0; }
+.lrow .lname { font-size: 17px; line-height: 22px; }
+.lrow .lfp { font-family: var(--mono); font-size: 15px; line-height: 20px; color: var(--color-text-2); margin-top: 1px; }
+.lrow .chev { color: var(--color-separator); font-size: 20px; }
+.empty { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 0 32px 120px; }
+.empty .ico { font-size: 56px; color: var(--color-text-2); line-height: 1; }
+.empty h2 { font-size: 22px; margin: 14px 0 6px; }
+.empty p { font-size: 15px; line-height: 20px; color: var(--color-text-2); margin: 0 0 16px; }
+.sheetwrap { flex: 1; display: flex; flex-direction: column; background: rgba(0,0,0,.35); padding-top: 10px; }
+.dark .sheetwrap { background: rgba(0,0,0,.6); }
+.sheet { flex: 1; background: var(--color-bg); border-radius: 10px 10px 0 0; display: flex; flex-direction: column; overflow: hidden; }
+.sheet .body { flex: 1; overflow: hidden; padding: 4px var(--gutter) 0; display: flex; flex-direction: column; }
+.lbl { font-size: 13px; color: var(--color-text-2); text-transform: uppercase; letter-spacing: .4px; margin: 14px 0 6px; }
+.lbl:first-child { margin-top: 4px; }
+.keyfield { background: var(--color-surface); border-radius: 10px; padding: 12px; min-height: 92px; font-family: var(--mono); font-size: 15px; line-height: 20px; word-break: break-all; color: var(--color-text); }
+.keyfield.ph { color: var(--color-text-2); }
+.brow { display: flex; gap: 12px; margin-top: 12px; }
+.brow .btn { flex: 1; margin-top: 0; height: 44px; font-size: 15px; }
+.err { color: var(--color-danger); font-size: 13px; line-height: 18px; margin: 8px 0 0; }
+.fp2 { font-family: var(--mono); font-size: 17px; line-height: 24px; white-space: pre; font-weight: 600; letter-spacing: .5px; }
+.input { background: var(--color-surface); border-radius: 10px; padding: 13px 12px; font-size: 17px; line-height: 22px; color: var(--color-text); display: flex; justify-content: space-between; align-items: center; }
+.input.ph { color: var(--color-text-2); }
+.input > span { overflow: hidden; white-space: nowrap; text-overflow: clip; direction: rtl; text-align: left; }
+.input .caret { display: inline-block; width: 2px; height: 20px; background: var(--color-accent); vertical-align: middle; margin-left: 1px; }
+.count { font-size: 13px; color: var(--color-text-2); text-align: right; margin: 6px 0 0; }
+.count.over { color: var(--color-danger); }
+.spacer { flex: 1; }
+.btn.disabled { opacity: .4; }
+.btn.danger { border-color: var(--color-danger); color: var(--color-danger); }
+.sheet .foot { padding: 8px var(--gutter) 34px; }
+.sheet .foot .btn { margin-top: 0; }
+.cam { flex: 1; position: relative; background: radial-gradient(ellipse at 50% 40%, #3a3f48 0%, #15171b 70%); display: flex; flex-direction: column; align-items: center; justify-content: center; color: #fff; }
+.cam .frame { width: 240px; height: 240px; border: 3px solid rgba(255,255,255,.9); border-radius: 22px; box-shadow: 0 0 0 2000px rgba(0,0,0,.35); }
+.cam .chint { position: absolute; left: 32px; right: 32px; bottom: 70px; text-align: center; font-size: 15px; line-height: 20px; color: #fff; }
+.cam .close { position: absolute; top: 10px; right: 20px; font-size: 17px; color: #fff; }
+.camoff { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 0 32px 60px; }
+.camoff .ico { font-size: 52px; color: var(--color-text-2); line-height: 1; }
+.camoff h2 { font-size: 22px; margin: 14px 0 8px; }
+.camoff p { font-size: 15px; line-height: 20px; color: var(--color-text-2); margin: 0 0 12px; }
+.camoff .btn { width: auto; padding: 0 32px; }
+.card { flex: 1; overflow: hidden; padding: 0 var(--gutter); display: flex; flex-direction: column; }
+.card h1 { font-size: 34px; font-weight: 700; margin: 2px 0 2px; letter-spacing: .3px; }
+.dlgwrap { position: absolute; inset: 0; background: rgba(0,0,0,.4); display: flex; flex-direction: column; justify-content: flex-end; padding: 0 8px 8px; }
+.dgroup { background: var(--color-surface); border-radius: 14px; overflow: hidden; margin-top: 8px; opacity: .97; }
+.dtitle { padding: 14px 16px 2px; font-size: 13px; font-weight: 600; color: var(--color-text-2); text-align: center; }
+.dmsg { padding: 0 16px 12px; font-size: 13px; color: var(--color-text-2); text-align: center; border-bottom: .5px solid var(--color-separator); }
+.dbtn { height: 57px; display: flex; align-items: center; justify-content: center; font-size: 20px; color: var(--color-accent); }
+.dbtn.red { color: var(--color-danger); }
+.dbtn.bold { font-weight: 600; }
+.kbsub { font-size: 15px; color: var(--color-text-2); text-align: center; margin-top: 6px; }
+.syskb { height: 260px; background: var(--color-kb); padding: 8px 3px 0; display: flex; flex-direction: column; gap: 10px; }
+.krow { display: flex; gap: 5px; justify-content: center; }
+.k { flex: 0 0 29px; height: 42px; background: var(--color-surface); border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 17px; box-shadow: 0 1px 0 rgba(0,0,0,.3); }
+.dark .k { background: #6B6B6E; }
+.k.w { flex: 0 0 44px; font-size: 13px; }
+.k.sp { flex: 1; }
+</style></head>
+<body>
+<header class="page">
+  <h1>03-contacts · Контакты — ключи собеседников</h1>
+  <p>Макет-эталон · 2026-10-31 · токены — <code>specs/_design/design.md</code>. Ключи и отпечатки — вымышленные, но правильного формата (93 символа, 8 групп).</p>
+  <nav>Состояния: <a href="#state-empty">Пусто</a> · <a href="#state-list">Список</a> · <a href="#state-add-empty">Новый контакт</a> · <a href="#state-add-errors">Ошибки ключа</a> · <a href="#state-add-preview">Предпросмотр</a> · <a href="#state-add-name-errors">Ошибки имени</a> · <a href="#state-scanner">Сканер</a> · <a href="#state-card">Карточка</a> · <a href="#state-rename">Переименовать</a> · <a href="#state-delete">Удаление</a> · <a href="#state-error">Ошибка чтения</a> · <a href="#state-keyboard">Клавиатура</a></nav>
+</header>
+<section id="state-empty"><h2 class="st">Список: пусто</h2><p class="sd">Вкладка «Контакты» без контактов. В панели навигации нет «+»; единственная кнопка — «Добавить контакт».</p><div class="row"><figure><div class="phone" style="width:402px;height:874px"><div class="sb"><span>9:41</span><span class="sbi">●●● ◔ ▮</span></div><div class="pad"><div class="navrow"><span></span><span></span></div><h1>Контакты</h1></div>
+<div class="empty"><div class="ico">👥</div><h2>Пока нет контактов</h2><p>Добавьте ключ собеседника — отсканируйте его QR или вставьте текст.</p><button class="btn primary" style="width:auto;padding:0 32px;margin:0">Добавить контакт</button></div><nav class="tabbar"><div class="tab"><span class="ti">⚿</span><span>Мой ключ</span></div><div class="tab on"><span class="ti">👥</span><span>Контакты</span></div><div class="tab"><span class="ti">🔓</span><span>Расшифровать</span></div><div class="tab"><span class="ti">⚙︎</span><span>Настройка</span></div></nav><div class="home"></div></div><figcaption>402 × 874 · светлая</figcaption></figure><figure><div class="phone dark" style="width:402px;height:874px"><div class="sb"><span>9:41</span><span class="sbi">●●● ◔ ▮</span></div><div class="pad"><div class="navrow"><span></span><span></span></div><h1>Контакты</h1></div>
+<div class="empty"><div class="ico">👥</div><h2>Пока нет контактов</h2><p>Добавьте ключ собеседника — отсканируйте его QR или вставьте текст.</p><button class="btn primary" style="width:auto;padding:0 32px;margin:0">Добавить контакт</button></div><nav class="tabbar"><div class="tab"><span class="ti">⚿</span><span>Мой ключ</span></div><div class="tab on"><span class="ti">👥</span><span>Контакты</span></div><div class="tab"><span class="ti">🔓</span><span>Расшифровать</span></div><div class="tab"><span class="ti">⚙︎</span><span>Настройка</span></div></nav><div class="home"></div></div><figcaption>402 × 874 · тёмная</figcaption></figure></div></section><section id="state-list"><h2 class="st">Список: с контактами</h2><p class="sd">Строка — имя и первые две группы отпечатка моноширинным. Сортировка по имени без учёта регистра. «+» справа. Третья рамка — 120 сгенерированных контактов на 375 pt (прокрутка).</p><div class="row"><figure><div class="phone" style="width:402px;height:874px"><div class="sb"><span>9:41</span><span class="sbi">●●● ◔ ▮</span></div><div class="pad"><div class="navrow"><span></span><span class="plus">+</span></div><h1>Контакты</h1></div>
+<div class="list"><div class="lrow"><div class="lt2"><div class="lname">Анна</div><div class="lfp">190D 6D44</div></div><span class="chev">›</span></div><div class="lrow"><div class="lt2"><div class="lname">Борис Ковалёв</div><div class="lfp">A61C D7C0</div></div><span class="chev">›</span></div><div class="lrow"><div class="lt2"><div class="lname">Яна</div><div class="lfp">595C 8AE6</div></div><span class="chev">›</span></div></div><nav class="tabbar"><div class="tab"><span class="ti">⚿</span><span>Мой ключ</span></div><div class="tab on"><span class="ti">👥</span><span>Контакты</span></div><div class="tab"><span class="ti">🔓</span><span>Расшифровать</span></div><div class="tab"><span class="ti">⚙︎</span><span>Настройка</span></div></nav><div class="home"></div></div><figcaption>402 · светлая · 3 контакта</figcaption></figure><figure><div class="phone dark" style="width:402px;height:874px"><div class="sb"><span>9:41</span><span class="sbi">●●● ◔ ▮</span></div><div class="pad"><div class="navrow"><span></span><span class="plus">+</span></div><h1>Контакты</h1></div>
+<div class="list"><div class="lrow"><div class="lt2"><div class="lname">Анна</div><div class="lfp">190D 6D44</div></div><span class="chev">›</span></div><div class="lrow"><div class="lt2"><div class="lname">Борис Ковалёв</div><div class="lfp">A61C D7C0</div></div><span class="chev">›</span></div><div class="lrow"><div class="lt2"><div class="lname">Яна</div><div class="lfp">595C 8AE6</div></div><span class="chev">›</span></div></div><nav class="tabbar"><div class="tab"><span class="ti">⚿</span><span>Мой ключ</span></div><div class="tab on"><span class="ti">👥</span><span>Контакты</span></div><div class="tab"><span class="ti">🔓</span><span>Расшифровать</span></div><div class="tab"><span class="ti">⚙︎</span><span>Настройка</span></div></nav><div class="home"></div></div><figcaption>402 · тёмная · 3 контакта</figcaption></figure><figure><div class="phone" style="width:375px;height:812px"><div class="sb"><span>9:41</span><span class="sbi">●●● ◔ ▮</span></div><div class="pad"><div class="navrow"><span></span><span class="plus">+</span></div><h1>Контакты</h1></div>
+<div class="list"><div class="lrow"><div class="lt2"><div class="lname">Контакт 001</div><div class="lfp">1670 20F9</div></div><span class="chev">›</span></div><div class="lrow"><div class="lt2"><div class="lname">Контакт 002</div><div class="lfp">216C 9407</div></div><span class="chev">›</span></div><div class="lrow"><div class="lt2"><div class="lname">Контакт 003</div><div class="lfp">A99E C858</div></div><span class="chev">›</span></div><div class="lrow"><div class="lt2"><div class="lname">Контакт 004</div><div class="lfp">3F1F 29B2</div></div><span class="chev">›</span></div><div class="lrow"><div class="lt2"><div class="lname">Контакт 005</div><div class="lfp">8668 515B</div></div><span class="chev">›</span></div><div class="lrow"><div class="lt2"><div class="lname">Контакт 006</div><div class="lfp">4F21 C4B1</div></div><span class="chev">›</span></div><div class="lrow"><div class="lt2"><div class="lname">Контакт 007</div><div class="lfp">CF24 1E00</div></div><span class="chev">›</span></div><div class="lrow"><div class="lt2"><div class="lname">Контакт 008</div><div class="lfp">993A FE74</div></div><span class="chev">›</span></div><div class="lrow"><div class="lt2"><div class="lname">Контакт 009</div><div class="lfp">A4DF E232</div></div><span class="chev">›</span></div><div class="lrow"><div class="lt2"><div class="lname">Контакт 010</div><div class="lfp">20B8 1A69</div></div><span class="chev">›</span></div><div class="lrow"><div class="lt2"><div class="lname">Контакт 011</div><div class="lfp">283E 768E</div></div><span class="chev">›</span></div><div class="lrow"><div class="lt2"><div class="lname">Контакт 012</div><div class="lfp">AEE2 63F4</div></div><span class="chev">›</span></div></div><nav class="tabbar"><div class="tab"><span class="ti">⚿</span><span>Мой ключ</span></div><div class="tab on"><span class="ti">👥</span><span>Контакты</span></div><div class="tab"><span class="ti">🔓</span><span>Расшифровать</span></div><div class="tab"><span class="ti">⚙︎</span><span>Настройка</span></div></nav><div class="home"></div></div><figcaption>375 × 812 · 120 контактов (видны первые)</figcaption></figure></div></section><section id="state-add-empty"><h2 class="st">Новый контакт: пустой лист</h2><p class="sd">Лист `.sheet` поверх списка. Поле ключа пустое, сообщения нет, предпросмотра нет, «Сохранить» недоступна.</p><div class="row"><figure><div class="phone" style="width:402px;height:874px"><div class="sb"><span>9:41</span><span class="sbi">●●● ◔ ▮</span></div><div class="sheetwrap"><div class="sheet"><div class="navrow"><span class="act">Отмена</span><span class="ttl">Новый контакт</span><span style="width:52px"></span></div>
+<div class="body"><div class="lbl">Ключ собеседника</div><div class="keyfield ph">ckpub1:…</div><div class="brow"><button class="btn secondary">Вставить</button><button class="btn secondary">Сканировать QR</button></div><div class="spacer"></div></div><div class="foot"><button class="btn primary disabled">Сохранить</button></div></div></div></div><figcaption>402 · светлая</figcaption></figure></div></section><section id="state-add-errors"><h2 class="st">Новый контакт: ошибки ключа</h2><p class="sd">Сообщение красным под рядом кнопок. Предпросмотра нет, «Сохранить» недоступна.</p><div class="row"><figure><div class="phone" style="width:402px;height:874px"><div class="sb"><span>9:41</span><span class="sbi">●●● ◔ ▮</span></div><div class="sheetwrap"><div class="sheet"><div class="navrow"><span class="act">Отмена</span><span class="ttl">Новый контакт</span><span style="width:52px"></span></div>
+<div class="body"><div class="lbl">Ключ собеседника</div><div class="keyfield">Мой ключ: ckpub1:9Nzy2Q4XFVzVK7zPq9pOQJs2mwmUrij_bqNkzbnc_oLzX4vvcYBE5gneB1137lHoYWzk4oYqjy08OwYtUywigg</div><div class="brow"><button class="btn secondary">Вставить</button><button class="btn secondary">Сканировать QR</button></div><p class="err">Это не ключ CipherKeyboard. Вставьте строку целиком — она начинается с ckpub1:</p><div class="spacer"></div></div><div class="foot"><button class="btn primary disabled">Сохранить</button></div></div></div></div><figcaption>не ключ (ключ внутри текста)</figcaption></figure><figure><div class="phone" style="width:402px;height:874px"><div class="sb"><span>9:41</span><span class="sbi">●●● ◔ ▮</span></div><div class="sheetwrap"><div class="sheet"><div class="navrow"><span class="act">Отмена</span><span class="ttl">Новый контакт</span><span style="width:52px"></span></div>
+<div class="body"><div class="lbl">Ключ собеседника</div><div class="keyfield">ckpub2:9Nzy2Q4XFVzVK7zPq9pOQJs2mwmUrij_bqNkzbnc_oLzX4vvcYBE5gneB1137lHoYWzk4oYqjy08OwYtUywigg</div><div class="brow"><button class="btn secondary">Вставить</button><button class="btn secondary">Сканировать QR</button></div><p class="err">Этот ключ создан более новой версией CipherKeyboard. Обновите приложение.</p><div class="spacer"></div></div><div class="foot"><button class="btn primary disabled">Сохранить</button></div></div></div></div><figcaption>новая версия</figcaption></figure><figure><div class="phone" style="width:402px;height:874px"><div class="sb"><span>9:41</span><span class="sbi">●●● ◔ ▮</span></div><div class="sheetwrap"><div class="sheet"><div class="navrow"><span class="act">Отмена</span><span class="ttl">Новый контакт</span><span style="width:52px"></span></div>
+<div class="body"><div class="lbl">Ключ собеседника</div><div class="keyfield">ckpub1:2GLC42sKQveCfGfryNRN93pbleToN4EjSCPBGJ7MQPzoiPu0z5rmJU8ZuhLm2a9UeI8ZWm9QnKPpNPeNenHdhQ</div><div class="brow"><button class="btn secondary">Вставить</button><button class="btn secondary">Сканировать QR</button></div><p class="err">Это ваш собственный ключ. Добавьте ключ собеседника.</p><div class="spacer"></div></div><div class="foot"><button class="btn primary disabled">Сохранить</button></div></div></div></div><figcaption>свой ключ</figcaption></figure><figure><div class="phone" style="width:402px;height:874px"><div class="sb"><span>9:41</span><span class="sbi">●●● ◔ ▮</span></div><div class="sheetwrap"><div class="sheet"><div class="navrow"><span class="act">Отмена</span><span class="ttl">Новый контакт</span><span style="width:52px"></span></div>
+<div class="body"><div class="lbl">Ключ собеседника</div><div class="keyfield">ckpub1:IpHYzcMQQR5-wnN4pmHJNRh8B-TVY26bw8QAsnJEuM06l_Ea5lEHBQamigLw4WGvN_hsuQeHOMNw8H6NO1g7rQ</div><div class="brow"><button class="btn secondary">Вставить</button><button class="btn secondary">Сканировать QR</button></div><p class="err">Этот ключ уже сохранён как «Анна»</p><div class="spacer"></div></div><div class="foot"><button class="btn primary disabled">Сохранить</button></div></div></div></div><figcaption>уже сохранён как «Анна»</figcaption></figure></div></section><section id="state-add-preview"><h2 class="st">Новый контакт: предпросмотр и имя</h2><p class="sd">Ключ валидный: отпечаток в две строки, пояснение, поле «Имя» со счётчиком. «Сохранить» доступна только с валидным именем. На 375 pt — с открытой клавиатурой iOS: лист прокручивается, «Сохранить» над клавиатурой.</p><div class="row"><figure><div class="phone" style="width:402px;height:874px"><div class="sb"><span>9:41</span><span class="sbi">●●● ◔ ▮</span></div><div class="sheetwrap"><div class="sheet"><div class="navrow"><span class="act">Отмена</span><span class="ttl">Новый контакт</span><span style="width:52px"></span></div>
+<div class="body"><div class="lbl">Ключ собеседника</div><div class="keyfield">ckpub1:9Nzy2Q4XFVzVK7zPq9pOQJs2mwmUrij_bqNkzbnc_oLzX4vvcYBE5gneB1137lHoYWzk4oYqjy08OwYtUywigg</div><div class="brow"><button class="btn secondary">Вставить</button><button class="btn secondary">Сканировать QR</button></div><div class="lbl">Отпечаток</div><div class="fp2">A61C D7C0 0659 7C9B
+88CF 43E7 62F3 C588</div>
+<p class="hint">Сверьте отпечаток с собеседником при встрече или по телефону — он должен совпасть.</p>
+<div class="lbl">Имя</div><div class="input ph">Как вы зовёте собеседника</div><p class="count">0/40</p><div class="spacer"></div></div><div class="foot"><button class="btn primary disabled">Сохранить</button></div></div></div></div><figcaption>ключ есть, имя пустое — «Сохранить» недоступна</figcaption></figure><figure><div class="phone" style="width:402px;height:874px"><div class="sb"><span>9:41</span><span class="sbi">●●● ◔ ▮</span></div><div class="sheetwrap"><div class="sheet"><div class="navrow"><span class="act">Отмена</span><span class="ttl">Новый контакт</span><span style="width:52px"></span></div>
+<div class="body"><div class="lbl">Ключ собеседника</div><div class="keyfield">ckpub1:9Nzy2Q4XFVzVK7zPq9pOQJs2mwmUrij_bqNkzbnc_oLzX4vvcYBE5gneB1137lHoYWzk4oYqjy08OwYtUywigg</div><div class="brow"><button class="btn secondary">Вставить</button><button class="btn secondary">Сканировать QR</button></div><div class="lbl">Отпечаток</div><div class="fp2">A61C D7C0 0659 7C9B
+88CF 43E7 62F3 C588</div>
+<p class="hint">Сверьте отпечаток с собеседником при встрече или по телефону — он должен совпасть.</p>
+<div class="lbl">Имя</div><div class="input"><span>Борис Ковалёв<span class="caret"></span></span></div><p class="count">13/40</p><div class="spacer"></div></div><div class="foot"><button class="btn primary">Сохранить</button></div></div></div></div><figcaption>валидно · светлая</figcaption></figure><figure><div class="phone dark" style="width:402px;height:874px"><div class="sb"><span>9:41</span><span class="sbi">●●● ◔ ▮</span></div><div class="sheetwrap"><div class="sheet"><div class="navrow"><span class="act">Отмена</span><span class="ttl">Новый контакт</span><span style="width:52px"></span></div>
+<div class="body"><div class="lbl">Ключ собеседника</div><div class="keyfield">ckpub1:9Nzy2Q4XFVzVK7zPq9pOQJs2mwmUrij_bqNkzbnc_oLzX4vvcYBE5gneB1137lHoYWzk4oYqjy08OwYtUywigg</div><div class="brow"><button class="btn secondary">Вставить</button><button class="btn secondary">Сканировать QR</button></div><div class="lbl">Отпечаток</div><div class="fp2">A61C D7C0 0659 7C9B
+88CF 43E7 62F3 C588</div>
+<p class="hint">Сверьте отпечаток с собеседником при встрече или по телефону — он должен совпасть.</p>
+<div class="lbl">Имя</div><div class="input"><span>Борис Ковалёв<span class="caret"></span></span></div><p class="count">13/40</p><div class="spacer"></div></div><div class="foot"><button class="btn primary">Сохранить</button></div></div></div></div><figcaption>валидно · тёмная</figcaption></figure><figure><div class="phone" style="width:375px;height:812px"><div class="sb"><span>9:41</span><span class="sbi">●●● ◔ ▮</span></div><div class="sheetwrap"><div class="sheet"><div class="navrow"><span class="act">Отмена</span><span class="ttl">Новый контакт</span><span style="width:52px"></span></div>
+<div class="body"><div class="lbl">Ключ собеседника</div><div class="keyfield">ckpub1:9Nzy2Q4XFVzVK7zPq9pOQJs2mwmUrij_bqNkzbnc_oLzX4vvcYBE5gneB1137lHoYWzk4oYqjy08OwYtUywigg</div><div class="brow"><button class="btn secondary">Вставить</button><button class="btn secondary">Сканировать QR</button></div><div class="lbl">Отпечаток</div><div class="fp2">A61C D7C0 0659 7C9B
+88CF 43E7 62F3 C588</div>
+<p class="hint">Сверьте отпечаток с собеседником при встрече или по телефону — он должен совпасть.</p>
+<div class="lbl">Имя</div><div class="input"><span>Борис Ковалёв<span class="caret"></span></span></div><p class="count">13/40</p><div class="spacer"></div></div><div class="foot" style="padding-bottom:8px"><button class="btn primary">Сохранить</button></div></div></div><div class="syskb"><div class="krow"><div class="k">Й</div><div class="k">Ц</div><div class="k">У</div><div class="k">К</div><div class="k">Е</div><div class="k">Н</div><div class="k">Г</div><div class="k">Ш</div><div class="k">Щ</div><div class="k">З</div><div class="k">Х</div></div><div class="krow"><div class="k">Ф</div><div class="k">Ы</div><div class="k">В</div><div class="k">А</div><div class="k">П</div><div class="k">Р</div><div class="k">О</div><div class="k">Л</div><div class="k">Д</div><div class="k">Ж</div><div class="k">Э</div></div><div class="krow"><div class="k w">⇧</div><div class="k">Я</div><div class="k">Ч</div><div class="k">С</div><div class="k">М</div><div class="k">И</div><div class="k">Т</div><div class="k">Ь</div><div class="k">Б</div><div class="k">Ю</div><div class="k w">⌫</div></div><div class="krow"><div class="k w">123</div><div class="k w">🌐</div><div class="k sp">пробел</div><div class="k w">Готово</div></div></div></div><figcaption>375 · с клавиатурой iOS</figcaption></figure></div></section><section id="state-add-name-errors"><h2 class="st">Новый контакт: ошибки имени</h2><p class="sd">Сообщение под полем имени; счётчик краснеет при 41+. Последняя рамка — ошибка записи: лист не закрывается, имя сохранено.</p><div class="row"><figure><div class="phone" style="width:402px;height:874px"><div class="sb"><span>9:41</span><span class="sbi">●●● ◔ ▮</span></div><div class="sheetwrap"><div class="sheet"><div class="navrow"><span class="act">Отмена</span><span class="ttl">Новый контакт</span><span style="width:52px"></span></div>
+<div class="body"><div class="lbl">Ключ собеседника</div><div class="keyfield">ckpub1:9Nzy2Q4XFVzVK7zPq9pOQJs2mwmUrij_bqNkzbnc_oLzX4vvcYBE5gneB1137lHoYWzk4oYqjy08OwYtUywigg</div><div class="brow"><button class="btn secondary">Вставить</button><button class="btn secondary">Сканировать QR</button></div><div class="lbl">Отпечаток</div><div class="fp2">A61C D7C0 0659 7C9B
+88CF 43E7 62F3 C588</div>
+<p class="hint">Сверьте отпечаток с собеседником при встрече или по телефону — он должен совпасть.</p>
+<div class="lbl">Имя</div><div class="input"><span>   <span class="caret"></span></span></div><p class="err">Введите имя</p><p class="count">0/40</p><div class="spacer"></div></div><div class="foot"><button class="btn primary disabled">Сохранить</button></div></div></div></div><figcaption>только пробелы</figcaption></figure><figure><div class="phone" style="width:402px;height:874px"><div class="sb"><span>9:41</span><span class="sbi">●●● ◔ ▮</span></div><div class="sheetwrap"><div class="sheet"><div class="navrow"><span class="act">Отмена</span><span class="ttl">Новый контакт</span><span style="width:52px"></span></div>
+<div class="body"><div class="lbl">Ключ собеседника</div><div class="keyfield">ckpub1:9Nzy2Q4XFVzVK7zPq9pOQJs2mwmUrij_bqNkzbnc_oLzX4vvcYBE5gneB1137lHoYWzk4oYqjy08OwYtUywigg</div><div class="brow"><button class="btn secondary">Вставить</button><button class="btn secondary">Сканировать QR</button></div><div class="lbl">Отпечаток</div><div class="fp2">A61C D7C0 0659 7C9B
+88CF 43E7 62F3 C588</div>
+<p class="hint">Сверьте отпечаток с собеседником при встрече или по телефону — он должен совпасть.</p>
+<div class="lbl">Имя</div><div class="input"><span>ААААААААААААААААААААААААААААААААААААААААА<span class="caret"></span></span></div><p class="err">Не больше 40 символов</p><p class="count over">41/40</p><div class="spacer"></div></div><div class="foot"><button class="btn primary disabled">Сохранить</button></div></div></div></div><figcaption>41 символ</figcaption></figure><figure><div class="phone" style="width:402px;height:874px"><div class="sb"><span>9:41</span><span class="sbi">●●● ◔ ▮</span></div><div class="sheetwrap"><div class="sheet"><div class="navrow"><span class="act">Отмена</span><span class="ttl">Новый контакт</span><span style="width:52px"></span></div>
+<div class="body"><div class="lbl">Ключ собеседника</div><div class="keyfield">ckpub1:9Nzy2Q4XFVzVK7zPq9pOQJs2mwmUrij_bqNkzbnc_oLzX4vvcYBE5gneB1137lHoYWzk4oYqjy08OwYtUywigg</div><div class="brow"><button class="btn secondary">Вставить</button><button class="btn secondary">Сканировать QR</button></div><div class="lbl">Отпечаток</div><div class="fp2">A61C D7C0 0659 7C9B
+88CF 43E7 62F3 C588</div>
+<p class="hint">Сверьте отпечаток с собеседником при встрече или по телефону — он должен совпасть.</p>
+<div class="lbl">Имя</div><div class="input"><span>анна<span class="caret"></span></span></div><p class="err">Контакт с таким именем уже есть</p><p class="count">4/40</p><div class="spacer"></div></div><div class="foot"><button class="btn primary disabled">Сохранить</button></div></div></div></div><figcaption>дубль имени</figcaption></figure><figure><div class="phone" style="width:402px;height:874px"><div class="sb"><span>9:41</span><span class="sbi">●●● ◔ ▮</span></div><div class="sheetwrap"><div class="sheet"><div class="navrow"><span class="act">Отмена</span><span class="ttl">Новый контакт</span><span style="width:52px"></span></div>
+<div class="body"><div class="lbl">Ключ собеседника</div><div class="keyfield">ckpub1:9Nzy2Q4XFVzVK7zPq9pOQJs2mwmUrij_bqNkzbnc_oLzX4vvcYBE5gneB1137lHoYWzk4oYqjy08OwYtUywigg</div><div class="brow"><button class="btn secondary">Вставить</button><button class="btn secondary">Сканировать QR</button></div><div class="lbl">Отпечаток</div><div class="fp2">A61C D7C0 0659 7C9B
+88CF 43E7 62F3 C588</div>
+<p class="hint">Сверьте отпечаток с собеседником при встрече или по телефону — он должен совпасть.</p>
+<div class="lbl">Имя</div><div class="input"><span>Борис Ковалёв<span class="caret"></span></span></div><p class="count">13/40</p><div class="spacer"></div></div><div class="foot"><button class="btn primary">Сохранить</button><p class="err" style="text-align:center">Не удалось сохранить контакт. Попробуйте ещё раз.</p></div></div></div></div><figcaption>ошибка записи</figcaption></figure></div></section><section id="state-scanner"><h2 class="st">Сканер QR</h2><p class="sd">Полноэкранный сканер с кнопкой «Закрыть». Без разрешения — объяснение и два выхода; в симуляторе камеры нет — «Камера недоступна».</p><div class="row"><figure><div class="phone dark" style="width:402px;height:874px"><div class="sb"><span>9:41</span><span class="sbi">●●● ◔ ▮</span></div><div class="cam"><span class="close">Закрыть</span><div class="frame"></div><p class="chint">Наведите на QR-код с экрана «Мой ключ» собеседника</p></div><div class="kbbottom" style="background:#15171b"><div class="home" style="background:#fff"></div></div></div><figcaption>камера (устройство)</figcaption></figure><figure><div class="phone" style="width:402px;height:874px"><div class="sb"><span>9:41</span><span class="sbi">●●● ◔ ▮</span></div><div class="navrow"><span></span><span class="act">Закрыть</span></div><div class="camoff"><div class="ico">📷</div><h2>Нет доступа к камере</h2><p>Разрешите доступ в Настройках или вставьте ключ текстом.</p><button class="btn primary">Открыть Настройки</button><button class="btn secondary">Вставить ключ текстом</button></div><div class="home"></div></div><figcaption>нет доступа к камере</figcaption></figure><figure><div class="phone dark" style="width:402px;height:874px"><div class="sb"><span>9:41</span><span class="sbi">●●● ◔ ▮</span></div><div class="navrow"><span></span><span class="act">Закрыть</span></div><div class="camoff"><div class="ico">📷</div><h2>Камера недоступна</h2><p>На этом устройстве нет камеры. Вставьте ключ текстом.</p><button class="btn secondary">Вставить ключ текстом</button></div><div class="home"></div></div><figcaption>камера недоступна (симулятор) · тёмная</figcaption></figure></div></section><section id="state-card"><h2 class="st">Карточка контакта</h2><p class="sd">Push из списка. Имя — заголовок. Поля ключа нет — только показ. «Удалить» — контур красным.</p><div class="row"><figure><div class="phone" style="width:402px;height:874px"><div class="sb"><span>9:41</span><span class="sbi">●●● ◔ ▮</span></div><div class="navrow"><span class="back"><b>‹</b>Контакты</span><span></span></div>
+<div class="card"><h1>Анна</h1>
+<div class="lbl">Отпечаток</div><div class="fp2">190D 6D44 21D2 83EF
+3731 1E1A F922 D4EC</div>
+<p class="hint">Сверьте отпечаток с собеседником при встрече или по телефону — он должен совпасть.</p>
+<div class="lbl">Открытый ключ</div><div class="key" style="margin-top:0">ckpub1:IpHYzcMQQR5-wnN4pmHJNRh8B-TVY26bw8QAsnJEuM06l_Ea5lEHBQamigLw4WGvN_hsuQeHOMNw8H6NO1g7rQ</div>
+<button class="btn secondary" style="margin-top:20px">Переименовать</button>
+<button class="btn secondary danger">Удалить</button></div><nav class="tabbar"><div class="tab"><span class="ti">⚿</span><span>Мой ключ</span></div><div class="tab on"><span class="ti">👥</span><span>Контакты</span></div><div class="tab"><span class="ti">🔓</span><span>Расшифровать</span></div><div class="tab"><span class="ti">⚙︎</span><span>Настройка</span></div></nav><div class="home"></div></div><figcaption>402 · светлая</figcaption></figure><figure><div class="phone dark" style="width:402px;height:874px"><div class="sb"><span>9:41</span><span class="sbi">●●● ◔ ▮</span></div><div class="navrow"><span class="back"><b>‹</b>Контакты</span><span></span></div>
+<div class="card"><h1>Анна</h1>
+<div class="lbl">Отпечаток</div><div class="fp2">190D 6D44 21D2 83EF
+3731 1E1A F922 D4EC</div>
+<p class="hint">Сверьте отпечаток с собеседником при встрече или по телефону — он должен совпасть.</p>
+<div class="lbl">Открытый ключ</div><div class="key" style="margin-top:0">ckpub1:IpHYzcMQQR5-wnN4pmHJNRh8B-TVY26bw8QAsnJEuM06l_Ea5lEHBQamigLw4WGvN_hsuQeHOMNw8H6NO1g7rQ</div>
+<button class="btn secondary" style="margin-top:20px">Переименовать</button>
+<button class="btn secondary danger">Удалить</button></div><nav class="tabbar"><div class="tab"><span class="ti">⚿</span><span>Мой ключ</span></div><div class="tab on"><span class="ti">👥</span><span>Контакты</span></div><div class="tab"><span class="ti">🔓</span><span>Расшифровать</span></div><div class="tab"><span class="ti">⚙︎</span><span>Настройка</span></div></nav><div class="home"></div></div><figcaption>402 · тёмная</figcaption></figure><figure><div class="phone" style="width:375px;height:812px"><div class="sb"><span>9:41</span><span class="sbi">●●● ◔ ▮</span></div><div class="navrow"><span class="back"><b>‹</b>Контакты</span><span></span></div>
+<div class="card"><h1>Борис Ковалёв</h1>
+<div class="lbl">Отпечаток</div><div class="fp2">A61C D7C0 0659 7C9B
+88CF 43E7 62F3 C588</div>
+<p class="hint">Сверьте отпечаток с собеседником при встрече или по телефону — он должен совпасть.</p>
+<div class="lbl">Открытый ключ</div><div class="key" style="margin-top:0">ckpub1:9Nzy2Q4XFVzVK7zPq9pOQJs2mwmUrij_bqNkzbnc_oLzX4vvcYBE5gneB1137lHoYWzk4oYqjy08OwYtUywigg</div>
+<button class="btn secondary" style="margin-top:20px">Переименовать</button>
+<button class="btn secondary danger">Удалить</button></div><nav class="tabbar"><div class="tab"><span class="ti">⚿</span><span>Мой ключ</span></div><div class="tab on"><span class="ti">👥</span><span>Контакты</span></div><div class="tab"><span class="ti">🔓</span><span>Расшифровать</span></div><div class="tab"><span class="ti">⚙︎</span><span>Настройка</span></div></nav><div class="home"></div></div><figcaption>375 · длинное имя</figcaption></figure></div></section><section id="state-rename"><h2 class="st">Переименовать</h2><p class="sd">Лист с одним полем, заполненным текущим именем, счётчик, «Отмена»/«Сохранить». Правила имени те же.</p><div class="row"><figure><div class="phone" style="width:402px;height:874px"><div class="sb"><span>9:41</span><span class="sbi">●●● ◔ ▮</span></div><div class="sheetwrap"><div class="sheet"><div class="navrow"><span class="act">Отмена</span><span class="ttl">Переименовать</span><span style="width:52px"></span></div>
+<div class="body"><div class="lbl">Имя</div><div class="input"><span>Анна<span class="caret"></span></span></div><p class="count">4/40</p><div class="spacer"></div></div><div class="foot"><button class="btn primary">Сохранить</button></div></div></div></div><figcaption>402 · светлая</figcaption></figure><figure><div class="phone" style="width:402px;height:874px"><div class="sb"><span>9:41</span><span class="sbi">●●● ◔ ▮</span></div><div class="sheetwrap"><div class="sheet"><div class="navrow"><span class="act">Отмена</span><span class="ttl">Переименовать</span><span style="width:52px"></span></div>
+<div class="body"><div class="lbl">Имя</div><div class="input"><span>Яна<span class="caret"></span></span></div><p class="err">Контакт с таким именем уже есть</p><p class="count">3/40</p><div class="spacer"></div></div><div class="foot"><button class="btn primary">Сохранить</button></div></div></div></div><figcaption>дубль имени</figcaption></figure></div></section><section id="state-delete"><h2 class="st">Подтверждение удаления</h2><p class="sd">Системный confirmationDialog с именем в заголовке. «Удалить» красная.</p><div class="row"><figure><div class="phone" style="width:402px;height:874px"><div class="sb"><span>9:41</span><span class="sbi">●●● ◔ ▮</span></div><div class="navrow"><span class="back"><b>‹</b>Контакты</span><span></span></div>
+<div class="card"><h1>Анна</h1>
+<div class="lbl">Отпечаток</div><div class="fp2">190D 6D44 21D2 83EF
+3731 1E1A F922 D4EC</div>
+<p class="hint">Сверьте отпечаток с собеседником при встрече или по телефону — он должен совпасть.</p>
+<div class="lbl">Открытый ключ</div><div class="key" style="margin-top:0">ckpub1:IpHYzcMQQR5-wnN4pmHJNRh8B-TVY26bw8QAsnJEuM06l_Ea5lEHBQamigLw4WGvN_hsuQeHOMNw8H6NO1g7rQ</div>
+<button class="btn secondary" style="margin-top:20px">Переименовать</button>
+<button class="btn secondary danger">Удалить</button></div><nav class="tabbar"><div class="tab"><span class="ti">⚿</span><span>Мой ключ</span></div><div class="tab on"><span class="ti">👥</span><span>Контакты</span></div><div class="tab"><span class="ti">🔓</span><span>Расшифровать</span></div><div class="tab"><span class="ti">⚙︎</span><span>Настройка</span></div></nav><div class="home"></div><div class="dlgwrap"><div class="dgroup"><div class="dtitle">Удалить контакт «Анна»?</div><div class="dmsg">Вы не сможете отправлять ему сообщения.</div><div class="dbtn red">Удалить</div></div><div class="dgroup"><div class="dbtn bold">Отмена</div></div></div></div><figcaption>402 · светлая</figcaption></figure><figure><div class="phone dark" style="width:402px;height:874px"><div class="sb"><span>9:41</span><span class="sbi">●●● ◔ ▮</span></div><div class="navrow"><span class="back"><b>‹</b>Контакты</span><span></span></div>
+<div class="card"><h1>Анна</h1>
+<div class="lbl">Отпечаток</div><div class="fp2">190D 6D44 21D2 83EF
+3731 1E1A F922 D4EC</div>
+<p class="hint">Сверьте отпечаток с собеседником при встрече или по телефону — он должен совпасть.</p>
+<div class="lbl">Открытый ключ</div><div class="key" style="margin-top:0">ckpub1:IpHYzcMQQR5-wnN4pmHJNRh8B-TVY26bw8QAsnJEuM06l_Ea5lEHBQamigLw4WGvN_hsuQeHOMNw8H6NO1g7rQ</div>
+<button class="btn secondary" style="margin-top:20px">Переименовать</button>
+<button class="btn secondary danger">Удалить</button></div><nav class="tabbar"><div class="tab"><span class="ti">⚿</span><span>Мой ключ</span></div><div class="tab on"><span class="ti">👥</span><span>Контакты</span></div><div class="tab"><span class="ti">🔓</span><span>Расшифровать</span></div><div class="tab"><span class="ti">⚙︎</span><span>Настройка</span></div></nav><div class="home"></div><div class="dlgwrap"><div class="dgroup"><div class="dtitle">Удалить контакт «Анна»?</div><div class="dmsg">Вы не сможете отправлять ему сообщения.</div><div class="dbtn red">Удалить</div></div><div class="dgroup"><div class="dbtn bold">Отмена</div></div></div></div><figcaption>402 · тёмная</figcaption></figure></div></section><section id="state-error"><h2 class="st">Ошибка чтения контактов</h2><p class="sd">Файл повреждён или недоступен. Нет «+» и «Добавить контакт». Файл не перезаписывается.</p><div class="row"><figure><div class="phone" style="width:402px;height:874px"><div class="sb"><span>9:41</span><span class="sbi">●●● ◔ ▮</span></div><div class="pad"><div class="navrow"><span></span><span></span></div><h1>Контакты</h1></div><div class="center" style="padding-bottom:140px">
+  <div class="erricon">⚠︎</div>
+  <h2>Не удалось прочитать контакты</h2>
+  <p class="et">Файл контактов повреждён или недоступен. Контакты не удалены.</p>
+  <button class="btn primary narrow">Повторить</button>
+</div><nav class="tabbar"><div class="tab"><span class="ti">⚿</span><span>Мой ключ</span></div><div class="tab on"><span class="ti">👥</span><span>Контакты</span></div><div class="tab"><span class="ti">🔓</span><span>Расшифровать</span></div><div class="tab"><span class="ti">⚙︎</span><span>Настройка</span></div></nav><div class="home"></div></div><figcaption>402 · светлая</figcaption></figure><figure><div class="phone dark" style="width:402px;height:874px"><div class="sb"><span>9:41</span><span class="sbi">●●● ◔ ▮</span></div><div class="pad"><div class="navrow"><span></span><span></span></div><h1>Контакты</h1></div><div class="center" style="padding-bottom:140px">
+  <div class="erricon">⚠︎</div>
+  <h2>Не удалось прочитать контакты</h2>
+  <p class="et">Файл контактов повреждён или недоступен. Контакты не удалены.</p>
+  <button class="btn primary narrow">Повторить</button>
+</div><nav class="tabbar"><div class="tab"><span class="ti">⚿</span><span>Мой ключ</span></div><div class="tab on"><span class="ti">👥</span><span>Контакты</span></div><div class="tab"><span class="ti">🔓</span><span>Расшифровать</span></div><div class="tab"><span class="ti">⚙︎</span><span>Настройка</span></div></nav><div class="home"></div></div><figcaption>402 · тёмная</figcaption></figure></div></section><section id="state-keyboard"><h2 class="st">Клавиатура: строка контактов</h2><p class="sd">Каркас клавиатуры (02) с второй строкой под «Ваш ключ». Только с полным доступом.</p><div class="row"><figure><div class="phone" style="width:402px;height:874px"><div class="sb"><span>9:41</span><span class="sbi">●●● ◔ ▮</span></div><div class="chat">
+  <div class="chathead"><span class="back">‹</span><div><b>Анна</b><small>в сети</small></div></div>
+  <div class="msgs"><div class="bubble in">Добавила твой ключ, пиши</div><div class="bubble out">Сейчас проверю, что и твой у меня есть</div></div>
+  <div class="inputbar"><div class="field">Сообщение</div></div>
+  <div class="kb"><div><div class="kbstatus">Ваш ключ: 7C78 28FE</div><div class="kbsub">Контактов: 3</div></div><div class="globe">🌐</div></div>
+  <div class="kbbottom"><div class="home"></div></div>
+</div></div><figcaption>контакты есть</figcaption></figure><figure><div class="phone" style="width:402px;height:874px"><div class="sb"><span>9:41</span><span class="sbi">●●● ◔ ▮</span></div><div class="chat">
+  <div class="chathead"><span class="back">‹</span><div><b>Анна</b><small>в сети</small></div></div>
+  <div class="msgs"><div class="bubble in">Добавила твой ключ, пиши</div><div class="bubble out">Сейчас проверю, что и твой у меня есть</div></div>
+  <div class="inputbar"><div class="field">Сообщение</div></div>
+  <div class="kb"><div><div class="kbstatus">Ваш ключ: 7C78 28FE</div><div class="kbsub">Контактов нет</div></div><div class="globe">🌐</div></div>
+  <div class="kbbottom"><div class="home"></div></div>
+</div></div><figcaption>контактов нет</figcaption></figure><figure><div class="phone dark" style="width:375px;height:812px"><div class="sb"><span>9:41</span><span class="sbi">●●● ◔ ▮</span></div><div class="chat">
+  <div class="chathead"><span class="back">‹</span><div><b>Анна</b><small>в сети</small></div></div>
+  <div class="msgs"><div class="bubble in">Добавила твой ключ, пиши</div><div class="bubble out">Сейчас проверю, что и твой у меня есть</div></div>
+  <div class="inputbar"><div class="field">Сообщение</div></div>
+  <div class="kb"><div><div class="kbstatus">Ваш ключ: 7C78 28FE</div><div class="kbsub">Не удалось прочитать контакты</div></div><div class="globe">🌐</div></div>
+  <div class="kbbottom"><div class="home"></div></div>
+</div></div><figcaption>375 · файл нечитаем · тёмная</figcaption></figure></div></section>
+</body></html>
