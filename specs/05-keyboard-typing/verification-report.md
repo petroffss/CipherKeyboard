@@ -1,97 +1,82 @@
-# Independent verification — final round 5
+0 находок — исправлять нечего. **17/17 evals pass.**
 
-**1 важное замечание; итог 16/17 pass. E14 — fail из-за D5.** Остальные 16 evals прошли заново. Фича не готова к приёмке или слиянию; first-time-user не проводился, потому что E14 не пройден. Это последний из пяти разрешённых раундов; исправления следующего раунда не применялись.
+Независимый verifier round 6 завершён на frozen `0c96362e8a105ea70dbbf049c4950121f948b165`, runtime/source marker `777320538`. Все результаты получены заново; результаты builder и r5 использованы только как setup/tool recipes, а не как текущие доказательства. Риск остаётся high. FTUE, пользовательская приёмка и слияние не проводились; это отдельные шаги координатора.
 
-Frozen commit: `1db6b7e172c3bf576345845eabebda25caa63f65`; source/runtime marker: `248220564`. Все 67 Swift-файлов сохранили SHA256 `86011f92293dcb8c4fa67a6d808adfc178e0ff82d2356449968ffa331aa9cb89`. Verifier не строил фичу и не менял product/test/script код, требования или ожидания evals. В evals изменены только status/evidence строки. Старый отчёт сохранён как `evidence/verifier-round5/prior-verification-report-round4.md`.
+Старый отчёт сохранён в `evidence/verifier-round6/prior-verification-report-round5.md`. Verifier не менял product/test/script код, требования, макет или ожидания evals. В `evals.md` изменены только status/evidence строки. Все локальные доказательства ниже находятся в `evidence/verifier-round6/`.
 
-## Выполненные проверки
+## Свежие результаты
 
-Все результаты ниже получены независимо на frozen source; результаты builder/предыдущих раундов не перенесены как текущие доказательства. Артефакты находятся в `evidence/verifier-round5/`.
-
-| Проверка | Результат | Доказательство |
+| Проверка | Наблюдаемый результат | Доказательство |
 |---|---|---|
-| Core | exit0; 15 typing tests/4 suites +135 core tests/23 suites =150 | `core.log`, `core-exit.txt` |
-| Lint | exit0;67 файлов | `lint.log`, `lint-exit.txt` |
-| Явная Debug сборка | exit0 | `debug-build.log`, `debug-build-exit.txt` |
-| Явная Release сборка | exit0 | `release-build.log`, `release-build-exit.txt` |
-| Debug binary audit |6 actual Mach-O; положительные Debug controls; network0;4 actual entitlement slices | `debug-binary-audit.json` |
-| Release binary audit |2 actual Mach-O;0 из24 Debug markers; selected network references/frameworks0;4 actual entitlement slices | `release-binary-audit.json` |
-| Полный unfiltered UI |30 pass,0 fail,0 skip,exit0; все30 уникальных identifiers точно совпали с frozen source | `full-ui-summary.json`, `full-ui-case-results.json`, `full-ui-contract-coverage.json`, `full-ui-process.txt` |
-| Реальное расширение/runtime |7/7 pass,0 skip,exit0 | `runtime-summary.json`, `runtime-case-results.json`, `runtime.log`, `runtime-attachments/` |
-| E12 isolated audit |setup2/2 +canary1/1,0 skip,exit0; strict compare PASS | `audit/` |
-| Полная capture matrix |186/186 unique screenshot/geometry pairs;6 capture tests +3 preflights passed | `matrix/frames/manifest.json`, `matrix-command.log`, `matrix-exit.txt` |
-| Независимый визуальный просмотр |все186 original-derived full native frames отдельно открыты;186 frame pass,0 frame fail | `design-review.json`, `*-native/`, `reference-frames.json` |
-| Дополнительный actual scroll/caret |pan открыл пятую строку; tap поставил caret в середину; реальная а вставилась именно там; host неизменен | `gui-12…17`, `gui-editor-scroll-gesture.json`, `supplemental-ui-review.json` |
-| Дополнительный normal preview 375 |**FAIL D5:** реальные5строк с а/Enter обрезали обязательную инструкцию;2 settled frames | `gui-19-normal-empty.png`, `gui-20-real-five-lines.png`, `gui-21-real-five-lines-stable.png` |
+| Core | 150 = 15 typing / 4 suites +135 CipherCore /23 suites, exit0 | `core-confirmed.log`, `core-confirmed-exit.txt`; отдельный prescribed `core-script.log` тоже exit0 |
+| Lint | 68 Swift-файлов, exit0 | `lint-confirmed.log`, `lint-exit.txt` |
+| Явный Debug | `scripts/build.sh -configuration Debug`, exit0 | `debug-build.log`, `debug-build-exit.txt` |
+| Universal Release | `xcodebuild build ... -configuration Release -destination generic/platform=iOS Simulator`, exit0 | `release-build.log`, `release-build-exit.txt` |
+| Фактические бинарники | Debug6 Mach-O с положительными Debug controls; Release2 Mach-O, 0/24 выбранных Debug markers, network references/frameworks0, DebugHost files0 | `debug-binary-audit.json`, `release-binary-audit.json` |
+| Entitlements/Info | ожидаемый App Group во всех фактических sections; `RequestsOpenAccess=true` у extension; версии777320538 | actual `__TEXT,__entitlements` в binary audits; Release4 sections = arm64/x86_64 app+appex; Debug4 sections включают app/appex и их preview dylibs |
+| Полный unfiltered UI | 32 pass,0 fail,0 skip,exit0; exact32 unique source IDs, missing[]/unexpected[] | `full-ui-summary.json`, `full-ui-case-results.json`, `full-ui-contract-coverage.json` |
+| Матрица | 186/186 unique screenshot/geometry pairs;3 real preflights +6 capture tests pass | `matrix-command.log`, `matrix-exit.txt`, `matrix/frames/manifest.json`, `matrix-integrity.json` |
+| Визуальный просмотр | каждый из186 полных native-кадров открыт отдельно;186 pass,0 fail; просмотренные originals/geometry точно совпали с финальным экспортом | `design-review.json`, `final-matrix-review-integrity.json` |
+| Runtime |7/7 pass,0 skip; отдельный preflight1/1; все9 retained screenshots отдельно просмотрены | `runtime-summary.json`, `runtime-case-results.json`, `runtime-screenshot-review.json` |
+| E12 | isolated setup2/2 +canary1/1, valid sentinel/identity before+after, strict compare pass | `audit/attempt-01/`, `audit-independent-review.json` |
+| Динамический D5 | actual375 light+dark; real keys/no fixture;14+14 stages и все28 native-изображений отдельно приняты | `dynamic-light-attachments/independent-integrity.json`, `dynamic-dark-attachments/independent-integrity.json`, оба `dynamic-*-visual-review.json` |
+| Дополнительные реальные жесты | distinct-line pan/caret/middle insert/grow-shrink; middle-cursor rotation, pending alternative cancellation, quick-globe/list/reset | `supplemental-ui-review.json`, `gui-events.jsonl`, `gui-07…38*.png` |
 
-Actual independently built/installed extension dylib SHA256: `293a72a37a1df17c1e6d81ab6c9c16e2fd0c4d433fa792d553189913eb9f45a7`. Runner byte-compared installed and freshly built bytes before test runs and asserted loaded248220564; the comparison was independently repeated before the supplemental UI in `gui-source-context.json`. This is the verifier's fresh `.build/IndependentR5` build, not builder output.
+Полный UI выполнен на brand-new `CipherKeyboard-Typing-VerifierR6Clean`, `04009B93-25DC-455B-96DF-2F066B7571E3`, с pre-test AutomaticMinimizationEnabled=0; расширение и Full Access на нём не включались. Команда без only/skip filters: `DEVICE=CipherKeyboard-Typing-VerifierR6Clean DERIVED=$PWD/.build/IndependentR6/Regression scripts/test.sh ui -parallel-testing-enabled NO`. Оригинал результата: `.build/TestResults/ui-20261101-213902.xcresult`; внутри r6 сохранена ссылка `.build/IndependentR6/full-ui.xcresult`. Оба новых preview-теста входят в реальные32. Targeted прогоны не заменяли полный набор.
 
-Actual audited Release app, suitable for a later clean first-user test only after the feature passes:
-`/Users/segei/Documents/CipherKeyboard/.build/IndependentR5Release/Build/Products/Release-iphonesimulator/CipherKeyboard.app`.
-The audit read actual executable binaries and actual `__TEXT,__entitlements` sections, covering both architecture slices of both Release executables. All4 slices contain the expected App Group `group.dev.cipherkeyboard`. It did not mistake an empty codesign signature dictionary for entitlement evidence. Release contains no selected Debug fixture/seed/host/diagnostic routes among24 markers; Debug positive controls prove the scan can find them.
+## E14 и D5
 
-## E17 — full clean suite now passed
+Матрица покрывает native375×667,402×874,440×956 и667×375,874×402,956×440;15 extension states в обеих реальных темах/ориентациях плюс6 portrait preview. Каждый capture проверил installed bytes, loaded777320538, exact fixture, actual resolved trait, caret, warning style и настоящее hittable48pt host field с полной visible intersection. Проверены все key bounds/minimums. Все12 limit/multiline пар имеют одинаковую panel/key geometry: появление counter/error ничего не сдвигает. Фактические extrema сохранены в `matrix-geometry-extrema.json`. Нативные системные safe areas и варианты системного/собственного глобуса учтены. Montages не использовались как замена индивидуальному просмотру; ссылки на matching approved HTML anchors/frames извлечены из текущего неизменённого mockup в `reference-frames.json`.
 
-A **brand-new** separate iPhone17 simulator was created: `CipherKeyboard-Typing-VerifierR5Clean`, `E0F7ADEB-5F77-434B-BCE6-A436DEC66564`. Neither extension activation nor Full Access was enabled on it. Before tests, its disposable-only `AutomaticMinimizationEnabled=false` readback was0. The actual command was `DEVICE=CipherKeyboard-Typing-VerifierR5Clean DERIVED=.build/IndependentR5Regression scripts/test.sh ui -parallel-testing-enabled NO`, with **no only-testing/skip filter**. It naturally completed with30 pass/0 fail/0 skip/exit0; all30 unique case identifiers exactly match the frozen source list. The formerly failing Contacts keyboard-visibility scenario is among the passed cases. Result: `.build/TestResults/ui-20261101-193958.xcresult`.
+D5 отдельно перепроверен обычными production keys/Return, без fixture/typeText/paste, на375 в обеих фактических темах. Во всех28 кадрах полная инструкция в2строки, read-only «До встречи!» и все4 key rows видимы. При росте1→5 строк, shrink до3 и двух добавлениях/удалениях newline у среднего caret не теряются текст/курсор; реальнаяб вставлена как «Аб\nА\nА». Metadata подтверждает exact cursor/UTF8 counts, marker, отсутствие fixture, caretVisible и bounds. В Back/tab/background reset действительно пусто/РУС/auto Shift. Визуально нормальная шапка y82 переключается на компактную y74, сохраняя весь текст, и возвращается при shrink. **D5 не воспроизведён.**
 
-After the successful suite, an extra preference read returned1: iOS had changed that OS preference. This is recorded honestly in `clean-postcondition.json`; it does not replace the proven pre-test0 readback or the actual completed tests. The verifier's unnecessary post0 assertion initially stopped the next device prep; the subsequent integration invocation failed149 before any runtime build/test because375 was still Shutdown. That0-case setup attempt is retained as `runtime-initial-setup.log`/`runtime-initial-setup-exit.txt`. After explicit boot and the unchanged pre-test guard/readback0, all7 runtime cases passed. No test assertion or product/script source was changed and no full UI rerun was substituted.
+Дополнительный normal UI, `gui-07…17`: реальными клавишами набраны6 разных строк А/Б/В/Г/Д/Е. Pan открыл ранее скрытуюА; tap поставил caret после неё; ENG сохранил позицию, реальнаяx дала «Аx». Обратный pan показалЕ, end caret виден. Delete6 дал «Аx\nБ\nВ»; Return/X дал4строки; Delete2 вернул тот же3строчный текст. ENG и caret сохранились через fit boundary, инструкция/host/4rows оставались целиком. Прокрутка установлена фактическим изменением видимых различимых строк, не фактом отправки swipe.
 
-## E10–E13/E15–E16 — real runtime and E12
+## Runtime, изоляция и отсутствие записи
 
-Seven actual runtime cases covered five status fixtures with typing/deletion and no-access reader counts0; rotation/hide with focused=false, panel absence and empty reopen; background and actual globe list/switch reset; actual preview/extension parity; real Settings Full Access ON/OFF ×empty/selected host documents; no-export interactions; and typing in ordinary Settings search. Text and selection of the host remained unchanged. All9 retained runtime screenshots were independently opened (`runtime-screenshot-review.json`). `receipt-schema.json` proves the real shared access receipt has only date/version and no draft field. Production controller/panel/adapter proxy-spy, Russian labels/Shift/Caps/hints/IDs and true/false globe boundary passed in the full UI suite. Core covered500 fixed operations,10 resets, zero pending timers and independent overlapping touches.
+Реальные Settings Full Access on/off ×empty/selected host, обычный Settings search,5 status fixtures с вводом/удалением и no-access readers0, hide/focus=false/panel disappearance/reopen, rotation, background/globe и parity preview/extension прошли7/7. Девять runtime screenshots отдельно открыты, включая green/on и gray/off реальные переключатели. Host text/selection остались исходными. Actual shared receipt имеет только version/date (`receipt-schema.json`). Production controller/panel/adapter proxy spy из полного UI дал0 обращений; Russian AX labels/Shift/Caps/hints/IDs и needsInputModeSwitchKey true/false проверены тем же actual probe. Core дополнительно проверил500 действий,10 resets, zero pending timers и независимые overlapping gestures. Source write/proxy пути независимо прочитаны: `source-write-proxy-audit.json`.
 
-E12 ran alone on440 (`A3F7BEC2-F01C-43BA-90C4-9014BF2FE18C`). Before baseline, setup separately established the actual synthetic clipboard sentinel and a real known nonempty identity. The in-process attributes-only SecItem query proved exact service/account/access group with1row (`audit/setup-attachments/…txt`); no secret bytes/kSecReturnData were requested. Both independent snapshots observed sentinel=true and exactly1 identity metadata row, setupFailures[]. Canary ran via direct test-without-building, with no reinstall/rebuild/preference writes between snapshots. All15 app/extension/group files were unchanged except the allowed `group/keyboard-access.v1.json` date/version receipt. Identity metadata hashes, defaults coverage and clipboard hash/sentinel were unchanged; no new Preferences plist, canary file match or scoped app/extension/host log match appeared. `audit/result.json`: PASS, failures[], unexpectedChanges[], canaryMatches[]. Source write/proxy paths were separately audited in `source-write-proxy-audit.json`.
+E12 выполнялся один на440 без конкурирующих UI/clipboard тестов. До baseline production app установил известную реальную identity; attributes-only SecItem query проверил точные service/account/group и1row, без kSecReturnData. In-process DebugHost установил фактический sentinel. **Оба** независимых снимка видят sentinel=true,1identity row, setupFailures[]. Между ними не было rebuild/reinstall/preference writes. Все15 app/extension/group файлов неизменны, кроме разрешённого version/date receipt; metadata hashes и clipboard стабильны. Preferences plist отсутствовал до и после, новых domains/files не появилось. Canary отсутствует в файлах и scoped app/extension/host logs; unexpectedChanges[]/canaryMatches[]/failures[]. Все3 корректных native440 screenshots и attributes-only proof отдельно просмотрены.
 
-## E14 — complete matrix passed, but normal preview D5 failed
+GUI21–38 дополнили lifecycle: средний caret в «Абв» сохранён при обоих поворотах; portraitд даёт «Адбв», корректный landscapeг даёт «Адгбв». Реальный holdе показываетё, затем поворот/отпускание внутри нового е key отменяет жест без вставки или отложенной буквы. Quick own-globe открыл стандартную OS help, затем Russian keyboard; system globe list вернул CipherKeyboard пустым, РУС/auto Shift, что подтверждено двумя stable native кадрами.
 
-All186 fresh pairs were captured serially on375/402/440, both real OS appearances, both extension orientations, plus6 portrait previews. Strict export and independent integrity check require exact186 combinations, no duplicate or missing frame, loaded248220564, exact fixture, actual resolved trait, visible caret, primary warning color and font/line-height, lower-case multiline/limit state, fully visible/hittable actual48pt host field, panel/key bounds and minimum key sizes. Every full original-derived native-point frame was opened separately against its exact approved anchor/caption; montages were not treated as individual inspection. D1–D4 are absent on all observed approved frames. Minimum375 letter width26.33pt; key heights44/32pt; maximum375 panel height378/220pt. Real system safe areas and globe variants were respected.
+## Сохранённые инструментальные попытки
 
-The mandatory live interaction supplement additionally proved editor scrolling and cursor placement: `gui-12` shows the fifth line clipped in the four-line viewport; real begin/move/end pan reveals it in `gui-13`; `gui-14` shows caret after «До »; real а-key center makes «До австречи!» in `gui-17`, with visible caret and the read-only host sample still «До встречи!».
+Никакие setup/calibration ошибки не скрыты и не перенесены в product pass. `verifier-tool-attempts.json` содержит reserved zsh variable logging error (исправлен bash capture; fresh scratch150 и prescribed script подтверждены exact exit0), truncated manifest read до просмотра, отсутствующий child IAB/locked Mac, отсутствие global AppleKeyboards key и прочие read/setup результаты.
 
-That supplement exposed **D5**, then it was independently reproduced through ordinary UI without a fixture:
+Первый manual CLI tap не действовал в двух settled кадрах: scoped375 CoreDevice dtuhidd flag1. Документированный pinned serve-sim repair-input поменял только этот guest flag на0 и перезапустил только его backboardd; собственный helper перезапущен. Mac lock/main/global prefs не менялись. Root IAB только пассивно показывал здоровый stream; независимое решение принято по собственным native PNG. Первый host focus кадр был без панели; minimization preference уже был0 до/после, поэтому причина drift не утверждается. После Hide/Open фактический Cipher panel проверен **до** ввода.
 
-1. Back out to Setup, reopen «Попробовать клавиатуру». `gui-19-normal-empty.png`: empty draft, actual «Ваш ключ: CAD0 AB1D · Контактов нет» status, complete mandatory instruction in2lines.
-2. Tap actual Cyrillic а/Return keys: `а, Return, а, Return, а, Return, а, Return, а`; no typeText/paste/fixture/seed (`gui-real-key-reproduction.json`). The actual draft is5 lines of «А».
-3. Wait for native layout, capture2 settled actual frames. Both `gui-20-real-five-lines.png` and `gui-21-real-five-lines-stable.png` show the instruction ellipsized to «Набирайте текст внутри клавиатуры. При вы…». The sentence warning that the draft is erased on exit is hidden. Host sample and all4key rows remain visible.
+Landscape CLI coordinates калиброваны явно. Первый logical tap не вставилг; ошибочная physical гипотеза коснулась host и пользовательским касанием изменила selection на11,0. Это **не** приписывается keyboard editing и не включается в доказательство неизменности selection через тот probe. Корректный HID mapping `(screenY,1-screenX)` действительно вставилг в середину; последующие keyboard operations сохранили новый host baseline11,0. Автоматический runtime selected-host(3,7) и manual21–26 до probe отдельно доказывают исходную изоляцию. Все попытки сохранены. Неверно уменьшенные audit440 inspection copies до375 помечены NOT USED; исходники неизменны, правильные440 native copies пересозданы и отдельно просмотрены. Все186 design copies изначально имели правильные native размеры.
 
-**[Важно] [сломан-мобильный-вид] `App/KeyboardPreviewView.swift:11`** — mandatory instruction is vertically compressed when the shared editor grows. AC8 forbids clipped prompts and AC10 requires the full text. Lines10–20 place the instruction Text and growing fixed-height panel in one constrained VStack. This is observable normal behavior, not a fixture-only inference or a font-rasterization difference. Fix must preserve the entire instruction, actual host and approved key/editor sizes on375. See `fix-list.md`/`findings.json`. Other widths/themes for this additional dynamic case were not checked; no passing inference is made about them.
+## Все17 verdicts
 
-Thus capture/per-frame matrix acceptance remains186/186, but **overall E14 is fail** for D5. The approved preview matrix anchor contains a short draft and cannot disprove the normal multiline case. No requirement was reduced to make the result green.
-
-## All17 verdicts
-
-| Eval | Verdict | Fresh evidence |
+| Eval | Verdict | Свежий наблюдаемый результат |
 |---|---|---|
-| E1 | pass | exact insertion/grapheme cursor core test |
-| E2 | pass | four exact layouts/transitions core test |
-| E3 | pass | auto/one-shot/Caps299/301ms/explicit-off core test |
-| E4 | pass |449/450ms alternatives/cancellation/both cases core test |
-| E5 | pass | composed/skin-tone/flag/ZWJ deletion core test |
-| E6 | pass |399/400/480ms repeat +stop/cancel/hide core test |
-| E7 | pass | UTF-8 thresholds/atomic rejection/cursor/error core test |
-| E8 | pass | actual production proxy-spy UI,0calls |
-| E9 | pass | real preview keys/lifecycle/status/identity/host invariant in clean full30 |
-| E10 | pass | actual ON/OFF ×empty/selected host +ordinary Settings +receipt schema |
-| E11 | pass | actual hide/rotation/background/globe and preview reset; core timer checks |
-| E12 | pass | valid sentinel +known1identity attributes, strict15-file/defaults/clipboard/log comparison |
-| E13 | pass | five actual status scenarios typed/deleted; lazy readers0 |
-| E14 | **fail** |186 pairs +186 individual frame passes, actual scroll/caret pass; **normal375 multiline instruction D5** |
-| E15 | pass | production AX controls/states/hints +actual globe/list/switch +matrix variants |
-| E16 | pass |500actions/10resets/zero timers/overlapping touches +actual shell parity |
-| E17 | pass | full unfiltered clean30, core150/lint67/Debug+Release +actual binary/network/entitlements audits |
+| E1 | pass | точная вставка/Character cursor |
+| E2 | pass | 4 точные страницы/переходы |
+| E3 | pass | auto/one-shot/Caps299/301ms |
+| E4 | pass | 449/450ms/отмена +actual rotation cancel |
+| E5 | pass | целые combining/emoji/flag/ZWJ |
+| E6 | pass | 1/2/3 repeat и полная остановка |
+| E7 | pass | UTF8 thresholds/atomic rejection/cursor/error |
+| E8 | pass | production proxy spy0 calls |
+| E9 | pass | real preview keys/lifecycle/status/host invariant |
+| E10 | pass | real access on/off ×host variants +ordinary Settings |
+| E11 | pass | hide/background/globe/preview resets +middle rotation/cancel |
+| E12 | pass | valid sentinel/known1identity/15files/logs strict pass |
+| E13 | pass | 5 warning/status cases typed/deleted, readers0 |
+| E14 | pass | 186 individual frames +28 dynamic frames +actual pan/caret/D5 absent |
+| E15 | pass | production AX/globe boundary +actual standard switch/list |
+| E16 | pass | 500actions/10resets/zero timers +real parity |
+| E17 | pass | full32/core150/lint68/DebugRelease/actual binaries |
 
-## Environment, tools and retained attempts
+## Финальная передача
 
-Initial CUA access was blocked by Mac lock; the user manually unlocked it. No lock bypass/credential automation was attempted. Native DeviceHub (`com.apple.dt.Devices`, `/Applications/Xcode.app/Contents/Applications/DeviceHub.app`) was selected by the explicit disposable375 sidebar row; mainCE56 was never selected/touched. AX navigation worked; native coordinate input failed `noWindowsAvailable`. Child browser inventory had no IAB capability and explicit parent tab claim was denied; parent root IAB could show the actual live mirror. Safari's capture showed a black MJPEG area despite a healthy stream, so it was not claimed as visual proof.
+На момент передачи23:21 все4 owned disposable UDIDs375/402/440/04009 Shutdown; mainCE56 остаётся Booted и не затронут. Оба scoped mirror sessions32591/87644 завершены exit130 с target-only cleanup; root IAB закрыт; port3285 без listener; active build/test/input jobs[]. `handoff.json`, `handoff-devices.json`, `handoff-processes.txt`, `handoff-port3285.txt`. Владение simulator/build/test/UI возвращено координатору. Позднейшие FTUE-операции координатора отдельные и не являются активными verifier jobs.
 
-The `ios-simulator-browser` skill's recognized npm tool was used through bundled pnpm because systemnpx was absent. Pinned tool: `serve-sim@0.1.48`; preview bound only127.0.0.1:3285 and explicitly targeted375. The documented scoped `repair-input --device375` cleared `com.apple.coredevice.dtuhidd.active` and restarted only that disposable's backboardd; helper was then restarted. No host/global preference or main device was modified. Actual touch behavior was judged from native `simctl io375 screenshot` PNGs after1.2–2s layout settling, not exit0 alone.
+`source-integrity-final.json`: frozen SHA/marker,96 baseline source/contract files,123 exact frozen Git controls и eval contract неизменны. Все68 Swift bytes имеют combined SHA256 `2e54f858f37499e01097c2ab8f4c1fec9da76f61284a3ee6050b55b33f13f993` (`swift-source-hashes.json`). Сохранены все attempts; product/tests/scripts не менялись, staging/merge/push не выполнялись.
 
-The early2× coordinate hypothesis is **retracted**: a pre-transition screenshot caused premature attribution. A single nominal-coordinate probe and2 settled native frames proved ordinary normalized x/rawWidth,y/rawHeight coordinates work after repair. A later а-key attempt landed in an inter-key gap; tapping the visually verified key center worked. Those ambiguous/failed attempts are retained and are not product findings. Successful full editor gesture events are recorded in `gui-editor-scroll-gesture.json`. See `ui-access-handoff.md` for exact tool paths, scoped startup/cleanup and input recipe.
+Точный независимо собранный и аудированный Release app для следующего отдельного fresh FTUE:
+`/Users/segei/Documents/CipherKeyboard/.build/IndependentR6/Release/Build/Products/Release-iphonesimulator/CipherKeyboard.app`.
 
-## Handoff and limit
-
-No product/test/script edits, weakening, skip, merge or staging occurred. Final source/contract integrity and simulator/process inventory are in `source-integrity-final.json`, `handoff-devices.json`, `handoff-processes.txt`, `handoff.json`. The current failed D5 state is synthetic-only. First-time-user/human acceptance were not run because E14 failed. No sixth round is authorized by this report; coordinator handles any explicit user extension request.
-
-## Final operational handoff
-
-Final source-integrity check passed: frozen commit and all67Swift bytes unchanged, product/test/script inventory unchanged, eval contract unchanged; only approved verification/coordinator metadata changed. See `source-integrity-final.json`. All4owned disposable devices are Shutdown, mainCE56 remains Booted and untouched, no active build/test/input job remains, both scoped mirror sessions exited, and port3285 has no listener. Simulator/build/test/UI ownership is returned to the coordinator; see `handoff.json` and `ui-access-handoff.md`. No FTUE or extra implementation round was run after the E14failure.
+FTUE и пользовательская приёмка не заменены этими результатами. Нативный Mac CUA был locked, child IAB unavailable; эти ограничения не блокировали исполненные17 evals через разрешённые actual Simulator/XCUITest/nativePNG/scoped input tools. Вопрос доступа для отдельного screen-only FTUE решает координатор.

@@ -8,7 +8,7 @@
 - **Ожидается:** Текст точно соответствует последовательности; курсор всегда на границе Character, поле хозяина не требуется.
 - **Почему провалит плохую работу:** ловит редактор, который всегда дописывает в конец.
 - **Статус:** pass
-- **Доказательство:** Round5 1db6b7e/source248220564 insertsAtGraphemeBoundary exact text/cursor; independent core15typing+135core exit0; core.log. evidence/verifier-round5/.
+- **Доказательство:** Round6 0c96362e / source 777320538. insertsAtGraphemeBoundary: точный текст и границы Character; fresh core 150, exit 0 (core-confirmed.log). evidence/verifier-round6/.
 
 ## E2 · Точные страницы
 - **Тип:** test
@@ -16,7 +16,7 @@
 - **Ожидается:** Ряды совпадают полностью; курсор и текст сохранены; возврат по АБВ/ABC и смена языка соответствуют AC2.
 - **Почему провалит плохую работу:** ловит отсутствующие символы и потерю текста.
 - **Статус:** pass
-- **Доказательство:** Round5 1db6b7e/source248220564 layoutsAndTransitions all4exactpages/transitions, text+cursor preserved; core150 exit0; core.log. evidence/verifier-round5/.
+- **Доказательство:** Round6 0c96362e / source 777320538. layoutsAndTransitions: все 4 точные страницы, переходы, текст и курсор сохранены; fresh core 150, exit 0. evidence/verifier-round6/.
 
 ## E3 · Регистр
 - **Тип:** test
@@ -24,7 +24,7 @@
 - **Ожидается:** Автоматический и одноразовый регистры соответствуют AC3; 299 включает Caps, 301 не включает; буква расходует one-shot, цифра и пробел нет.
 - **Почему провалит плохую работу:** ловит декоративный Shift и всегда заглавную букву.
 - **Статус:** pass
-- **Доказательство:** Round5 1db6b7e/source248220564 shiftStateMachine auto/one-shot/Caps,299/301ms,explicitoff/page transitions; core150 exit0; core.log. evidence/verifier-round5/.
+- **Доказательство:** Round6 0c96362e / source 777320538. shiftStateMachine: auto/one-shot/Caps, 299/301 ms, explicit off и переходы страниц; fresh core 150, exit 0. evidence/verifier-round6/.
 
 ## E4 · Альтернативы и отмена [negative]
 - **Тип:** test
@@ -32,7 +32,7 @@
 - **Ожидается:** 449 даёт основную букву; 450 и отпускание внутри — только ё/ъ; отмена ничего не вставляет и не оставляет активный таймер.
 - **Почему провалит плохую работу:** ловит двойной ввод основной и альтернативной буквы.
 - **Статус:** pass
-- **Доказательство:** Round5 1db6b7e/source248220564 alternateTimingAndCancellation449/450ms,bothcases,inside/outside/hide/rotate/zero timers; core.log exit0. evidence/verifier-round5/.
+- **Доказательство:** Round6 0c96362e / source 777320538. alternateTimingAndCancellation: 449/450 ms, оба регистра, inside/outside/hide/rotate и 0 timers; core 150. Реальный popup ё отменён поворотом без отложенного ввода, gui-30–32. evidence/verifier-round6/.
 
 ## E5 · Удаление целых символов [negative]
 - **Тип:** test
@@ -40,7 +40,7 @@
 - **Ожидается:** Каждый пример удаляется целиком за одно действие, текст справа от курсора сохраняется, в начале нет изменений.
 - **Почему провалит плохую работу:** ловит удаление UTF-16 единиц и порчу emoji.
 - **Статус:** pass
-- **Доказательство:** Round5 1db6b7e/source248220564 deletesCharacters whole composed/skin-tone/flag/ZWJ, beginning unchanged; core.log exit0. evidence/verifier-round5/.
+- **Доказательство:** Round6 0c96362e / source 777320538. deletesCharacters: combining acute, skin-tone, flag, ZWJ удаляются целиком; начало поля неизменно; fresh core 150, exit 0. evidence/verifier-round6/.
 
 ## E6 · Повтор удаления
 - **Тип:** test
@@ -48,7 +48,7 @@
 - **Ожидается:** Удалений соответственно 1/2/3; после остановки ни одного нового; удержание прочих обычных клавиш не повторяет ввод.
 - **Почему провалит плохую работу:** ловит неотменённый таймер.
 - **Статус:** pass
-- **Доказательство:** Round5 1db6b7e/source248220564 repeatStops399/400/480ms counts1/2/3, cancellation/hide stop, ordinarykeys no repeat; core.log exit0. evidence/verifier-round5/.
+- **Доказательство:** Round6 0c96362e / source 777320538. repeatStops: 399/400/480 ms дают 1/2/3 удаления; release/cancel/hide останавливают, обычные клавиши не повторяются; core 150, exit 0. evidence/verifier-round6/.
 
 ## E7 · Байтовая граница [negative]
 - **Тип:** test
@@ -56,7 +56,7 @@
 - **Ожидается:** Счётчик только >3500; 4096 допустимы; переполнение отклонено целиком с точным текстом AC11 и неизменным курсором; удаление снимает ошибку.
 - **Почему провалит плохую работу:** ловит подсчёт букв вместо байтов и частичное принятие.
 - **Статус:** pass
-- **Доказательство:** Round5 1db6b7e/source248220564 utf8Limit3500/3501/4096 atomic rejection/cursor unchanged/exacterror/deletion reset; core.log exit0. evidence/verifier-round5/.
+- **Доказательство:** Round6 0c96362e / source 777320538. utf8Limit: 3500/3501/4096, атомарный отказ, точная ошибка, неизменный курсор и сброс удалением; core 150. Все 12 limit-рамок и стабильность counter geometry pass. evidence/verifier-round6/.
 
 ## E8 · Изоляция от хозяина [security]
 - **Тип:** test
@@ -64,7 +64,7 @@
 - **Ожидается:** Ноль чтений контекста и ноль перечисленных вызовов; проверен production adapter, а не отдельная заглушка.
 - **Почему провалит плохую работу:** ловит скрытые вызовы proxy при Backspace.
 - **Статус:** pass
-- **Доказательство:** Round5 1db6b7e/source248220564 Actual production controller/panel/adapter proxy-spy UI passed in unfiltered clean30;0calls; full-ui-case-results.json. evidence/verifier-round5/.
+- **Доказательство:** Round6 0c96362e / source 777320538. Production controller/panel/adapter proxy spy: 0 вызовов, тест реально прошёл в полном unfiltered UI 32; full-ui-case-results.json и source-write-proxy-audit.json. evidence/verifier-round6/.
 
 ## E9 · Превью общим компонентом
 - **Тип:** ui
@@ -72,7 +72,7 @@
 - **Ожидается:** Тексты AC10, поле «До встречи!» неизменно; набор работает, повторное открытие пустое; нет второй клавиатуры и глобуса, статус подключения не изменён.
 - **Почему провалит плохую работу:** ловит картинку вместо общей клавиатуры.
 - **Статус:** pass
-- **Доказательство:** Round5 1db6b7e/source248220564 Real previewkeys/Back/tab/background/reset/status/fingerprint/host invariance passed full unfiltered30 on BRANDNEW clean E0F7device, extensionneverenabled; full-ui-summary.json. evidence/verifier-round5/.
+- **Доказательство:** Round6 0c96362e / source 777320538. Реальные preview-клавиши, Back/tab/background reset, host/status/fingerprint invariance, без глобуса/второй клавиатуры; полный UI 32 на brand-new clean simulator без включения расширения. evidence/verifier-round6/.
 
 ## E10 · Настоящее расширение [security]
 - **Тип:** ui
@@ -80,7 +80,7 @@
 - **Ожидается:** Черновик меняется внутри панели, текст и диапазон выделения хозяина неизменны; работает и без доступа; подтверждение подключения не содержит черновик.
 - **Почему провалит плохую работу:** ловит успех только внутри preview.
 - **Статус:** pass
-- **Доказательство:** Round5 1db6b7e/source248220564 Runtime7/7 exit0; actualSettingsFullAccessON/OFF xempty/selectedhost, sequence/ordinarySettings, unchangedhost text+selection; receipt onlydate/version; runtime-summary.json,receipt-schema.json. evidence/verifier-round5/.
+- **Доказательство:** Round6 0c96362e / source 777320538. Runtime 7/7: реальные Settings Full Access on/off × empty/selected host, обычный Settings; текст/выделение хозяина неизменны. Actual receipt содержит только date/version; runtime-summary.json, receipt-schema.json. evidence/verifier-round6/.
 
 ## E11 · Стирание и поворот [negative] [security]
 - **Тип:** ui
@@ -88,7 +88,7 @@
 - **Ожидается:** После закрытий пусто, русский и auto Shift; поворот сохраняет текст/курсор и отменяет незавершённые жесты; отложенный ввод не появляется.
 - **Почему провалит плохую работу:** ловит сохранение состояния живущего процесса.
 - **Статус:** pass
-- **Доказательство:** Round5 1db6b7e/source248220564 Actual hide focus=false/panelabsent/reopen,rotation,background/globe andpreviewBack/tab/background resets passed; corecancel/zero timers; runtime-summary.json,full-ui-case-results.json,core.log. evidence/verifier-round5/.
+- **Доказательство:** Round6 0c96362e / source 777320538. Реальные hide/focus=false/panel absent, rotation/background/globe и preview Back/tab/background reset. Дополнительно middle cursor rotation, отмена удержания е и quick globe reset (gui-21–38); core timers 0. evidence/verifier-round6/.
 
 ## E12 · Нет экспорта или записи [security]
 - **Тип:** ui
@@ -96,7 +96,7 @@
 - **Ожидается:** Нет меню экспорта/вставки и drag-export, clipboard неизменен; canary нигде не записан. Ключи/контакты неизменны; допустима только штатная запись даты/версии подключения04 без текста.
 - **Почему провалит плохую работу:** ловит утечку через стандартный UITextView и логи.
 - **Статус:** pass
-- **Доказательство:** Round5 1db6b7e/source248220564 IsolatedauditPASS setup2/2+canary1/1: actualsentineltrueboth, exactknown1identityattribute-onlyproof,15files/defaults/metadata/clipboard unchanged exceptdate/versionreceipt, no canary/logmatches,no reinstall between; audit/result.json. evidence/verifier-round5/.
+- **Доказательство:** Round6 0c96362e / source 777320538. Изолированные setup 2/2 + canary 1/1: sentinel=true и known identity attributes-only rows=1 до/после; 15 файлов, metadata/clipboard стабильны кроме date/version receipt; нет новых Preferences, canary/log matches; audit/attempt-01/result.json. evidence/verifier-round6/.
 
 ## E13 · Статусы не блокируют набор [negative]
 - **Тип:** ui
@@ -104,15 +104,15 @@
 - **Ожидается:** Точные предупреждения AC9; набор во всех случаях; no-access не создаёт фабрик чтения общих хранилищ; расширение не создаёт ключ.
 - **Почему провалит плохую работу:** ловит регрессию защит02–04.
 - **Статус:** pass
-- **Доказательство:** Round5 1db6b7e/source248220564 Runtimefive-status typed/deleted each, exactwarnings/no-accessreaders0, hostunchanged; lazyfactorycorepass; runtime-summary.json,core.log. evidence/verifier-round5/.
+- **Доказательство:** Round6 0c96362e / source 777320538. Во всех 5 статусах реальный ввод/удаление, точные предупреждения, no-access readers=0; runtime 7/7 и lazy factory core pass. evidence/verifier-round6/.
 
 ## E14 · Все состояния и размеры [design]
 - **Тип:** design
 - **Шаги:** Скриншоты всех16 якорей mockup.html на375/402/440 в обеих темах; расширение также667/874/956 landscape. Сравнить с каждой соответствующей рамкой. Проверить popup, четыре строки, прокрутку и ошибку лимита.
 - **Ожидается:** Блоки/тексты/цвета совпадают; четыре ряда целиком, safe area учтена, ограничения размеров AC8 выполнены; буквы≥26pt, высоты≥44/32; нет переполнения или скачка счётчика. Preview только портрет.
 - **Почему провалит плохую работу:** ловит проверку лишь одного удобного размера.
-- **Статус:** fail
-- **Доказательство:** Round5 1db6b7e/source248220564 FAIL D5:186/186freshuniqueactualpairs andall186individuallyreviewedpass, actualtheme/host48pt/caret/style checks pass; actualscroll/caretpass. Normal375preview real5lineinputclipsAC10instruction,2settledframes gui20/gui21; design-review.json,fix-list.md. evidence/verifier-round5/.
+- **Статус:** pass
+- **Доказательство:** Round6 0c96362e / source 777320538. 186 свежих уникальных пар, все 186 изображений просмотрены отдельно/pass; обе реальные темы и все native размеры. D5: real keys/no fixture на 375 light+dark, 14+14 стадий/кадров, полная инструкция, grow/shrink/caret/no reset; реальный pan и вставка в середину gui-07–17. evidence/verifier-round6/.
 
 ## E15 · Доступность и системный глобус
 - **Тип:** ui
@@ -120,7 +120,7 @@
 - **Ожидается:** Имена/состояния/IDs из AC12 доступны; собственный глобус только при true, вызывает стандартное переключение/список; двойного глобуса нет.
 - **Почему провалит плохую работу:** ловит недоступные символы и тупиковый переключатель.
 - **Статус:** pass
-- **Доказательство:** Round5 1db6b7e/source248220564 Actual production labels/ShiftCaps/hints/IDs/needsInputModeSwitchKeytruefalse probe passed full30; realglobehold/list/switch runtimepass;375owntrue,402/440systemonly,previewfalse; runtime-summary.json,matrix-integrity.json. evidence/verifier-round5/.
+- **Доказательство:** Round6 0c96362e / source 777320538. Production Russian AX labels/Shift/Caps/hints/IDs и needsInputModeSwitchKey true/false прошли full UI 32. Реальные quick globe/list/reset gui-33–38; варианты глобуса просмотрены во всей матрице. evidence/verifier-round6/.
 
 ## E16 · Нагрузка и жизненный цикл
 - **Тип:** test
@@ -128,7 +128,7 @@
 - **Ожидается:** Результаты точно совпадают, нет crash/hang; после закрытия активных повторов0; одинаковый ввод даёт одинаковый черновик в обеих оболочках.
 - **Почему провалит плохую работу:** ловит гонки и различающиеся реализации.
 - **Статус:** pass
-- **Доказательство:** Round5 1db6b7e/source248220564 stressAndReset500actions/10resets/0timers+overlappingtouchtests passed; actualpreview/extension parity runtimepass; core.log,runtime-summary.json. evidence/verifier-round5/.
+- **Доказательство:** Round6 0c96362e / source 777320538. stressAndReset: 500 действий, 10 resets, 0 pending timers; overlapping gestures core pass. Реальная preview/extension parity прошла runtime 7/7. evidence/verifier-round6/.
 
 ## E17 · Регрессии и Release
 - **Тип:** command
@@ -136,7 +136,7 @@
 - **Ожидается:** Все тесты и команды завершаются0; Debug/Release собираются, новые тесты реально выполнены; Release не открывает тестовые пути.
 - **Почему провалит плохую работу:** ловит непроверенные тесты и диагностический доступ в релизе.
 - **Статус:** pass
-- **Доказательство:** Round5 1db6b7e/source248220564 PASS fullUNFILTERED30pass0fail0skip exit0 onBRANDNEW E0F7 cleanneverextensionenabled; exact30uniqueIDs. Core150/lint67/explicitDebugRelease exit0, Release0of24Debugmarkers/network0,actual4entitlementslices; full-ui-contract-coverage.json,release-binary-audit.json. evidence/verifier-round5/.
+- **Доказательство:** Round6 0c96362e / source 777320538. Полный UNFILTERED UI: 32 pass, 0 fail/skip, точные 32 source IDs на новом clean 04009. Fresh core 150/lint 68/Debug+Release exit 0; actual Release 0/24 Debug markers, network 0, 4 architecture entitlement slices; Debug positive controls pass. evidence/verifier-round6/.
 
 ## Покрытие
 AC1: E1,E9,E14; AC2: E2,E10; AC3: E3; AC4: E4,E10; AC5: E5,E6; AC6: E8,E10,E12; AC7: E11,E12,E16; AC8: E14; AC9: E10,E13,E15; AC10: E9; AC11: E7,E14; AC12: E15,E16.

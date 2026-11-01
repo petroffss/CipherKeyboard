@@ -1,7 +1,7 @@
 ---
 feature: 05-keyboard-typing
 title: Клавиатура — набор текста внутри клавиатуры
-status: building
+status: verified
 risk: high
 risk_reason: "ошибка может раскрыть открытый текст приложению-хозяину"
 ui: yes
