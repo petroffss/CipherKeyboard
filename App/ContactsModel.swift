@@ -64,30 +64,31 @@ final class ContactsModel {
     }
 
     func add(name: String, key: String) async throws(ContactError) {
-        try await perform { store, own in try store.add(name: name, key: key, own: own) }
+        try await perform { store, own in
+            Result { () throws(ContactError) in try store.add(name: name, key: key, own: own) }
+        }
     }
 
     func rename(id: UUID, to name: String) async throws(ContactError) {
-        try await perform { store, _ in try store.rename(id: id, to: name) }
+        try await perform { store, _ in
+            Result { () throws(ContactError) in try store.rename(id: id, to: name) }
+        }
     }
 
     func remove(id: UUID) async throws(ContactError) {
-        try await perform { store, _ in try store.remove(id: id) }
+        try await perform { store, _ in
+            Result { () throws(ContactError) in try store.remove(id: id) }
+        }
     }
 
     /// Выполняет операцию стора не на главном потоке (файл) и обновляет книгу.
+    /// `storeUnreadable` переводит вкладку в состояние ошибки чтения.
     private func perform(
-        _ operation: @Sendable @escaping (ContactStore, PublicKey) throws(ContactError) -> ContactBook
+        _ operation: @Sendable @escaping (ContactStore, PublicKey) -> Result<ContactBook, ContactError>
     ) async throws(ContactError) {
         let store = store
         let own = ownKey
-        let result = await Task.detached { () -> Result<ContactBook, ContactError> in
-            do {
-                return .success(try operation(store, own))
-            } catch {
-                return .failure(error)
-            }
-        }.value
+        let result = await Task.detached { operation(store, own) }.value
         switch result {
         case .success(let book):
             state = .ready(book)
