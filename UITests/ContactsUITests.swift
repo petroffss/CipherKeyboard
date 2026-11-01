@@ -225,7 +225,7 @@ final class ContactsUITests: XCTestCase {
         save.tap()
         point.tap()
         // Если лист уже закрылся, второе нажатие попадает в таб-бар под кнопкой — вернуться к списку.
-        let contactsTab = app.tabBars.buttons["tab.contacts"]
+        let contactsTab = app.navigationTab("tab.contacts")
         if !contactsTab.isSelected { contactsTab.tap() }
         XCTAssertTrue(app.staticTexts["contacts.title"].waitForExistence(timeout: 5))
 
@@ -583,7 +583,7 @@ final class ContactsUITests: XCTestCase {
 
     @MainActor
     private func openContacts(_ app: XCUIApplication) {
-        let tab = app.tabBars.buttons["tab.contacts"]
+        let tab = app.navigationTab("tab.contacts")
         XCTAssertTrue(tab.waitForExistence(timeout: 10))
         tab.tap()
         XCTAssertTrue(app.staticTexts["contacts.title"].waitForExistence(timeout: 5))

@@ -9,6 +9,7 @@ final class SetupUITests: XCTestCase {
         app.launchArguments = ["-keystore", "memory", "-setup-state", state] + extra
         app.launch()
         XCTAssertTrue(app.staticTexts["mykey.title"].waitForExistence(timeout: 10))
+        _ = app.navigationTab("tab.setup")
         return app
     }
 
@@ -19,7 +20,7 @@ final class SetupUITests: XCTestCase {
             let banner = app.buttons["mykey.setupBanner"]
             if state == "confirmed" {
                 XCTAssertFalse(banner.exists)
-                app.tabBars.buttons["tab.setup"].tap()
+                app.navigationTab("tab.setup").tap()
                 XCTAssertTrue(app.staticTexts["Подключение проверено"].waitForExistence(timeout: 5))
                 XCTAssertEqual(
                     app.staticTexts["setup.historicalNote"].label,
@@ -63,7 +64,7 @@ final class SetupUITests: XCTestCase {
     @MainActor
     func testRefreshOnForeground() {
         let app = launch("confirmed", extra: ["-setup-sequence", "confirmed,absent,present,unknown"])
-        app.tabBars.buttons["tab.setup"].tap()
+        app.navigationTab("tab.setup").tap()
         XCTAssertTrue(app.staticTexts["Подключение проверено"].exists)
         for expected in [
             "Подключите клавиатуру",
@@ -71,6 +72,7 @@ final class SetupUITests: XCTestCase {
             "Не удалось проверить подключение",
         ] {
             XCUIDevice.shared.press(.home)
+            XCTAssertTrue(app.wait(for: .runningBackground, timeout: 5))
             app.activate()
             XCTAssertTrue(app.staticTexts[expected].waitForExistence(timeout: 5))
             XCTAssertFalse(app.staticTexts["Подключение проверено"].exists)
@@ -81,7 +83,7 @@ final class SetupUITests: XCTestCase {
     func testOpenSettingsFailure() {
         for result in ["failure", "success"] {
             let app = launch("absent", extra: ["-setup-open", result])
-            app.tabBars.buttons["tab.setup"].tap()
+            app.navigationTab("tab.setup").tap()
             app.buttons["setup.openSettings"].tap()
             if result == "failure" {
                 XCTAssertTrue(app.staticTexts["setup.settingsError"].waitForExistence(timeout: 5))

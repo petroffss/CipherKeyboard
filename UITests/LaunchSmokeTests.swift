@@ -1,9 +1,10 @@
 import XCTest
 
-/// Смоук: приложение запускается и показывает первый экран — вкладку «Мой ключ».
+/// Смоук: четыре видимые вкладки и реальные переходы в их содержимое.
 final class LaunchSmokeTests: XCTestCase {
     @MainActor
     func testAppLaunchesAndShowsMyKey() {
+        continueAfterFailure = false
         let app = XCUIApplication()
         app.launch()
         let title = app.staticTexts["mykey.title"]
@@ -11,15 +12,13 @@ final class LaunchSmokeTests: XCTestCase {
         XCTAssertEqual(title.label, "Мой ключ")
 
         let tabs = ["tab.contacts", "tab.decrypt", "tab.setup", "tab.myKey"]
-        for destination in tabs {
-            for identifier in tabs {
-                XCTAssertTrue(app.tabBars.buttons[identifier].waitForExistence(timeout: 5), identifier)
-            }
-            app.tabBars.buttons[destination].tap()
+        let content = ["contacts.title", "Расшифровать", "setup.title", "mykey.title"]
+        for (destination, expected) in zip(tabs, content) {
+            for identifier in tabs { _ = app.navigationTab(identifier) }
+            XCTAssertEqual(app.tabBars.buttons.count, 4)
+            app.navigationTab(destination).tap()
+            XCTAssertTrue(app.staticTexts[expected].waitForExistence(timeout: 5), expected)
         }
-        for identifier in tabs {
-            XCTAssertTrue(app.tabBars.buttons[identifier].exists, identifier)
-        }
-        XCTAssertTrue(title.waitForExistence(timeout: 5))
+        XCTAssertTrue(title.exists)
     }
 }

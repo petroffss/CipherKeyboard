@@ -76,7 +76,6 @@ struct SetupView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(16)
         .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 16))
-        .accessibilityIdentifier("setup.status")
     }
 
     private var steps: some View {
