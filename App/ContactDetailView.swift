@@ -29,6 +29,18 @@ struct ContactDetailView: View {
                     .presentationDetents([.large])
             }
         }
+        // С iOS 26 системный диалог на iPhone — всплывающее меню, где кнопка с ролью `.cancel` скрыта (отмена — нажатием
+        // мимо). «Отмена» по AC15 должна быть видна, поэтому она — обычная кнопка без роли; нажатие мимо тоже отменяет.
+        .confirmationDialog(
+            "Удалить контакт «\(model.contact(id: id)?.name ?? "")»?", isPresented: $confirmingDelete,
+            titleVisibility: .visible
+        ) {
+            Button("Удалить", role: .destructive) { delete() }
+                .accessibilityIdentifier("contact.deleteConfirm")
+            Button("Отмена") {}
+        } message: {
+            Text("Вы не сможете отправлять ему сообщения.")
+        }
     }
 
     private func card(for contact: Contact) -> some View {
@@ -72,15 +84,6 @@ struct ContactDetailView: View {
             .padding(.bottom, 20)
         }
         .background(Color(.systemGroupedBackground))
-        .confirmationDialog(
-            "Удалить контакт «\(contact.name)»?", isPresented: $confirmingDelete, titleVisibility: .visible
-        ) {
-            Button("Удалить", role: .destructive) { delete() }
-                .accessibilityIdentifier("contact.deleteConfirm")
-            Button("Отмена", role: .cancel) {}
-        } message: {
-            Text("Вы не сможете отправлять ему сообщения.")
-        }
     }
 
     private func delete() {

@@ -12,6 +12,9 @@ struct AddContactSheet: View {
     @State private var isSaving = false
     @State private var saveFailed = false
     @State private var showingScanner = false
+    /// Ключ, который сейчас записывается: пока идёт запись и закрывается лист, предпросмотр показывает его,
+    /// а не «уже сохранён как …» из обновлённой книги.
+    @State private var savingKey: PublicKey?
     @FocusState private var nameFocused: Bool
 
     private enum KeyStatus: Equatable {
@@ -21,6 +24,7 @@ struct AddContactSheet: View {
     }
 
     private var keyStatus: KeyStatus {
+        if let savingKey { return .valid(savingKey) }
         let trimmed = keyText.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return .empty }
         do {
@@ -49,7 +53,12 @@ struct AddContactSheet: View {
         return nil
     }
 
-    private var nameCheck: NameCheck { NameCheck(name: name, touched: nameTouched, book: model.book, excluding: nil) }
+    private var nameCheck: NameCheck {
+        // Пока идёт запись, имя проверяется по книге без нового контакта (иначе оно стало бы «дублем» самого себя).
+        NameCheck(name: name, touched: nameTouched, book: savingKey == nil ? model.book : bookBeforeSave, excluding: nil)
+    }
+
+    @State private var bookBeforeSave = ContactBook()
 
     private var canSave: Bool { validKey != nil && nameCheck.isValid && !isSaving }
 
@@ -71,7 +80,7 @@ struct AddContactSheet: View {
                         Button("Сканировать QR") {
                             showingScanner = true
                         }
-                        .buttonStyle(SecondaryButtonStyle(minHeight: 44))
+                        .buttonStyle(SecondaryButtonStyle(minHeight: 44, font: .subheadline.weight(.semibold)))
                         .accessibilityIdentifier("addcontact.scan")
                     }
                     .padding(.top, 12)
@@ -161,6 +170,8 @@ struct AddContactSheet: View {
         guard let validKey, nameCheck.isValid, !isSaving else { return }
         isSaving = true
         saveFailed = false
+        bookBeforeSave = model.book
+        savingKey = validKey
         let keyString = validKey.string
         let trimmedName = ContactBook.trimmedName(name)
         Task {
@@ -170,6 +181,7 @@ struct AddContactSheet: View {
             } catch {
                 saveFailed = true
                 isSaving = false
+                savingKey = nil
             }
         }
     }

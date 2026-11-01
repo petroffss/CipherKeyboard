@@ -69,6 +69,7 @@ struct ContactsView: View {
                 NavigationLink(value: contact.id) {
                     ContactRow(contact: contact)
                 }
+                .accessibilityLabel("\(contact.name), \(contact.publicKey.fingerprint.short)")
                 .accessibilityIdentifier("contacts.row")
             }
             .listStyle(.insetGrouped)

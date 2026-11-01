@@ -160,19 +160,32 @@ struct StorageErrorView: View {
     }
 }
 
-/// Основная кнопка: залита акцентом, белый текст 17 semibold, высота 50.
+/// Основная кнопка: залита акцентом, белый текст 17 semibold, высота 50. Недоступная — прозрачность 0,4.
 struct PrimaryButtonStyle: ButtonStyle {
     var fullWidth = true
 
     func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .font(.body.weight(.semibold))
-            .foregroundStyle(.white)
-            .padding(.horizontal, fullWidth ? 16 : 36)
-            .frame(maxWidth: fullWidth ? .infinity : nil, minHeight: 50)
-            .background(Color.accentColor, in: RoundedRectangle(cornerRadius: 14))
-            .opacity(configuration.isPressed ? 0.8 : 1)
-            .contentShape(RoundedRectangle(cornerRadius: 14))
+        StyledLabel(configuration: configuration) { label, isEnabled in
+            label
+                .font(.body.weight(.semibold))
+                .foregroundStyle(.white)
+                .padding(.horizontal, fullWidth ? 16 : 36)
+                .frame(maxWidth: fullWidth ? .infinity : nil, minHeight: 50)
+                .background(Color.accentColor, in: RoundedRectangle(cornerRadius: 14))
+                .opacity(isEnabled ? (configuration.isPressed ? 0.8 : 1) : 0.4)
+                .contentShape(RoundedRectangle(cornerRadius: 14))
+        }
+    }
+}
+
+/// Подпись кнопки с доступностью из окружения: стиль кнопки сам `isEnabled` не получает.
+private struct StyledLabel<Content: View>: View {
+    let configuration: ButtonStyleConfiguration
+    let content: (ButtonStyleConfiguration.Label, Bool) -> Content
+    @Environment(\.isEnabled) private var isEnabled
+
+    var body: some View {
+        content(configuration.label, isEnabled)
     }
 }
 
@@ -180,15 +193,18 @@ struct PrimaryButtonStyle: ButtonStyle {
 struct SecondaryButtonStyle: ButtonStyle {
     var color: Color = .accentColor
     var minHeight: CGFloat = 50
+    var font: Font = .body.weight(.semibold)
 
     func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .font(.body.weight(.semibold))
-            .foregroundStyle(color)
-            .padding(.horizontal, 16)
-            .frame(maxWidth: .infinity, minHeight: minHeight)
-            .overlay(RoundedRectangle(cornerRadius: 14).strokeBorder(color, lineWidth: 1.5))
-            .opacity(configuration.isPressed ? 0.6 : 1)
-            .contentShape(RoundedRectangle(cornerRadius: 14))
+        StyledLabel(configuration: configuration) { label, isEnabled in
+            label
+                .font(font)
+                .foregroundStyle(color)
+                .padding(.horizontal, 16)
+                .frame(maxWidth: .infinity, minHeight: minHeight)
+                .overlay(RoundedRectangle(cornerRadius: 14).strokeBorder(color, lineWidth: 1.5))
+                .opacity(isEnabled ? (configuration.isPressed ? 0.6 : 1) : 0.4)
+                .contentShape(RoundedRectangle(cornerRadius: 14))
+        }
     }
 }

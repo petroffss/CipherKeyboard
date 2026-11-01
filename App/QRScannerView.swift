@@ -28,9 +28,12 @@ struct QRScannerView: View {
                     text: "На этом устройстве нет камеры. Вставьте ключ текстом.", showSettings: false)
             }
         }
+        .accessibilityElement(children: .contain)
         .accessibilityIdentifier("scanner.view")
         .task {
             if let payload = LaunchStorage.scannerOverride {
+                // Debug: строка вместо камеры. Ждём окончания анимации показа, чтобы закрытие не потерялось.
+                try? await Task.sleep(for: .milliseconds(1500))
                 deliver(payload)
                 return
             }
@@ -155,7 +158,8 @@ final class CameraController {
     }
 
     private(set) var state: State = .checking
-    let session = AVCaptureSession()
+    private let capture = CaptureSession()
+    var session: AVCaptureSession { capture.session }
     private let queue = DispatchQueue(label: "dev.cipherkeyboard.scanner")
     private var delegate: MetadataDelegate?
 
@@ -193,15 +197,22 @@ final class CameraController {
         output.setMetadataObjectsDelegate(delegate, queue: queue)
         output.metadataObjectTypes = [.qr]
         state = .running
-        let session = session
-        queue.async { session.startRunning() }
+        let capture = capture
+        queue.async { capture.session.startRunning() }
     }
 
+    /// Останавливает камеру. Ставится в ту же последовательную очередь, что и запуск, поэтому срабатывает
+    /// и тогда, когда запуск ещё не успел выполниться.
     func stop() {
-        guard session.isRunning else { return }
-        let session = session
-        queue.async { session.stopRunning() }
+        guard state == .running else { return }
+        let capture = capture
+        queue.async { capture.session.stopRunning() }
     }
+}
+
+/// Сессия камеры: запускается и останавливается только в последовательной очереди `CameraController`.
+private final class CaptureSession: @unchecked Sendable {
+    let session = AVCaptureSession()
 }
 
 /// Делегат вывода метаданных: первый QR-код передаётся на главный поток, остальные игнорируются.
