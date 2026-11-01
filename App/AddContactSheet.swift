@@ -61,11 +61,11 @@ struct AddContactSheet: View {
 
     @State private var bookBeforeSave = ContactBook()
 
-    private var canSave: Bool { validKey != nil && nameCheck.isValid && !isSaving }
+    private var canSave: Bool { model.isReady && validKey != nil && nameCheck.isValid && !isSaving }
 
     var body: some View {
         NavigationStack {
-            ScrollView {
+            ContactFormScroll(nameFocused: nameFocused, nameMessage: nameCheck.message) {
                 VStack(alignment: .leading, spacing: 0) {
                     SectionLabel(text: "Ключ собеседника", topPadding: 4)
                     keyField
@@ -97,10 +97,9 @@ struct AddContactSheet: View {
                 }
                 .padding(.horizontal, 20)
                 .padding(.bottom, 16)
+            } footer: {
+                footer
             }
-            .scrollDismissesKeyboard(.interactively)
-            .background(Color(.systemGroupedBackground))
-            .safeAreaInset(edge: .bottom) { footer }
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     // Пока идёт запись, лист не закрыть: контакт либо сохранится и лист закроется сам,
@@ -143,10 +142,14 @@ struct AddContactSheet: View {
         VStack(alignment: .leading, spacing: 0) {
             SectionLabel(text: "Отпечаток")
             FingerprintText(key: key, identifier: "addcontact.fingerprint")
-            FieldHint(text: "Сверьте отпечаток с собеседником при встрече или по телефону — он должен совпасть.")
-                .accessibilityIdentifier("addcontact.fingerprintHint")
+            FieldHint(
+                text:
+                    "Сверьте отпечаток с собеседником при встрече или по телефону — он должен совпасть. Не совпадает — не сохраняйте: ключ мог быть подменён."
+            )
+            .accessibilityIdentifier("addcontact.fingerprintHint")
             NameField(name: $name, touched: $nameTouched, check: nameCheck, identifierPrefix: "addcontact")
                 .focused($nameFocused)
+                .id("contact.nameBlock")
         }
     }
 
@@ -156,7 +159,14 @@ struct AddContactSheet: View {
                 .buttonStyle(PrimaryButtonStyle())
                 .disabled(!canSave)
                 .accessibilityIdentifier("addcontact.save")
-            if saveFailed {
+            if !model.isReady {
+                Button("Повторить чтение контактов", action: model.retry)
+                    .accessibilityIdentifier("addcontact.retry")
+                Text("Не удалось прочитать контакты. Контакты не удалены.")
+                    .font(.footnote)
+                    .foregroundStyle(.red)
+                    .accessibilityIdentifier("addcontact.readError")
+            } else if saveFailed {
                 Text("Не удалось сохранить контакт. Попробуйте ещё раз.")
                     .font(.footnote)
                     .foregroundStyle(.red)
@@ -264,5 +274,41 @@ struct NameField: View {
                 .accessibilityIdentifier("\(identifierPrefix).nameCount")
                 .padding(.top, 6)
         }
+    }
+}
+
+/// Кнопка занимает собственное место под прокруткой. Прокручиваем весь блок имени (включая ошибку),
+/// когда меняются фокус, сообщение или доступная высота после появления клавиатуры.
+struct ContactFormScroll<Content: View, Footer: View>: View {
+    let nameFocused: Bool
+    let nameMessage: String?
+    @ViewBuilder let content: () -> Content
+    @ViewBuilder let footer: () -> Footer
+
+    var body: some View {
+        VStack(spacing: 0) {
+            ScrollViewReader { proxy in
+                ScrollView { content() }
+                    .scrollDismissesKeyboard(.interactively)
+                    .onChange(of: nameFocused) { scrollToName(proxy) }
+                    .onChange(of: nameMessage) { scrollToName(proxy, revealMessage: nameMessage != nil) }
+                    .onScrollGeometryChange(for: CGSize.self) { geometry in
+                        geometry.containerSize
+                    } action: { _, _ in
+                        scrollToName(proxy)
+                    }
+                    .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardDidShowNotification)) {
+                        _ in
+                        scrollToName(proxy)
+                    }
+            }
+            footer()
+        }
+        .background(Color(.systemGroupedBackground))
+    }
+
+    private func scrollToName(_ proxy: ScrollViewProxy, revealMessage: Bool = false) {
+        guard nameFocused || revealMessage else { return }
+        withAnimation { proxy.scrollTo("contact.nameBlock", anchor: .bottom) }
     }
 }

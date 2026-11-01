@@ -6,7 +6,8 @@ final class ContactsUITests: XCTestCase {
     private let notAKey = "Это не ключ CipherKeyboard. Вставьте строку целиком — она начинается с ckpub1:"
     private let newerVersion = "Этот ключ создан более новой версией CipherKeyboard. Обновите приложение."
     private let ownKeyMessage = "Это ваш собственный ключ. Добавьте ключ собеседника."
-    private let hint = "Сверьте отпечаток с собеседником при встрече или по телефону — он должен совпасть."
+    private let hint =
+        "Сверьте отпечаток с собеседником при встрече или по телефону — он должен совпасть. Не совпадает — удалите контакт: ключ мог быть подменён."
 
     override func setUp() {
         continueAfterFailure = false
@@ -327,7 +328,7 @@ final class ContactsUITests: XCTestCase {
         app.buttons["contact.delete"].tap()
         let dialogTitle = app.staticTexts["Удалить контакт «Анна»?"]
         XCTAssertTrue(dialogTitle.waitForExistence(timeout: 5))
-        XCTAssertTrue(app.staticTexts["Вы не сможете отправлять ему сообщения."].exists)
+        XCTAssertTrue(app.staticTexts["Вы больше не сможете писать этому контакту."].exists)
         let confirm = app.buttons["contact.deleteConfirm"].firstMatch
         XCTAssertTrue(confirm.exists)
         XCTAssertEqual(confirm.label, "Удалить")
@@ -462,6 +463,108 @@ final class ContactsUITests: XCTestCase {
         XCTAssertEqual(contactRows(app).count, 1)
     }
 
+    // MARK: - E28
+
+    @MainActor
+    func testNameFieldVisibleAboveSaveWithKeyboard() {
+        let app = launch(["-keystore", "memory", "-contacts", "memory"])
+        openContacts(app)
+        addContact(name: "Анна", key: TestKeys.k1.publicKey, in: app)
+        openAddSheet(app)
+        enterKey(TestKeys.k2.publicKey, in: app)
+        let name = app.textFields["addcontact.name"]
+        name.tap()
+        assertNameAboveSave(app, prefix: "addcontact", message: nil)
+        name.typeText("Анна")
+        assertNameAboveSave(app, prefix: "addcontact", message: "Контакт с таким именем уже есть")
+        let screenshot = XCTAttachment(screenshot: app.screenshot())
+        screenshot.name = "E28-add-duplicate-\(Int(app.frame.width))pt"
+        screenshot.lifetime = .keepAlways
+        add(screenshot)
+        app.buttons["addcontact.cancel"].tap()
+        row(named: "Анна", in: app).tap()
+        app.buttons["contact.rename"].tap()
+        let rename = app.textFields["rename.name"]
+        XCTAssertTrue(rename.waitForExistence(timeout: 5))
+        replaceText(in: rename, with: "", app: app)
+        assertNameAboveSave(app, prefix: "rename", message: "Введите имя")
+        let renameScreenshot = XCTAttachment(screenshot: app.screenshot())
+        renameScreenshot.name = "E28-rename-empty-\(Int(app.frame.width))pt"
+        renameScreenshot.lifetime = .keepAlways
+        add(renameScreenshot)
+    }
+
+    @MainActor
+    private func assertNameAboveSave(_ app: XCUIApplication, prefix: String, message: String?) {
+        XCTAssertTrue(app.keyboards.firstMatch.waitForExistence(timeout: 5), "Нужна настоящая экранная клавиатура")
+        XCTAssertGreaterThan(app.keyboards.count, 0)
+        let field = app.textFields["\(prefix).name"]
+        let error = app.staticTexts["\(prefix).nameError"]
+        let save = app.buttons["\(prefix).save"]
+        if let message {
+            XCTAssertTrue(error.waitForExistence(timeout: 5))
+            XCTAssertEqual(error.label, message)
+        }
+        let visible = NSPredicate { _, _ in
+            let keyboard = app.keyboards.firstMatch.frame
+            let bottom = min(save.frame.minY, keyboard.minY)
+            let top = app.navigationBars.firstMatch.frame.maxY
+            let nameFrame = field.frame
+            guard nameFrame.height > 0, nameFrame.minY >= top, nameFrame.maxY <= bottom,
+                !nameFrame.intersects(save.frame), !nameFrame.intersects(keyboard), field.isHittable
+            else { return false }
+            guard message != nil else { return true }
+            return error.frame.height > 0 && error.frame.minY >= nameFrame.maxY
+                && error.frame.maxY <= bottom && !error.frame.intersects(save.frame)
+                && !error.frame.intersects(keyboard)
+        }
+        XCTAssertEqual(
+            XCTWaiter().wait(for: [XCTNSPredicateExpectation(predicate: visible, object: nil)], timeout: 5),
+            .completed,
+            "Поле \(field.frame), ошибка \(error.exists ? error.frame : .zero), Сохранить \(save.frame), клавиатура \(app.keyboards.firstMatch.frame)"
+        )
+    }
+
+    @MainActor
+    func testRenameSurvivesUnreadableReloadAfterWriteFailure() {
+        let app = launch(["-keystore", "memory", "-contacts-seed", "1", "-contacts-fault", "write-then-read"])
+        openContacts(app)
+        row(named: "Контакт 001", in: app).tap()
+        app.buttons["contact.rename"].tap()
+        let field = app.textFields["rename.name"]
+        XCTAssertTrue(field.waitForExistence(timeout: 5))
+        replaceText(in: field, with: "Анна", app: app)
+        app.buttons["rename.save"].tap()
+        XCTAssertTrue(app.staticTexts["rename.readError"].waitForExistence(timeout: 5))
+        XCTAssertEqual(field.value as? String, "Анна")
+        XCTAssertFalse(app.buttons["rename.save"].isEnabled)
+        XCTAssertTrue(app.buttons["rename.cancel"].isEnabled)
+        app.buttons["rename.retry"].tap()
+        XCTAssertTrue(app.staticTexts["rename.readError"].waitForNonExistence(timeout: 5))
+        XCTAssertEqual(field.value as? String, "Анна")
+        app.buttons["rename.save"].tap()
+        XCTAssertTrue(field.waitForNonExistence(timeout: 5))
+        XCTAssertEqual(app.staticTexts["contact.title"].label, "Анна")
+    }
+
+    @MainActor
+    func testDeleteShowsUnreadableReloadAndCanRetry() {
+        let app = launch(["-keystore", "memory", "-contacts-seed", "1", "-contacts-fault", "write-then-read"])
+        openContacts(app)
+        row(named: "Контакт 001", in: app).tap()
+        app.buttons["contact.delete"].tap()
+        app.buttons["contact.deleteConfirm"].firstMatch.tap()
+        XCTAssertTrue(app.staticTexts["contacts.error"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["contacts.error"].label.contains("Контакты не удалены."))
+        XCTAssertFalse(app.buttons["contact.delete"].exists)
+        app.buttons["contacts.retry"].tap()
+        XCTAssertTrue(app.staticTexts["contact.title"].waitForExistence(timeout: 5))
+        XCTAssertEqual(app.staticTexts["contact.title"].label, "Контакт 001")
+        app.buttons["contact.delete"].tap()
+        app.buttons["contact.deleteConfirm"].firstMatch.tap()
+        XCTAssertTrue(app.staticTexts["contacts.empty"].waitForExistence(timeout: 5))
+    }
+
     // MARK: - Помощники
 
     @MainActor
@@ -555,6 +658,9 @@ final class ContactsUITests: XCTestCase {
             let value = (field.value as? String) ?? ""
             return value == (field.placeholderValue ?? "") ? "" : value
         }
+        // Сначала XCTest раскрывает само поле и ставит фокус. На 375 pt прежняя экранная координата
+        // могла лежать на клавиатуре и менять ключ вместо имени. После фокуса берём обновлённую рамку.
+        field.tap()
         // Нажатие в правый нижний угол текста (внутри отступа 12 pt) ставит курсор в конец последней строки.
         let frame = field.frame
         let end = app.coordinate(withNormalizedOffset: .zero)

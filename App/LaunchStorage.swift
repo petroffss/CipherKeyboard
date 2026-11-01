@@ -27,8 +27,10 @@ enum LaunchStorage {
             // Только для UI-тестов (03 AC20): хранилище контактов в памяти, настоящий файл не трогается.
             let seed = argument(after: "-contacts-seed").flatMap(Int.init)
             let fault = argument(after: "-contacts-fault") == "read"
-            if argument(after: "-contacts") == "memory" || seed != nil || fault {
+            let writeThenReadFault = argument(after: "-contacts-fault") == "write-then-read"
+            if argument(after: "-contacts") == "memory" || seed != nil || fault || writeThenReadFault {
                 let storage = seed.map { InMemoryContactStorage.seeded(count: $0) } ?? InMemoryContactStorage()
+                if writeThenReadFault { return ContactStore(storage: UnreadableAfterWriteFailure(storage: storage)) }
                 if fault { return ContactStore(storage: InMemoryContactStorage(data: storage.data, failingReads: 1)) }
                 return ContactStore(storage: storage)
             }
@@ -53,3 +55,37 @@ enum LaunchStorage {
         }
     #endif
 }
+
+#if DEBUG
+    /// UI-регрессия: запись падает, следующее чтение недоступно; «Повторить» снова читает прежние байты.
+    /// Только память, настоящий файл не меняется.
+    private final class UnreadableAfterWriteFailure: ContactStorageWriting, @unchecked Sendable {
+        private let lock = NSLock()
+        private let storage: InMemoryContactStorage
+        private var shouldFailWrite = true
+        private var shouldFailRead = false
+
+        init(storage: InMemoryContactStorage) { self.storage = storage }
+
+        func read() throws -> Data? {
+            try lock.withLock {
+                if shouldFailRead {
+                    shouldFailRead = false
+                    throw CocoaError(.fileReadUnknown)
+                }
+                return try storage.read()
+            }
+        }
+
+        func write(_ data: Data) throws {
+            try lock.withLock {
+                if shouldFailWrite {
+                    shouldFailWrite = false
+                    shouldFailRead = true
+                    throw CocoaError(.fileWriteUnknown)
+                }
+                try storage.write(data)
+            }
+        }
+    }
+#endif

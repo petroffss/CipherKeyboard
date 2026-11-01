@@ -313,6 +313,36 @@ struct ContactBookTests {
         #expect(try FileManager.default.contentsOfDirectory(atPath: directory.path) == [FileContactStorage.fileName])
     }
 
+    @Test func interruptedStagingIsRemovedWithoutChangingCommittedContacts() throws {
+        let directory = FileManager.default.temporaryDirectory
+            .appendingPathComponent("contacts-\(UUID().uuidString)", isDirectory: true)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: false)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let url = directory.appendingPathComponent(FileContactStorage.fileName)
+        let storage = FileContactStorage(url: url)
+        let committed = try ContactStore(storage: storage).add(name: "Анна", key: newKey(), own: nil)
+        let original = try Data(contentsOf: url)
+        let unrelated = directory.appendingPathComponent("unrelated.tmp")
+        try Data("other data".utf8).write(to: unrelated)
+
+        // Имитируем обрыв на каждом содержательном этапе: папка, частичные и полные байты записи.
+        for pending in [Data(), Data(original.prefix(original.count / 2)), original] {
+            var staging = directory.appendingPathComponent(".contacts-staging", isDirectory: true)
+            try FileManager.default.createDirectory(at: staging, withIntermediateDirectories: false)
+            var values = URLResourceValues()
+            values.isExcludedFromBackup = true
+            try staging.setResourceValues(values)
+            try pending.write(to: staging.appendingPathComponent("pending"))
+            let reopened = ContactStore(storage: storage)
+            #expect(!FileManager.default.fileExists(atPath: staging.path))
+            #expect(try Data(contentsOf: url) == original)
+            #expect(reopened.read() == .contacts(committed.contacts))
+            #expect(try Data(contentsOf: unrelated) == Data("other data".utf8))
+        }
+        let after = try ContactStore(storage: storage).add(name: "Борис", key: newKey(), own: nil)
+        #expect(names(after) == ["Анна", "Борис"])
+    }
+
     @Test func renameAndRemoveNeverOverwriteUnreadableFile() throws {
         let (book, valid) = try twoContacts()
         let ids = book.contacts.map(\.id)

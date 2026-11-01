@@ -7,7 +7,7 @@ struct ContactDetailView: View {
     let model: ContactsModel
     let id: UUID
     @Environment(\.dismiss) private var dismiss
-    @State private var showingRename = false
+    @State private var renamingContact: Contact?
     @State private var confirmingDelete = false
     @State private var isDeleting = false
     @State private var deleteFailed = false
@@ -16,18 +16,22 @@ struct ContactDetailView: View {
         Group {
             if let contact = model.contact(id: id) {
                 card(for: contact)
+            } else if case .unreadable = model.state {
+                ContactsErrorView(retry: model.retry)
+                    .background(Color(.systemGroupedBackground))
+            } else if case .loading = model.state {
+                ProgressView().frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
-                Color(.systemGroupedBackground)
+                ContentUnavailableView(
+                    "Контакт больше не существует", systemImage: "person.crop.circle.badge.questionmark")
             }
         }
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar(.visible, for: .navigationBar)
-        .sheet(isPresented: $showingRename) {
-            if let contact = model.contact(id: id) {
-                RenameSheet(model: model, contact: contact)
-                    .presentationDetents([.large])
-            }
+        .sheet(item: $renamingContact) { contact in
+            RenameSheet(model: model, contact: contact)
+                .presentationDetents([.large])
         }
         // С iOS 26 системный диалог на iPhone — всплывающее меню, где кнопка с ролью `.cancel` скрыта (отмена — нажатием
         // мимо). «Отмена» по AC15 должна быть видна, поэтому она — обычная кнопка без роли; нажатие мимо тоже отменяет.
@@ -39,7 +43,7 @@ struct ContactDetailView: View {
                 .accessibilityIdentifier("contact.deleteConfirm")
             Button("Отмена") {}
         } message: {
-            Text("Вы не сможете отправлять ему сообщения.")
+            Text("Вы больше не сможете писать этому контакту.")
         }
     }
 
@@ -53,8 +57,11 @@ struct ContactDetailView: View {
                     .accessibilityIdentifier("contact.title")
                 SectionLabel(text: "Отпечаток")
                 FingerprintText(key: contact.publicKey, identifier: "contact.fingerprint")
-                FieldHint(text: "Сверьте отпечаток с собеседником при встрече или по телефону — он должен совпасть.")
-                    .accessibilityIdentifier("contact.hint")
+                FieldHint(
+                    text:
+                        "Сверьте отпечаток с собеседником при встрече или по телефону — он должен совпасть. Не совпадает — удалите контакт: ключ мог быть подменён."
+                )
+                .accessibilityIdentifier("contact.hint")
                 SectionLabel(text: "Открытый ключ")
                 PublicKeyText(text: contact.publicKey.string, identifier: "contact.publicKey")
                     .padding(.vertical, 8)
@@ -63,7 +70,7 @@ struct ContactDetailView: View {
                     .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 10))
                     .padding(.top, 6)
                 // Пока идёт удаление, переименовать нечего: обе кнопки выключены.
-                Button("Переименовать") { showingRename = true }
+                Button("Переименовать") { renamingContact = contact }
                     .buttonStyle(SecondaryButtonStyle())
                     .disabled(isDeleting)
                     .accessibilityIdentifier("contact.rename")
@@ -125,20 +132,26 @@ struct RenameSheet: View {
 
     var body: some View {
         NavigationStack {
-            ScrollView {
+            ContactFormScroll(nameFocused: focused, nameMessage: check.message) {
                 NameField(name: $name, touched: $touched, check: check, identifierPrefix: "rename")
                     .focused($focused)
+                    .id("contact.nameBlock")
                     .padding(.horizontal, 20)
                     .padding(.bottom, 16)
-            }
-            .background(Color(.systemGroupedBackground))
-            .safeAreaInset(edge: .bottom) {
+            } footer: {
                 VStack(spacing: 8) {
                     Button("Сохранить", action: save)
                         .buttonStyle(PrimaryButtonStyle())
-                        .disabled(!check.isValid || isSaving)
+                        .disabled(!model.isReady || !check.isValid || isSaving)
                         .accessibilityIdentifier("rename.save")
-                    if saveFailed {
+                    if !model.isReady {
+                        Text("Не удалось прочитать контакты. Контакты не удалены.")
+                            .font(.footnote)
+                            .foregroundStyle(.red)
+                            .accessibilityIdentifier("rename.readError")
+                        Button("Повторить чтение контактов", action: model.retry)
+                            .accessibilityIdentifier("rename.retry")
+                    } else if saveFailed {
                         Text("Не удалось сохранить контакт. Попробуйте ещё раз.")
                             .font(.footnote)
                             .foregroundStyle(.red)

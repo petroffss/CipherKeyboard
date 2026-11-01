@@ -32,6 +32,11 @@ final class ContactsModel {
         return ContactBook()
     }
 
+    var isReady: Bool {
+        if case .ready = state { return true }
+        return false
+    }
+
     func contact(id: UUID) -> Contact? { book.contact(id: id) }
 
     /// Первая загрузка при появлении вкладки.

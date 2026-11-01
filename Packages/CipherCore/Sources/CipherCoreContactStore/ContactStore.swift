@@ -9,6 +9,12 @@ import Foundation
 public protocol ContactStorageWriting: ContactStorageReading {
     /// Заменяет файл целиком. Неудача — ошибка; прежний файл при этом остаётся прежним.
     func write(_ data: Data) throws
+    /// Удаляет только незавершённые записи этого хранилища при открытии приложения.
+    func recoverInterruptedWrite() throws
+}
+
+extension ContactStorageWriting {
+    public func recoverInterruptedWrite() throws {}
 }
 
 /// Книга контактов приложения: каждая операция читает файл, меняет книгу и записывает файл целиком.
@@ -18,6 +24,7 @@ public struct ContactStore: Sendable {
 
     public init(storage: any ContactStorageWriting) {
         self.storage = storage
+        try? storage.recoverInterruptedWrite()
     }
 
     /// Файл в общем контейнере App Group.
@@ -61,30 +68,44 @@ public struct ContactStore: Sendable {
 }
 
 extension FileContactStorage: ContactStorageWriting {
-    /// Замена файла одним шагом: байты и все атрибуты (защита до первой разблокировки — клавиатура читает контакты
-    /// и до неё; исключение из резервной копии — контакты без приватного ключа бесполезны, а в чужой копии лишние)
-    /// ставятся на промежуточный файл рядом, и только потом он переименованием `rename(2)` встаёт на место прежнего.
-    /// Любая ошибка до переименования — прежний файл не тронут ни одним байтом, промежуточный удаляется;
-    /// после переименования шагов, которые могут упасть, нет. Атрибуты и класс защиты при переименовании
-    /// остаются на файле (они принадлежат файлу, а не имени).
+    // Только приложение пишет файл. Блокировка не даёт второму экземпляру стора удалить текущую запись.
+    private static let writeLock = NSLock()
+
+    private var stagingDirectory: URL? {
+        url?.deletingLastPathComponent().appendingPathComponent(".contacts-staging", isDirectory: true)
+    }
+
+    public func recoverInterruptedWrite() throws {
+        try Self.writeLock.withLock {
+            guard let stagingDirectory else { return }
+            if FileManager.default.fileExists(atPath: stagingDirectory.path) {
+                try FileManager.default.removeItem(at: stagingDirectory)
+            }
+        }
+    }
+
+    /// Папка исключается из копии и защищается ДО появления в ней байтов контактов. Поэтому даже обрыв
+    /// процесса между записью и rename оставляет только защищённый, исключённый из копии остаток.
+    /// Следующее открытие ContactStore удалит папку; чужие файлы в App Group очистка не затрагивает.
+    /// rename(2) атомарно меняет основной файл вместе с заранее установленными атрибутами.
     public func write(_ data: Data) throws {
-        guard let url else { throw CocoaError(.fileWriteUnknown) }
-        // Имя без «contact»: если процесс оборвётся между шагами, остаток не спутать с файлом контактов.
-        var staging = url.deletingLastPathComponent()
-            .appendingPathComponent(".\(UUID().uuidString).tmp", isDirectory: false)
-        do {
-            try data.write(to: staging, options: [.atomic])
-            try FileManager.default.setAttributes(
-                [.protectionKey: FileProtectionType.completeUntilFirstUserAuthentication], ofItemAtPath: staging.path)
+        try Self.writeLock.withLock {
+            guard let url, var directory = stagingDirectory else { throw CocoaError(.fileWriteUnknown) }
+            let manager = FileManager.default
+            if manager.fileExists(atPath: directory.path) { try manager.removeItem(at: directory) }
+            try manager.createDirectory(
+                at: directory, withIntermediateDirectories: false,
+                attributes: [.protectionKey: FileProtectionType.completeUntilFirstUserAuthentication])
+            defer { try? manager.removeItem(at: directory) }
             var values = URLResourceValues()
             values.isExcludedFromBackup = true
+            try directory.setResourceValues(values)
+            var staging = directory.appendingPathComponent("pending")
+            try data.write(to: staging, options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
             try staging.setResourceValues(values)
             guard Darwin.rename(staging.path, url.path) == 0 else {
                 throw POSIXError(POSIXErrorCode(rawValue: errno) ?? .EIO)
             }
-        } catch {
-            try? FileManager.default.removeItem(at: staging)
-            throw error
         }
     }
 }
