@@ -25,6 +25,8 @@ struct MainTabs: View {
     let info: MyKeyInfo
     @State private var selection: AppTab = .myKey
     @State private var contacts: ContactsModel
+    @State private var setup = SetupModel.live()
+    @Environment(\.scenePhase) private var scenePhase
 
     init(info: MyKeyInfo) {
         self.info = info
@@ -33,7 +35,7 @@ struct MainTabs: View {
 
     var body: some View {
         TabView(selection: $selection) {
-            MyKeyView(info: info)
+            MyKeyView(info: info, setupNeeded: !setup.confirmed, openSetup: { selection = .setup })
                 .background(TabBarIdentifiers(identifiers: Self.identifiers).allowsHitTesting(false))
                 .tabItem { tabLabel("Мой ключ", systemImage: "key", id: "tab.myKey") }
                 .tag(AppTab.myKey)
@@ -43,9 +45,12 @@ struct MainTabs: View {
             PlaceholderTabView(title: "Расшифровать")
                 .tabItem { tabLabel("Расшифровать", systemImage: "lock.open", id: "tab.decrypt") }
                 .tag(AppTab.decrypt)
-            PlaceholderTabView(title: "Настройка")
+            SetupView(model: setup)
                 .tabItem { tabLabel("Настройка", systemImage: "gearshape", id: "tab.setup") }
                 .tag(AppTab.setup)
+        }
+        .onChange(of: scenePhase, initial: true) { _, phase in
+            if phase == .active { setup.refresh() }
         }
     }
 

@@ -6,6 +6,8 @@ import UIKit
 /// Приватный ключ здесь не показывается и не экспортируется.
 struct MyKeyView: View {
     let info: MyKeyInfo
+    var setupNeeded = false
+    var openSetup: () -> Void = {}
     @State private var toastVisible = false
     @State private var toastTask: Task<Void, Never>?
     /// Счётчик нажатий «Скопировать ключ» — триггер тактильного отклика: меняется при каждом нажатии,
@@ -113,6 +115,18 @@ struct MyKeyView: View {
                     .padding(.top, 12)
                 }
                 .padding(.top, 12)
+                if setupNeeded {
+                    Button(action: openSetup) {
+                        Label("Проверьте подключение клавиатуры", systemImage: "keyboard")
+                            .font(.subheadline.weight(.semibold))
+                            .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+                            .padding(12)
+                            .background(
+                                Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 14))
+                    }
+                    .accessibilityIdentifier("mykey.setupBanner")
+                    .padding(.top, 16)
+                }
             }
             .padding(.horizontal, 20)
         }

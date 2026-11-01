@@ -25,7 +25,7 @@ final class MyKeyUITests: XCTestCase {
         // Вкладки: подписи, порядок слева направо, выбрана «Мой ключ».
         let tabIDs = ["tab.myKey", "tab.contacts", "tab.decrypt", "tab.setup"]
         let tabLabels = ["Мой ключ", "Контакты", "Расшифровать", "Настройка"]
-        let tabs = tabIDs.map { app.tabBars.buttons[$0] }
+        let tabs = tabIDs.map { app.navigationTab($0) }
         for (tab, label) in zip(tabs, tabLabels) {
             XCTAssertTrue(tab.waitForExistence(timeout: 5), "нет вкладки \(label)")
             XCTAssertEqual(tab.label, label)
