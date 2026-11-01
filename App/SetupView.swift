@@ -25,6 +25,9 @@ struct SetupView: View {
                         .accessibilityIdentifier("setup.openSettings")
                 }
                 explanation
+                NavigationLink("Попробовать клавиатуру") { KeyboardPreviewView() }
+                    .buttonStyle(SecondaryButtonStyle())
+                    .accessibilityIdentifier("setup.tryKeyboard")
             }
             .padding(.horizontal, 20)
             .padding(.vertical, 8)

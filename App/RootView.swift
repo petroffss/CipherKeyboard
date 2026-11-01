@@ -45,7 +45,7 @@ struct MainTabs: View {
             PlaceholderTabView(title: "Расшифровать")
                 .tabItem { tabLabel("Расшифровать", systemImage: "lock.open", id: "tab.decrypt") }
                 .tag(AppTab.decrypt)
-            SetupView(model: setup)
+            NavigationStack { SetupView(model: setup) }
                 .tabItem { tabLabel("Настройка", systemImage: "gearshape", id: "tab.setup") }
                 .tag(AppTab.setup)
         }

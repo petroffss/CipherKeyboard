@@ -7,8 +7,15 @@ struct CipherKeyboardApp: App {
 
     var body: some Scene {
         WindowGroup {
-            RootView(model: model)
-                .task { model.loadIfNeeded() }
+            #if DEBUG
+                if ProcessInfo.processInfo.arguments.contains("-typing-isolation") {
+                    Text(KeyboardIsolationProbe.run()).accessibilityIdentifier("typing.isolationResult")
+                } else {
+                    RootView(model: model).task { model.loadIfNeeded() }
+                }
+            #else
+                RootView(model: model).task { model.loadIfNeeded() }
+            #endif
         }
     }
 }

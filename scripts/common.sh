@@ -15,7 +15,7 @@ SANDBOX_NAME="CipherKeyboard-Sandbox"
 
 # Все .swift-файлы проекта (без сборочных папок).
 swift_files() {
-    find App Keyboard UITests "$CORE_PACKAGE" -name '*.swift' -not -path '*/.build/*' -not -path '*/.swiftpm/*' | sort
+    find App Keyboard UITests DebugHost DebugHostTests "$CORE_PACKAGE" -name '*.swift' -not -path '*/.build/*' -not -path '*/.swiftpm/*' | sort
 }
 
 # UDID доступного симулятора по имени (первый с таким именем).
