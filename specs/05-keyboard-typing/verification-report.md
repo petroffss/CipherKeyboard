@@ -1,67 +1,79 @@
-# Independent verification — round 3
+# Independent verification — round 4
 
-Frozen source: `3df0780388f7df99e6f376c9ab550c2a3a4e1d51`; loaded build marker `861862296`. Verifier made no product or test edits. This report uses independent executions, not builder test claims. Main simulator `CE56E4D3-8193-4BFA-8996-FA3AA4A628C9` was untouched.
+4 важных замечания по E14; итог **15/17 pass**. E14 и E17 — **fail**. Фича не готова к приёмке или слиянию.
 
-## Completed checks
+Frozen commit: `2c7726eb52ee2b1691e4fef50de376971e50785c`; loaded/source marker: `956018778`. Verifier не строил фичу и не менял product/test/script код. Проверены 67 Swift-файлов: после прогонов их хеши не изменились. Все результаты ниже получены независимо на этом frozen source; старые builder/round3 результаты не использованы как текущие.
 
-- `scripts/test.sh core`: exit0, **15 typing tests/4 suites +135 crypto/core tests/23 suites**. The overlapping-touch tests now require both valid releases (Пр or Рп), independent cancellations and timers. `core.log`.
-- `scripts/lint.sh`: exit0, **66 files**. `lint.log`.
-- Isolated Regression device, `.build/VerifierRound2Regression`: `scripts/test.sh ui` restricted to `KeyboardTypingTests`, `ContactsUITests/testDeleteAsksConfirmation`, and `ContactsUITests/testNameValidationInSheet`: **4/4 passed,0 skipped,exit0**. Bundle `.build/TestResults/ui-20261101-154223.xcresult`, `focused-ui.log`, `focused-ui-results.json`. Preview uses actual setup status/fingerprint and real keys; connected production controller verifies proxy isolation and accessibility/globe visibility boundaries.
-- `scripts/build.sh -configuration Release` with separate `.build/VerifierRound3Release`: exit0. Actual Release app/extension binaries contain none of nine debug/fixture/seed/isolation/canary/host markers; no DebugHost files in app. `release-build.log`, `release-audit.json`. The script's generic success message prints a Debug path; the audited files were the actual `Release-iphonesimulator` binaries.
-- Installed-byte verification: final runtime runner compares installed and built extension dylib, then verifies loaded revision from the real UI. SHA256 `e85e22bbb5193f007c440d094f2f79cce75f85d45dcf23b3dbb5409091f554df`. `runtime.log`.
+## Выполненные проверки
 
-## E12: no-export interaction passed; full persistence audit did not
-
-The dedicated serial canary UI test passed **1/1 in24.3s**, exit0 (`audit-ui.log`, `/tmp/verifier-r3-audit.xcresult`). It inserted the exact synthetic canary, checked no copy/cut/paste/share menu, dragged toward the host without changing it, confirmed actual hide and panel disappearance, reopened empty, reseeded, backgrounded and terminated the host. No other UI/clipboard test ran concurrently.
-
-Before/after snapshots (`audit-before.json`, `audit-after.json`) show16 checked files unchanged, defaults unchanged, no UTF-8/UTF-16 canary matches in checked app/extension/group files, and no canary in scoped app/extension/host logs. Clipboard SHA256 was also unchanged.
-
-**These facts do not pass E12.** The sentinel did not install: `clipboardIsSentinel=false` already in the before-snapshot. A bounded diagnostic confirmed correct `simctl pbcopy` syntax and exit0, but three immediate `pbpaste` reads retained the same93-byte hash rather than the34-byte synthetic sentinel. No actual clipboard contents were printed. The audit message “clipboard sentinel changed” is misleading here: the observed hash did not change; setup was invalid.
-
-**The selected Keychain metadata lists had0 rows before and after.** An empty-list comparison is not evidence that actual identity entries stayed unchanged. Any earlier shorthand “keychain metadata unchanged” must be understood as an invalid coverage claim and is corrected here. No secret/value columns were read. A future authorized verification must establish a known nonempty identity fixture and validate that the chosen Keychain database/query actually sees its identifying metadata; then compare that metadata without disclosing secrets. It must also assert a successfully installed sentinel before proceeding.
-
-## E14: 18/186 captured; full design acceptance failed
-
-All three native profiles were attempted with independent build directories. Initial375 reached actual Full Access ON but failed extension activation with a visible system English keyboard. Initial402 failed waiting for Full Access value1. Concurrent load is a possible confound, not an established cause.
-
-Native440 passed setup and captured **18 screenshot/geometry pairs**: all15 extension states in light portrait440×956, plus light landscape956×440 ru-empty,ru-text,shift. It then failed when the landscape `caps` submenu item was not hittable after three swipes (`TypingTestSupport.swift:113`). This is a Debug/system-menu test-harness blocker, not proof that the production Caps key is broken. A planned serial402 control run was interrupted before frames at coordinator instruction after E14 failed in the third review round. No further matrix retries or fixes were made.
-
-`matrix-440-frames/manifest.json` names every captured image/reference anchor and explicitly lists **168 missing frames**. All18 raw images were individually opened and compared against the matching approved mockup markup; `design-review.md` records each comparison and `geometry-review.json` records dimensions. Portrait panels316/378pt, landscape220pt; key heights44/32pt; minimum letter widths33.56/61.09pt. Four rows remain visible, popup is inside panel, error/counter are visible in the captured frames.
-
-Observed deviations are unresolved: all15 portrait frames show a soft blur/fade over the upper portion of editor text/placeholder, absent in the three landscape frames and reference. Examples: `matrix-440-frames/raw-0/48A0B5DD-DF07-4385-A68F-F1923CF34608.png` (ru-empty) and `DE41C640-8639-41F0-99E1-4AC17C5848DE.png` (ru-text). The cause was not diagnosed. Multiline and limit fixtures also use different synthetic text from the approved excerpt; the literal reference text therefore was not matched. This is not full design acceptance and must not be reported as “18 frames passed” or silently generalized to missing sizes/themes.
-
-## E17: full regression was not completed green
-
-The earlier frozen round2 full suite was interrupted after11 passes,2 actual Contact UI failures, and one canceled test. On final round3 both actual failures passed focused reruns. Their assertions were sheet disappearance after Save (`ContactsUITests:615`) and row appearance after saving trimmed name (`:205`). This suggests timing sensitivity but does not establish baseline attribution and does not turn the incomplete full suite green. A full final-snapshot suite was not rerun after coordinator bounded the third-round workflow. Core/lint/Release/targeted successes cannot substitute for that requirement.
-
-## Prior finding correction
-
-The original round1 claim of retained draft after genuine Hide was not established: the old test neither confirmed actual Hide after rotation nor proved current installed app bytes. Round2 and current checks use settled host coordinates, focusfalse, panel absence and loaded revision. Preserve that correction; do not repeat the unsupported old production-defect claim.
-
-The final current-runtime result and17-eval table follow below.
-
-## Final result: 14/17 pass; E12,E14,E17 fail
-
-The independent final serial runtime completed **7/7 passed,0 failures,exit0** in266.985s (`runtime-summary.json`). Five statuses22.570s; real rotation/hide/reopen18.046s; background/system globe/shell parity54.044s; Full Access ON with both host variants64.437s; OFF with both variants66.895s; canary/no-export/lifecycle23.665s; ordinary Settings search12.948s. Installed hash/revision verified by runner. Receipt schema independently checked: only date/version,version1,numeric date (`receipt-schema.json`).
-
-| Eval | Verdict | Independent evidence |
+| Проверка | Текущий результат | Доказательство |
 |---|---|---|
-| E1 | pass | insertsAtGraphemeBoundary, exact insertion/cursor result. |
-| E2 | pass | All four exact layout arrays/transitions. |
-| E3 | pass | Auto/one-shot/Caps and299/301ms state machine. |
-| E4 | pass |449/450ms alternatives and cancellation. |
-| E5 | pass | Whole composed/flag/ZWJ Character deletion. |
-| E6 | pass |399/400/480ms repeat and timer cancellation. |
-| E7 | pass | UTF-8 thresholds, atomic rejection, cursor unchanged. |
-| E8 | pass | Current connected production-controller proxy spy UI probe. |
-| E9 | pass | Real preview keys; host/status/fingerprint unchanged; reset/absence of second keyboard. |
-| E10 | pass | Current real ON/OFF × empty/selected host, full edit sequence, ordinary Settings and receipt schema. |
-| E11 | pass | Actual hide/focus loss/panel absence/reopen reset after rotation; background/globe reset; current preview lifecycle and model cancellation. |
-| E12 | fail | Successful canary gestures, but sentinel setup invalid and Keychain metadata0rows. No leak observed; complete audit not proved. |
-| E13 | pass | Five status fixtures typed/deleted; no-access lazy factory guards. |
-| E14 | fail |18/186 reviewed,168missing; system fixture-menu harness blocked; visual deviations documented. |
-| E15 | pass | Actual controller accessibility/OS visibility boundary plus real system globe list/switch. |
-| E16 | pass |500 actions/10 resets/zero timers, fixed overlapping-touch expectations, actual shell parity. |
-| E17 | fail | No completed green full final-snapshot UI suite; matrix failed despite targeted/core/lint/Release successes. |
+| Core | exit0; 15 typing tests/4 suites +135 core tests/23 suites, всего150 | `evidence/verifier-round4/core.log`, `core-exit.txt` |
+| Lint | exit0;67 файлов | `lint.log` |
+| Явная Debug сборка | exit0 | `debug-build.log` |
+| Явная Release сборка | exit0 | `release-build.log` |
+| Debug/Release binary audit | pass; Debug положительный контроль, Release0из21Debug markers; сетевых маркеров/frameworks0 | `debug-binary-audit.json`, `release-binary-audit.json` |
+| Реальное расширение |7/7 passed,0skipped,exit0 | `runtime-summary.json`, `runtime.log`, `runtime-attachments/` |
+| Изолированный E12 | setup2/2 +canary1/1 passed,exit0; strict persistence compare pass | `audit/` |
+| Полный unfiltered UI |29passed,1failed,0skipped,exit65; все30 фактически выполнены | `full-ui-first-summary.json`, `full-ui-first-case-results.json`, `full-ui.log` |
+| Чистый контроль |3/3 passed,0skipped,exit0; только оговорённые3теста | `clean-supplement-summary.json`, `clean-supplement-case-results.json` |
+| Матрица |78/186 уникальных screenshot/geometry пар;108missing; все78 просмотрены,28 отдельных кадров pass/50fail | `matrix-frames/manifest.json`, `design-review.json`, `fix-list.md` |
 
-No further product/test fixes or matrix reruns were made after the coordinator's third-round stop. Remaining work requires the review-loop continuation decision: repair/validate fixture navigation and complete168 missing frames plus re-evaluate all186 as required; establish a real synthetic clipboard sentinel and a known nonempty auditable identity fixture; run the complete final UI suite under controlled load. Preserve initial failed attempts and distinguish harness/environment failures from product findings.
+Actual Release bundles audited at `.build/VerifierRound4Release/Build/Products/Release-iphonesimulator/`, not the generic Debug path printed by build.sh. Actual Mach-O binaries were scanned; Debug contains19 selected markers and all6 positive controls, Release contains none of21 selected Debug routes/fixtures/host/seed markers. No selected forbidden network reference or linked network framework was found. Actual Simulator entitlements were extracted from all4 Mach-O architecture slices and contain the expected App Group; see `release-entitlements.json`. The initial signature-only/otool-format read attempts were corrected: simulator entitlements live in the actual `__TEXT,__entitlements` sections, while codesign's signature dictionary was empty. No product change or secret read was made.
+
+The independently built/installed extension dylib SHA256 is `c0715d9fb4c129b4d6fd24b9190f2e6eb64f1952ab3f9da5e68a7acdd4d3551b`; the runner byte-compared installed and freshly built binaries and asserted loaded956018778. This fresh DerivedData binary is not the builder's earlier hash.
+
+## E12 — now valid and passed
+
+Before any canary interaction, DEBUG setup wrote only the fixed synthetic sentinel and checked actual readback. The independent baseline then confirmed `clipboardIsSentinel=true`, no setup failures and exactly1 real identity metadata row. An attributes-only SecItem query separately proved exact identity service/account/access group; no kSecReturnData or secret/value SQL column was requested.
+
+The canary ran alone between snapshots, with no reinstall/rebuild between them. All15 checked app/extension/group files were unchanged except the allowed `group/keyboard-access.v1.json` version/date receipt. Clipboard hash and actual sentinel, identity metadata hashes and defaults coverage were unchanged. No Preferences files existed in either checked container snapshot; creation of a new plist would have been an unexpected file change. No UTF-8/UTF-16 canary appeared in checked files or scoped app/extension/host logs. `audit/result.json`: pass, failures[], unexpectedChanges[], canaryMatches[]. This addresses the old zero-row/sentinel setup gap without weakening assertions.
+
+## E14 — confirmed fail, coordinator-bounded capture
+
+375 preflight passed and its complete62-frame capture test passed. Every native375 frame was explicitly reviewed against the exact matching approved anchor, including both themes and orientations. 402 preflight passed, then16 pairs were captured (all15light portrait states plus light landscape ru-empty). After four concrete failures were confirmed, coordinator explicitly ordered fail-fast for this already failing E14. Only the active402xcodebuild was gracefully interrupted; its xcresult says Testing was canceled and matrix command exit75. 440 design capture was not started. Strict `--complete` export retained78/186 and correctly exited1 with108missing. No missing frame or uninspected width/theme was inferred as passing.
+
+All78 captured frames were independently opened through original-derived native panel crops; representative full originals were also opened for host visibility/theme diagnosis. Every frame has its own path, anchor, inspection flag and verdict in `design-review.json`. Panel/key-size assertions pass for all78; this does not pass all of AC8, because real host-field visibility fails on the observed landscape frames. Four remaining issues:
+
+1. **D1:** multiline/limit use cursor0, activating automatic uppercase keycaps; their approved anchors show lowercase. Confirmed on both375themes/orientations and captured402portrait. The literal reference excerpt and upper-edge clarity are now correct. Start caret is the cause, not permission to move the caret offscreen: preserve AC1 while reproducing the intended lowercase state.
+2. **D2:** all warning states are muted secondary gray; the approved `.warning` uses primary black/white. Portrait is11pt instead of12pt. Landscape reference overrides size to10pt, matching current size but not color. RequirementsAC9 does not override that style; E14 explicitly requires matching colors. Exact source/PNG paths are in `fix-list.md`.
+3. **D3:**375dark preview is actually light despite its dark name/metadata. Full original `matrix-375-frames/raw-0/F61D7D46-7820-4E99-8613-868BC3F9C4FD.png` proves the wrong resolved theme. This is a capture-state failure, not proof that production preview cannot render dark mode. Final capture must set real appearance and assert actual resolved theme in both preview and extension.
+4. **D4:** the real host UITextView is obscured in observed375/402landscape; only its top edge/selection handle remains. The visible duplicate “Текст: До встречи!” belongs to a diagnostic UILabel. The DebugHost vertical stack does not adapt above the keyboard. Original375`9980FC7E-5199-41CA-B8A5-71B0A9B11835.png`,402`340FD39A-69E8-4F04-9168-81D1D4EDEC33.png`; source/actionable layout cause in `fix-list.md`.
+
+All186 must be freshly captured and independently reviewed on the corrected final round5 frozen revision; wrong-state/current incomplete captures cannot be reused as pass. Requirements/expectations and frame count were not changed.
+
+## E17 — full UI failed; clean control does not replace it
+
+The completed unfiltered suite executed exactly30 cases:29pass/1fail/0skip, exit65. Failure: `ContactsUITests/testNameFieldVisibleAboveSaveWithKeyboard()` at the app.keyboards existence assertion (“Нужна настоящая экранная клавиатура”). That prepared402 device still had CipherKeyboard active from design capture. Retained failure hierarchy `full-ui-first-attachments/CC70AEF7-80C7-465E-8247-4BD98A7FBC1A.txt` contains the actual CipherKeyboard panel/keys even though app.keyboards was empty. Both new KeyboardTypingTests passed in this full run.
+
+A new clean iPhone17 device was created without enabling CipherKeyboard or Full Access. A full clean retry was briefly started, then promptly canceled at coordinator instruction: exit75,0recorded tests/unknown summary, `.build/TestResults/ui-20261101-175054.xcresult`; never claim this as a green suite. Coordinator instead authorized the precise clean control: Contacts keyboard-visibility test plus both KeyboardTypingTests. All3passed,0skipped,exit0 on `.build/TestResults/ui-20261101-175149.xcresult`. This supports the keyboard-environment confound and proves preview/controller availability without system setup. It does not prove baseline attribution or turn the failed full suite green. E17 remains fail for missing full green final-source UI; core/lint/build/Release successes remain separately recorded.
+
+Final round5 should use a separate clean regression device with the system keyboard for the whole30-case unfiltered suite, distinct from native devices used to activate the extension and capture186frames. All17evals must be rerun on its final frozen code.
+
+## All17 verdicts
+
+| Eval | Verdict | Current independent evidence |
+|---|---|---|
+| E1 | pass | Exact insertion and grapheme cursor core test |
+| E2 | pass | Four exact layouts/transitions core test |
+| E3 | pass | Auto/one-shot/Caps;299/301ms; explicit off |
+| E4 | pass |449/450ms alternatives/cancellation, both cases |
+| E5 | pass | Whole composed/flag/skin-tone/ZWJ deletion |
+| E6 | pass |399/400/480ms repeat and cancellation |
+| E7 | pass | UTF-8 thresholds/atomic rejection/cursor/error |
+| E8 | pass | Current production controller proxy-spy UI,0calls |
+| E9 | pass | Real preview keys, lifecycle/status/identity invariance, clean no-setup control |
+| E10 | pass | Actual ON/OFF×empty/selected host; ordinary Settings; receipt schema |
+| E11 | pass | Real hide/rotation/background/globe and preview resets; zero pending timers |
+| E12 | pass | Valid sentinel+known nonempty identity baseline; strict before/after audit |
+| E13 | pass | Five actual status fixtures typed/deleted; lazy no-access factories0 |
+| E14 | fail | Four visual/capture issues;78/186reviewed,108missing; canceled402 |
+| E15 | pass | Russian labels/states/hints, true/false boundary, actual globe list/switch |
+| E16 | pass |500actions/10resets/zero timers/overlapping touches +actual shell parity |
+| E17 | fail | FullUI29/30exit65; clean3/3supplement does not substitute |
+
+## Handoff
+
+No active verifier UI/build/test jobs remain. All four verifier disposable devices are Shutdown and retained for coordination:375CCA87562-08F4-40EF-8C14-32FD4D505439;4022C979135-65D2-40A7-8F6D-6FC62B6B729B;440A3F7BEC2-F01C-43BA-90C4-9014BF2FE18C;clean7B77C778-4A7C-431D-9213-CF9F3B72EBD7. MainCE56E4D3-8193-4BFA-8996-FA3AA4A628C9 was untouched and remains Booted; see `handoff-devices.json` and `handoff-processes.json`. Nothing was merged/staged; coordinator's pre-existing state.md was not edited by verifier. Only eval status/evidence lines and the authorized report/evidence files were written. The previous verification-report.md was preserved as `prior-verification-report-round3.md` before replacement. First-time-user and human acceptance were not performed; these remain after all required final checks pass.
+
+Full local evidence directory: `specs/05-keyboard-typing/evidence/verifier-round4/`.
