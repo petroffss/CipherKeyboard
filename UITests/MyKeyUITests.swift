@@ -68,7 +68,8 @@ final class MyKeyUITests: XCTestCase {
             }
         }
 
-        tabs[1].tap()
+        // «Контакты» — экран фичи 03; заглушка следующих фич — на «Расшифровать».
+        tabs[2].tap()
         XCTAssertTrue(app.staticTexts["Появится в следующей версии"].waitForExistence(timeout: 5))
     }
 

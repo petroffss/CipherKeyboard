@@ -1,11 +1,14 @@
 import CipherCore
 import UIKit
 
-/// Точка входа расширения клавиатуры. Каркас: состояние своего ключа и кнопка 🌐; раскладки и внутреннее поле — фича 05.
-/// Клавиатура личность только читает (`IdentityReader`): создать ключ отсюда нельзя.
+/// Точка входа расширения клавиатуры. Каркас: состояние своего ключа, строка контактов и кнопка 🌐;
+/// раскладки и внутреннее поле — фича 05. Клавиатура личность и контакты только читает
+/// (`IdentityReader`, `ContactsReader`): создать ключ или изменить контакты отсюда нельзя.
 final class KeyboardViewController: UIInputViewController {
     private let nextKeyboardButton = UIButton(type: .system)
     private let statusLabel = UILabel()
+    private let contactsLabel = UILabel()
+    private let statusStack = UIStackView()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -16,21 +19,34 @@ final class KeyboardViewController: UIInputViewController {
         statusLabel.numberOfLines = 0
         statusLabel.adjustsFontForContentSizeCategory = false
         statusLabel.accessibilityIdentifier = "keyboard.identityStatus"
-        statusLabel.translatesAutoresizingMaskIntoConstraints = false
+
+        contactsLabel.font = .systemFont(ofSize: 15)
+        contactsLabel.textColor = .secondaryLabel
+        contactsLabel.textAlignment = .center
+        contactsLabel.numberOfLines = 0
+        contactsLabel.adjustsFontForContentSizeCategory = false
+        contactsLabel.accessibilityIdentifier = "keyboard.contactsStatus"
+
+        statusStack.axis = .vertical
+        statusStack.alignment = .center
+        statusStack.spacing = 6
+        statusStack.addArrangedSubview(statusLabel)
+        statusStack.addArrangedSubview(contactsLabel)
+        statusStack.translatesAutoresizingMaskIntoConstraints = false
 
         nextKeyboardButton.setImage(UIImage(systemName: "globe"), for: .normal)
         nextKeyboardButton.accessibilityLabel = "Следующая клавиатура"
         nextKeyboardButton.addTarget(self, action: #selector(handleInputModeList(from:with:)), for: .allTouchEvents)
         nextKeyboardButton.translatesAutoresizingMaskIntoConstraints = false
 
-        view.addSubview(statusLabel)
+        view.addSubview(statusStack)
         view.addSubview(nextKeyboardButton)
         NSLayoutConstraint.activate([
             view.heightAnchor.constraint(equalToConstant: 216),
-            statusLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            statusLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            statusLabel.leadingAnchor.constraint(greaterThanOrEqualTo: view.leadingAnchor, constant: 48),
-            statusLabel.trailingAnchor.constraint(lessThanOrEqualTo: view.trailingAnchor, constant: -48),
+            statusStack.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            statusStack.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            statusStack.leadingAnchor.constraint(greaterThanOrEqualTo: view.leadingAnchor, constant: 48),
+            statusStack.trailingAnchor.constraint(lessThanOrEqualTo: view.trailingAnchor, constant: -48),
             nextKeyboardButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 12),
             nextKeyboardButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -12),
             nextKeyboardButton.widthAnchor.constraint(greaterThanOrEqualToConstant: 44),
@@ -40,8 +56,11 @@ final class KeyboardViewController: UIInputViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        // Перечитываем при каждом показе: ключ мог появиться в приложении, пока клавиатура была скрыта.
+        // Перечитываем при каждом показе: ключ и контакты могли измениться в приложении, пока клавиатура была скрыта.
         statusLabel.text = Self.statusText(hasFullAccess: hasFullAccess)
+        let contactsText = Self.contactsText(hasFullAccess: hasFullAccess)
+        contactsLabel.text = contactsText
+        contactsLabel.isHidden = contactsText == nil
     }
 
     override func viewWillLayoutSubviews() {
@@ -59,6 +78,19 @@ final class KeyboardViewController: UIInputViewController {
             return "Откройте приложение CipherKeyboard, чтобы создать ключ"
         case .unavailable:
             return "Не удалось открыть хранилище ключей"
+        }
+    }
+
+    /// Строка контактов. Без полного доступа файл группы не читается — строки нет.
+    private static func contactsText(hasFullAccess: Bool) -> String? {
+        guard hasFullAccess else { return nil }
+        switch ContactsReader.appGroup.read() {
+        case .contacts(let contacts) where contacts.isEmpty:
+            return "Контактов нет"
+        case .contacts(let contacts):
+            return "Контактов: \(contacts.count)"
+        case .unreadable:
+            return "Не удалось прочитать контакты"
         }
     }
 }

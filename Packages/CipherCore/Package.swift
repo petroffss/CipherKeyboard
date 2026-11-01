@@ -8,10 +8,15 @@ let package = Package(
         .library(name: "CipherCore", targets: ["CipherCore"]),
         // Создание личности — только для приложения. Клавиатура этот продукт не линкует.
         .library(name: "CipherCoreIdentityStore", targets: ["CipherCoreIdentityStore"]),
+        // Запись контактов — только для приложения. Клавиатура этот продукт не линкует.
+        .library(name: "CipherCoreContactStore", targets: ["CipherCoreContactStore"]),
     ],
     targets: [
         .target(name: "CipherCore"),
         .target(name: "CipherCoreIdentityStore", dependencies: ["CipherCore"]),
-        .testTarget(name: "CipherCoreTests", dependencies: ["CipherCore", "CipherCoreIdentityStore"]),
+        .target(name: "CipherCoreContactStore", dependencies: ["CipherCore"]),
+        .testTarget(
+            name: "CipherCoreTests",
+            dependencies: ["CipherCore", "CipherCoreIdentityStore", "CipherCoreContactStore"]),
     ]
 )

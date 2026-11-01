@@ -196,6 +196,7 @@ struct CopiedToast: View {
 /// дефис можно принять за символ ключа (в base64url есть настоящие «-»).
 struct PublicKeyText: UIViewRepresentable {
     let text: String
+    var identifier = "mykey.publicKey"
 
     func makeUIView(context: Context) -> UILabel {
         let label = UILabel()
@@ -207,7 +208,7 @@ struct PublicKeyText: UIViewRepresentable {
             for: .monospacedSystemFont(ofSize: 12, weight: .regular))
         label.textColor = .secondaryLabel
         label.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
-        label.accessibilityIdentifier = "mykey.publicKey"
+        label.accessibilityIdentifier = identifier
         return label
     }
 

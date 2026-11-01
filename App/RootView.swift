@@ -24,13 +24,20 @@ enum AppTab: Hashable {
 struct MainTabs: View {
     let info: MyKeyInfo
     @State private var selection: AppTab = .myKey
+    @State private var contacts: ContactsModel
+
+    init(info: MyKeyInfo) {
+        self.info = info
+        _contacts = State(initialValue: ContactsModel(store: LaunchStorage.contactStore(), ownKey: info.publicKey))
+    }
 
     var body: some View {
         TabView(selection: $selection) {
             MyKeyView(info: info)
+                .background(TabBarIdentifiers(identifiers: Self.identifiers).allowsHitTesting(false))
                 .tabItem { tabLabel("Мой ключ", systemImage: "key", id: "tab.myKey") }
                 .tag(AppTab.myKey)
-            PlaceholderTabView(title: "Контакты")
+            ContactsView(model: contacts)
                 .tabItem { tabLabel("Контакты", systemImage: "person.2", id: "tab.contacts") }
                 .tag(AppTab.contacts)
             PlaceholderTabView(title: "Расшифровать")
@@ -40,7 +47,6 @@ struct MainTabs: View {
                 .tabItem { tabLabel("Настройка", systemImage: "gearshape", id: "tab.setup") }
                 .tag(AppTab.setup)
         }
-        .task { await TabBarIdentifiers.apply(byTitle: Self.identifiers) }
     }
 
     private static let identifiers = [
@@ -56,29 +62,64 @@ struct MainTabs: View {
 /// Идентификаторы кнопок таб-бара для UI-тестов. SwiftUI переносит `accessibilityIdentifier` из `.tabItem`
 /// (и из `Tab`) на кнопки таб-бара не при каждом запуске: в части запусков у `UITabBarItem` идентификатор пуст,
 /// и кнопки видны в дереве доступности только с подписями. Поэтому идентификатор ставится прямо на `UITabBarItem`.
-enum TabBarIdentifiers {
-    @MainActor static func apply(byTitle identifiers: [String: String]) async {
-        // Таб-бар появляется в иерархии окна после первого прохода раскладки — ждём его до ~2 с.
-        for _ in 0..<40 {
-            let bars = UIApplication.shared.connectedScenes
-                .compactMap { $0 as? UIWindowScene }
-                .flatMap(\.windows)
-                .flatMap(tabBars(in:))
-            var applied = false
+struct TabBarIdentifiers: UIViewControllerRepresentable {
+    let identifiers: [String: String]
+
+    func makeUIViewController(context: Context) -> IdentifierController {
+        IdentifierController(identifiers: identifiers)
+    }
+
+    func updateUIViewController(_ controller: IdentifierController, context: Context) {
+        controller.identifiers = identifiers
+        controller.scheduleIdentifiers()
+    }
+
+    /// SwiftUI может заменить UITabBarItem после первого появления бара. Назначение связано с раскладкой
+    /// и появлением контроллера, а не с одноразовым поиском, который завершался до этой замены.
+    final class IdentifierController: UIViewController {
+        var identifiers: [String: String]
+
+        init(identifiers: [String: String]) {
+            self.identifiers = identifiers
+            super.init(nibName: nil, bundle: nil)
+        }
+
+        required init?(coder: NSCoder) { return nil }
+
+        override func loadView() {
+            view = UIView()
+            view.isUserInteractionEnabled = false
+        }
+
+        override func viewDidLayoutSubviews() {
+            super.viewDidLayoutSubviews()
+            scheduleIdentifiers()
+        }
+
+        override func viewDidAppear(_ animated: Bool) {
+            super.viewDidAppear(animated)
+            scheduleIdentifiers()
+        }
+
+        func scheduleIdentifiers() {
+            // TabView завершает создание и замену UITabBarItem после callbacks дочернего контроллера.
+            DispatchQueue.main.async { [weak self] in self?.applyIdentifiers() }
+        }
+
+        private func applyIdentifiers() {
+            guard let window = viewIfLoaded?.window else { return }
+            let bars = tabBarController.map { [$0.tabBar] } ?? Self.tabBars(in: window)
             for item in bars.flatMap({ $0.items ?? [] }) {
                 if let title = item.title, let id = identifiers[title] {
                     item.accessibilityIdentifier = id
-                    applied = true
                 }
             }
-            if applied { return }
-            try? await Task.sleep(for: .milliseconds(50))
         }
-    }
 
-    @MainActor private static func tabBars(in view: UIView) -> [UITabBar] {
-        if let bar = view as? UITabBar { return [bar] }
-        return view.subviews.flatMap(tabBars(in:))
+        private static func tabBars(in view: UIView) -> [UITabBar] {
+            if let bar = view as? UITabBar { return [bar] }
+            return view.subviews.flatMap(tabBars(in:))
+        }
     }
 }
 
@@ -154,32 +195,51 @@ struct StorageErrorView: View {
     }
 }
 
-/// Основная кнопка: залита акцентом, белый текст 17 semibold, высота 50.
+/// Основная кнопка: залита акцентом, белый текст 17 semibold, высота 50. Недоступная — прозрачность 0,4.
 struct PrimaryButtonStyle: ButtonStyle {
     var fullWidth = true
 
     func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .font(.body.weight(.semibold))
-            .foregroundStyle(.white)
-            .padding(.horizontal, fullWidth ? 16 : 36)
-            .frame(maxWidth: fullWidth ? .infinity : nil, minHeight: 50)
-            .background(Color.accentColor, in: RoundedRectangle(cornerRadius: 14))
-            .opacity(configuration.isPressed ? 0.8 : 1)
-            .contentShape(RoundedRectangle(cornerRadius: 14))
+        StyledLabel(configuration: configuration) { label, isEnabled in
+            label
+                .font(.body.weight(.semibold))
+                .foregroundStyle(.white)
+                .padding(.horizontal, fullWidth ? 16 : 36)
+                .frame(maxWidth: fullWidth ? .infinity : nil, minHeight: 50)
+                .background(Color.accentColor, in: RoundedRectangle(cornerRadius: 14))
+                .opacity(isEnabled ? (configuration.isPressed ? 0.8 : 1) : 0.4)
+                .contentShape(RoundedRectangle(cornerRadius: 14))
+        }
     }
 }
 
-/// Вторичная кнопка: контур 1,5 pt акцентом, текст акцентом, высота 50.
+/// Подпись кнопки с доступностью из окружения: стиль кнопки сам `isEnabled` не получает.
+private struct StyledLabel<Content: View>: View {
+    let configuration: ButtonStyleConfiguration
+    let content: (ButtonStyleConfiguration.Label, Bool) -> Content
+    @Environment(\.isEnabled) private var isEnabled
+
+    var body: some View {
+        content(configuration.label, isEnabled)
+    }
+}
+
+/// Вторичная кнопка: контур 1,5 pt акцентом (или другим цветом — красным для «Удалить»), текст тем же цветом, высота 50.
 struct SecondaryButtonStyle: ButtonStyle {
+    var color: Color = .accentColor
+    var minHeight: CGFloat = 50
+    var font: Font = .body.weight(.semibold)
+
     func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .font(.body.weight(.semibold))
-            .foregroundStyle(Color.accentColor)
-            .padding(.horizontal, 16)
-            .frame(maxWidth: .infinity, minHeight: 50)
-            .overlay(RoundedRectangle(cornerRadius: 14).strokeBorder(Color.accentColor, lineWidth: 1.5))
-            .opacity(configuration.isPressed ? 0.6 : 1)
-            .contentShape(RoundedRectangle(cornerRadius: 14))
+        StyledLabel(configuration: configuration) { label, isEnabled in
+            label
+                .font(font)
+                .foregroundStyle(color)
+                .padding(.horizontal, 16)
+                .frame(maxWidth: .infinity, minHeight: minHeight)
+                .overlay(RoundedRectangle(cornerRadius: 14).strokeBorder(color, lineWidth: 1.5))
+                .opacity(isEnabled ? (configuration.isPressed ? 0.6 : 1) : 0.4)
+                .contentShape(RoundedRectangle(cornerRadius: 14))
+        }
     }
 }
