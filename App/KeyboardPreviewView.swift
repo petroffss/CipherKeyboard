@@ -33,6 +33,10 @@ private struct KeyboardPreviewPanel: UIViewRepresentable {
     @Binding var height: CGFloat
     func makeUIView(context: Context) -> KeyboardPanel {
         let panel = KeyboardPanel(adapter: adapter)
+        #if DEBUG
+            panel.debugBuild =
+                Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "unversioned"
+        #endif
         let status = KeyboardSharedStatus.read(hasFullAccess: true)
         panel.statusText = status.identity
         panel.contactsText = status.contacts

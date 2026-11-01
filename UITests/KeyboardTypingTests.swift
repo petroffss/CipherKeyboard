@@ -4,10 +4,16 @@ final class KeyboardTypingTests: XCTestCase {
     override func setUp() { continueAfterFailure = false }
     @MainActor func testPreviewTyping() {
         let app = XCUIApplication()
-        app.launchArguments = ["-keystore", "memory", "-setup-state", "absent"]
+        app.launchArguments = []
         app.launch()
         XCTAssertTrue(app.staticTexts["mykey.title"].waitForExistence(timeout: 10))
+        let fingerprint = app.staticTexts["mykey.fingerprint"].label
         app.navigationTab("tab.setup").tap()
+        let states = [
+            "Подключите клавиатуру", "Откройте клавиатуру", "Не удалось проверить подключение", "Подключение проверено",
+        ]
+        let actualStatus = states.first { app.staticTexts[$0].exists }
+        XCTAssertNotNil(actualStatus)
         app.scrollViews["setup.scroll"].swipeUp()
         app.buttons["setup.tryKeyboard"].tap()
         let editor = app.descendants(matching: .any)["keyboard.editor"].firstMatch
@@ -34,6 +40,11 @@ final class KeyboardTypingTests: XCTestCase {
         XCUIDevice.shared.press(.home)
         app.activate()
         XCTAssertEqual(editor.value as? String, "")
+        app.navigationBars.buttons.element(boundBy: 0).tap()
+        app.scrollViews["setup.scroll"].swipeDown()
+        if let actualStatus { XCTAssertTrue(app.staticTexts[actualStatus].exists) }
+        app.navigationTab("tab.myKey").tap()
+        XCTAssertEqual(app.staticTexts["mykey.fingerprint"].label, fingerprint)
     }
     @MainActor func testProductionControllerIsolation() {
         let app = XCUIApplication()

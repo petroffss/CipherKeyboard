@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# Three explicit disposable UDIDs: native 375, 402 and 440 pt profiles, in any order.
+source "$(dirname "$0")/common.sh"
+[ "$#" = 3 ] || { echo 'Usage: scripts/typing-matrix.sh UDID375 UDID402 UDID440' >&2; exit 2; }
+output="${TYPING_MATRIX_OUTPUT:-$ROOT/.build/TypingMatrix/$(date +%Y%m%d-%H%M%S)}"
+mkdir -p "$output"
+results=()
+for udid in "$@"; do
+    xcrun simctl bootstatus "$udid" -b >/dev/null
+    TYPING_SIMULATOR="$udid" scripts/typing-host.sh
+    result="$output/$udid.xcresult"
+    TYPING_SIMULATOR="$udid" TYPING_RESULT="$result" scripts/typing-integration.sh \
+        -only-testing:TypingIntegrationTests/KeyboardMatrixTests/testCaptureAllCurrentProfile > "$output/$udid.log" 2>&1
+    results+=("$result")
+done
+python3 scripts/typing-matrix-export.py "$output/frames" "${results[@]}" --complete
+xcrun swiftc -D DEBUG -parse-as-library DebugHost/MatrixMontage.swift -o "$output/montage"
+"$output/montage" "$output/frames/manifest.json" "$output/montages"
+echo "Matrix manifest: $output/frames/manifest.json"

@@ -21,6 +21,8 @@
         }
         private final class ProbeController: KeyboardExtensionController {
             let spy = HostSpy()
+            var requiresNextKeyboard = false
+            override var needsInputModeSwitchKey: Bool { requiresNextKeyboard }
             override var textDocumentProxy: any UITextDocumentProxy { spy }
             override var hasFullAccess: Bool { false }
         }
@@ -28,6 +30,36 @@
             let controller = ProbeController()
             controller.loadViewIfNeeded()
             let adapter = controller.panel.adapter
+            for required in [false, true] {
+                controller.requiresNextKeyboard = required
+                controller.viewWillLayoutSubviews()
+                guard controller.panel.nextKeyboardButton.isHidden == !required else { return "FAIL: globe visibility" }
+            }
+            let labels = [
+                "delete": "Удалить", "language": "Сменить язык", "numbers": "Цифры", "space": "Пробел",
+                "return": "Новая строка", "shift": "Регистр", "next": "Следующая клавиатура",
+            ]
+            for (id, label) in labels {
+                guard
+                    controller.panel.subviews.first(where: { $0.accessibilityIdentifier == "keyboard." + id })?
+                        .accessibilityLabel == label
+                else { return "FAIL: control label " + id }
+            }
+            for (key, alternative) in [("е", "ё"), ("ь", "ъ")] {
+                guard
+                    let button = controller.panel.subviews.first(where: {
+                        $0.accessibilityIdentifier == "keyboard.key." + key
+                    }),
+                    button.accessibilityHint == "Удерживайте для " + alternative,
+                    button.accessibilityCustomActions?.first?.name == "Ввести " + alternative
+                else { return "FAIL: alternate accessibility" }
+            }
+            adapter.activate(.shift); adapter.activate(.shift)
+            guard
+                controller.panel.subviews.first(where: { $0.accessibilityIdentifier == "keyboard.shift" })?
+                    .accessibilityValue == "Caps Lock"
+            else { return "FAIL: caps accessibility" }
+            adapter.hide()
             for action in [
                 KeyboardAction.delete, .enter, .space, .shift, .character("е"), .language, .numbers, .symbols,
                 .character("1"), .delete,

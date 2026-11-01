@@ -127,11 +127,14 @@ public enum KeyboardAction: Equatable, Sendable {
     private let clock: any KeyboardClock
     private var pending: UUID?
     private var pressed: KeyboardAction?
+    private var gestureToken: UUID?
     public var activeTimerCount: Int { pending == nil ? 0 : 1 }
     public init(clock: any KeyboardClock = SystemKeyboardClock()) { self.clock = clock }
     public func moveCursor(to position: Int) { input.moveCursor(to: position); onChange?() }
-    public func press(_ action: KeyboardAction) {
+    @discardableResult public func press(_ action: KeyboardAction) -> UUID {
         cancelGesture()
+        let token = UUID()
+        gestureToken = token
         pressed = action
         if action == .delete {
             input.deleteBackward()
@@ -145,8 +148,10 @@ public enum KeyboardAction: Equatable, Sendable {
             }
         }
         onChange?()
+        return token
     }
-    public func release(inside: Bool) {
+    public func release(_ token: UUID, inside: Bool) {
+        guard gestureToken == token else { return }
         let action = pressed
         let alternate = alternative
         cancelGesture()
@@ -163,11 +168,13 @@ public enum KeyboardAction: Equatable, Sendable {
         }
         onChange?()
     }
-    public func activate(_ action: KeyboardAction) { press(action); release(inside: true) }
-    public func cancelGesture() {
+    public func activate(_ action: KeyboardAction) { let token = press(action); release(token, inside: true) }
+    public func cancelGesture(_ token: UUID? = nil) {
+        if let token, gestureToken != token { return }
         if let pending { clock.cancel(pending) }
         pending = nil
         pressed = nil
+        gestureToken = nil
         alternative = nil
         onChange?()
     }

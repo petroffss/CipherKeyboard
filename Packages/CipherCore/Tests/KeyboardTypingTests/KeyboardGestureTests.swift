@@ -24,10 +24,10 @@ import Testing
                 for duration in [0.449, 0.450] {
                     let clock = ManualKeyboardClock(); let a = KeyboardInputAdapter(clock: clock)
                     if !uppercase { a.activate(.shift) }
-                    a.press(.character(base)); clock.advance(duration)
+                    let token = a.press(.character(base)); clock.advance(duration)
                     let alternate = base == "е" ? "ё" : "ъ"
                     #expect(a.alternative == (duration < 0.450 ? nil : alternate))
-                    a.release(inside: true)
+                    a.release(token, inside: true)
                     let expected = duration < 0.450 ? base : alternate
                     #expect(a.input.text == (uppercase ? expected.uppercased() : expected))
                     #expect(clock.jobs.isEmpty)
@@ -35,14 +35,14 @@ import Testing
             }
             for cancellation in 0..<4 {
                 let clock = ManualKeyboardClock(); let a = KeyboardInputAdapter(clock: clock)
-                a.press(.character(base)); clock.advance(0.450)
+                let token = a.press(.character(base)); clock.advance(0.450)
                 switch cancellation {
-                case 0: a.release(inside: false);
+                case 0: a.release(token, inside: false);
                 case 1: a.hide();
                 case 2: a.rotate();
                 default: a.cancelGesture()
                 }
-                clock.advance(1); a.release(inside: true)
+                clock.advance(1); a.release(token, inside: true)
                 #expect(a.input.text.isEmpty && clock.jobs.isEmpty && a.activeTimerCount == 0)
             }
         }
@@ -51,11 +51,11 @@ import Testing
         for duration in [0.399, 0.400, 0.480] {
             for cancellation in 0..<3 {
                 let clock = ManualKeyboardClock(); let a = KeyboardInputAdapter(clock: clock)
-                a.seedForTesting("abcdefghij"); a.press(.delete); clock.advance(duration)
+                a.seedForTesting("abcdefghij"); let token = a.press(.delete); clock.advance(duration)
                 let deleted = duration < 0.400 ? 1 : (duration < 0.480 ? 2 : 3)
                 #expect(a.input.text == String("abcdefghij".dropLast(deleted)))
                 switch cancellation {
-                case 0: a.release(inside: true);
+                case 0: a.release(token, inside: true);
                 case 1: a.cancelGesture();
                 default: a.hide()
                 }
@@ -64,7 +64,46 @@ import Testing
             }
         }
         let clock = ManualKeyboardClock(); let a = KeyboardInputAdapter(clock: clock)
-        a.press(.character("a")); clock.advance(10); #expect(a.input.text.isEmpty)
-        a.release(inside: true); #expect(a.input.text == "A")
+        let token = a.press(.character("a")); clock.advance(10); #expect(a.input.text.isEmpty)
+        a.release(token, inside: true); #expect(a.input.text == "A")
+    }
+}
+
+extension KeyboardGestureTests {
+    @Test func overlappingTouchesOwnTheirReleaseAndCancellation() {
+        for first in [
+            KeyboardAction.character("п"), .character("е"), .delete, .shift, .language, .numbers, .symbols, .space,
+            .enter,
+        ] {
+            let clock = ManualKeyboardClock()
+            let adapter = KeyboardInputAdapter(clock: clock)
+            let old = adapter.press(first)
+            let current = adapter.press(.character("р"))
+            let before = adapter.input.text
+            adapter.release(old, inside: true)
+            adapter.cancelGesture(old)
+            #expect(adapter.input.text == before)
+            clock.advance(1)
+            adapter.release(current, inside: true)
+            #expect(adapter.input.text == before + "Р")
+            #expect(adapter.activeTimerCount == 0 && clock.jobs.isEmpty)
+        }
+        let clock = ManualKeyboardClock(); let adapter = KeyboardInputAdapter(clock: clock)
+        adapter.seedForTesting("abcdef")
+        let old = adapter.press(.character("е"))
+        let deletion = adapter.press(.delete)
+        adapter.cancelGesture(old)
+        clock.advance(0.48)
+        #expect(adapter.input.text == "abc")
+        adapter.release(old, inside: false)
+        adapter.release(deletion, inside: true)
+        clock.advance(1)
+        #expect(adapter.input.text == "abc" && clock.jobs.isEmpty)
+        let alternate = adapter.press(.character("е"))
+        clock.advance(0.45)
+        adapter.release(deletion, inside: true)
+        #expect(adapter.input.text == "abc")
+        adapter.release(alternate, inside: true)
+        #expect(adapter.input.text == "abcё")
     }
 }

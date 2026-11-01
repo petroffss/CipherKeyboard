@@ -24,8 +24,8 @@ import Testing
             adapter.activate(action)
         }
         adapter.moveCursor(to: 0)
-        adapter.press(.delete); clock.advance(1); adapter.release(inside: true)
-        adapter.press(.character("е")); clock.advance(0.45); adapter.release(inside: true)
+        let delete = adapter.press(.delete); clock.advance(1); adapter.release(delete, inside: true)
+        let letter = adapter.press(.character("е")); clock.advance(0.45); adapter.release(letter, inside: true)
         adapter.rotate(); adapter.hide(); clock.advance(1)
         #expect(host.calls == 0)
         #expect(adapter.input.text.isEmpty)

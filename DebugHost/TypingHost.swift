@@ -28,14 +28,24 @@
     final class TypingHostController: UIViewController, UITextViewDelegate {
         private let field = UITextView()
         private let diagnostics = UILabel()
+        private let focus = UILabel()
+        private let geometry = UILabel()
+        private var controls: [String: UIButton] = [:]
+        private weak var controlsStack: UIStackView?
         override var supportedInterfaceOrientations: UIInterfaceOrientationMask { .allButUpsideDown }
         override func viewDidLoad() {
             super.viewDidLoad()
+            let args = ProcessInfo.processInfo.arguments
+            if let index = args.firstIndex(of: "-typing-theme"), args.indices.contains(index + 1) {
+                overrideUserInterfaceStyle = args[index + 1] == "dark" ? .dark : .light
+                field.keyboardAppearance = args[index + 1] == "dark" ? .dark : .light
+            }
             view.backgroundColor = .systemGroupedBackground
             let title = UILabel()
             title.text = "Тестовый хозяин · только Debug"
             title.font = .systemFont(ofSize: 17, weight: .semibold)
             let buttons = UIStackView()
+            controlsStack = buttons
             buttons.axis = .horizontal
             buttons.spacing = 12
             for (name, action) in [
@@ -46,6 +56,7 @@
                 button.setTitle(name, for: .normal)
                 button.addTarget(self, action: action, for: .touchUpInside)
                 buttons.addArrangedSubview(button)
+                controls[name] = button
             }
             field.font = .systemFont(ofSize: 17)
             field.backgroundColor = .secondarySystemGroupedBackground
@@ -55,7 +66,11 @@
             diagnostics.numberOfLines = 3
             diagnostics.font = .monospacedSystemFont(ofSize: 12, weight: .regular)
             diagnostics.accessibilityIdentifier = "host.diagnostics"
-            let stack = UIStackView(arrangedSubviews: [title, buttons, diagnostics, field])
+            focus.accessibilityIdentifier = "host.focus"
+            focus.font = .systemFont(ofSize: 10)
+            geometry.accessibilityIdentifier = "host.controlsGeometry"
+            geometry.font = .systemFont(ofSize: 8)
+            let stack = UIStackView(arrangedSubviews: [title, buttons, diagnostics, focus, geometry, field])
             stack.axis = .vertical
             stack.spacing = 8
             stack.translatesAutoresizingMaskIntoConstraints = false
@@ -68,12 +83,33 @@
             ])
             seed()
         }
+        override func viewDidLayoutSubviews() {
+            super.viewDidLayoutSubviews()
+            DispatchQueue.main.async { [weak self] in self?.publishGeometry() }
+        }
+        private func publishGeometry() {
+            controlsStack?.layoutIfNeeded()
+            let value =
+                "width=\(view.bounds.width);height=\(view.bounds.height);"
+                + controls.keys.sorted().compactMap { name -> String? in
+                    guard let button = controls[name] else { return nil }
+                    let rect = button.convert(button.bounds, to: view.window)
+                    return "\(name)=\(rect.midX),\(rect.midY)"
+                }.joined(separator: ";")
+            if geometry.text != value { geometry.text = value }
+        }
         @objc private func empty() { field.text = ""; field.selectedRange = NSRange(location: 0, length: 0); update() }
         @objc private func seed() {
             field.text = "До встречи!"; field.selectedRange = NSRange(location: 3, length: 7); update()
         }
-        @objc private func hide() { field.resignFirstResponder() }
-        @objc private func showKeyboard() { field.becomeFirstResponder() }
+        @objc private func hide() {
+            let result = field.resignFirstResponder()
+            focus.text = "hide=\(result); focused=\(field.isFirstResponder)"
+        }
+        @objc private func showKeyboard() {
+            let result = field.becomeFirstResponder()
+            focus.text = "show=\(result); focused=\(field.isFirstResponder)"
+        }
         private func update() {
             diagnostics.text =
                 "Текст: \(field.text ?? "")\nВыделение UTF-16: \(field.selectedRange.location), \(field.selectedRange.length)"

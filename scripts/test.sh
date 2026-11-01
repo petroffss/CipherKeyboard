@@ -19,7 +19,7 @@ if [ "$what" = all ] || [ "$what" = ui ]; then
     status=0
     xcodebuild test -project "$PROJECT" -scheme "$SCHEME" \
         -destination "platform=iOS Simulator,name=$DEVICE" \
-        -derivedDataPath "$DERIVED" -resultBundlePath "$RESULT" -quiet "$@" || status=$?
+        -derivedDataPath "$DERIVED" "CURRENT_PROJECT_VERSION=$(typing_revision)" -resultBundlePath "$RESULT" -quiet "$@" || status=$?
     if [ -d "$RESULT" ]; then
         xcrun xcresulttool get test-results summary --path "$RESULT" | python3 -c '
 import json, sys

@@ -3,7 +3,9 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 : "${TYPING_SIMULATOR:?Set TYPING_SIMULATOR to the disposable simulator UDID}"
-output="$PWD/.build/TypingHost.app"
+name="$(xcrun simctl list devices -j | python3 -c 'import json,sys; print(next(d["name"] for ds in json.load(sys.stdin)["devices"].values() for d in ds if d["udid"] == sys.argv[1]))' "$TYPING_SIMULATOR")"
+[[ "$name" == CipherKeyboard-Typing-* ]] || { echo "Disposable typing simulator required" >&2; exit 2; }
+output="${TMPDIR:-/tmp}/CipherKeyboardTypingHost.app"
 mkdir -p "$output"
 xcrun --sdk iphonesimulator swiftc -D DEBUG -parse-as-library -target arm64-apple-ios18.0-simulator \
     -sdk "$(xcrun --sdk iphonesimulator --show-sdk-path)" DebugHost/TypingHost.swift -o "$output/TypingHost"

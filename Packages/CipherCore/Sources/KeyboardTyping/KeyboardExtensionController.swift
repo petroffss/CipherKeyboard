@@ -6,10 +6,13 @@
     open class KeyboardExtensionController: UIInputViewController {
         public let panel = KeyboardPanel()
         private var panelHeight: NSLayoutConstraint?
-        private var rotating = false
 
         public override func viewDidLoad() {
             super.viewDidLoad()
+            #if DEBUG
+                panel.debugBuild =
+                    Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "unversioned"
+            #endif
             panel.translatesAutoresizingMaskIntoConstraints = false
             view.addSubview(panel)
             NSLayoutConstraint.activate([
@@ -50,15 +53,13 @@
         }
         public override func viewWillDisappear(_ animated: Bool) {
             super.viewWillDisappear(animated)
-            if !rotating { clearSession() }
+            clearSession()
         }
         public override func viewWillTransition(
             to size: CGSize, with coordinator: any UIViewControllerTransitionCoordinator
         ) {
-            rotating = true
             panel.adapter.rotate()
             super.viewWillTransition(to: size, with: coordinator)
-            coordinator.animate(alongsideTransition: nil) { [weak self] _ in self?.rotating = false }
         }
         public override func viewWillLayoutSubviews() {
             super.viewWillLayoutSubviews()

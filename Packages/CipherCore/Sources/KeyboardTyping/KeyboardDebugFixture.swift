@@ -1,32 +1,48 @@
 #if DEBUG && canImport(UIKit)
     import Foundation
+    import CipherCore
 
     /// Synthetic, process-local design fixtures. No defaults/container/clipboard transport.
-    /// Pass CIPHER_TYPING_FIXTURE in the Debug process environment. Absent in Release.
+    /// Select fixed states with the Debug status-strip menu. Absent in Release.
     @MainActor public enum KeyboardDebugFixture {
         public static func apply(to panel: KeyboardPanel, name: String) {
             let adapter = panel.adapter
-            if !["ru-empty", "no-access", "no-key", "key-error"].contains(name) {
-                adapter.seedForTesting("Привет, Анна!")
+            if name == "clear" { adapter.hide(); panel.debugFixture = "fixture=clear"; return }
+            if name == "canary" {
+                adapter.seedForTesting("TypingCanary05-Ж-20261101"); panel.debugFixture = "fixture=canary"; return
             }
+            adapter.seedForTesting(name == "ru-empty" ? "" : "Привет, Анна!")
+            panel.statusText = "Ключ A1B2 C3D4"
+            panel.contactsText = "Контактов: 2"
+            var identityReads = 0
+            var contactsReads = 0
+            if ["no-access", "no-key", "key-error", "contacts-error"].contains(name) {
+                let status = KeyboardSharedStatus.read(
+                    hasFullAccess: name != "no-access",
+                    identity: {
+                        identityReads += 1
+                        return name == "key-error" ? .unavailable(.unavailable(status: -1)) : .missing
+                    },
+                    contacts: {
+                        contactsReads += 1
+                        return name == "contacts-error" ? .unreadable : .contacts([])
+                    })
+                panel.statusText = name == "contacts-error" ? "Ключ A1B2 C3D4" : status.identity
+                panel.contactsText = name == "contacts-error" ? status.contacts : nil
+            }
+            panel.debugFixture = "fixture=\(name);identityReads=\(identityReads);contactsReads=\(contactsReads)"
             switch name {
             case "ru-empty": adapter.hide()
             case "shift": adapter.activate(.shift)
             case "caps": adapter.activate(.shift); adapter.activate(.shift)
-            case "en": adapter.activate(.language)
-            case "numbers": adapter.activate(.numbers)
-            case "symbols": adapter.activate(.numbers); adapter.activate(.symbols)
-            case "alternate-e": adapter.press(.character("е"))
-            case "alternate-softsign": adapter.press(.character("ь"))
+            case "en": adapter.seedForTesting("Hello, Anna!"); adapter.activate(.language)
+            case "numbers": adapter.seedForTesting("Встреча в 18:30"); adapter.activate(.numbers)
+            case "symbols": adapter.seedForTesting("Цена: 25 €"); adapter.activate(.numbers); adapter.activate(.symbols)
+            case "alternate-e": adapter.seedForTesting("Ещ"); adapter.press(.character("е"))
+            case "alternate-softsign": adapter.seedForTesting("Под"); adapter.press(.character("ь"))
             case "multiline":
                 adapter.seedForTesting("Первая строка\nВторая строка\nТретья строка\nЧетвёртая строка\nПятая строка")
             case "limit": adapter.seedForTesting(String(repeating: "я", count: 2048)); adapter.activate(.character("я"))
-            case "no-access":
-                panel.statusText = "Включите «Полный доступ» в Настройках, чтобы шифровать"; panel.contactsText = nil
-            case "no-key":
-                panel.statusText = "Откройте приложение CipherKeyboard, чтобы создать ключ"; panel.contactsText = nil
-            case "key-error": panel.statusText = "Не удалось открыть хранилище ключей"; panel.contactsText = nil
-            case "contacts-error": panel.contactsText = "Не удалось прочитать контакты"
             default: break
             }
         }

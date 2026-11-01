@@ -102,6 +102,7 @@
         let action: KeyboardAction
         weak var adapter: KeyboardInputAdapter?
         private var cancelled = false
+        private var token: UUID?
         init(action: KeyboardAction, adapter: KeyboardInputAdapter) {
             self.action = action
             self.adapter = adapter
@@ -116,24 +117,30 @@
         required init?(coder: NSCoder) { nil }
         override func beginTracking(_ touch: UITouch, with event: UIEvent?) -> Bool {
             cancelled = false
-            adapter?.press(action)
+            token = adapter?.press(action)
             isHighlighted = true
             return true
         }
         override func continueTracking(_ touch: UITouch, with event: UIEvent?) -> Bool {
             if !bounds.contains(touch.location(in: self)) {
                 cancelled = true
-                adapter?.cancelGesture()
+                if let token { adapter?.cancelGesture(token) }
+                token = nil
                 isHighlighted = false
             }
             return true
         }
         override func endTracking(_ touch: UITouch?, with event: UIEvent?) {
             let inside = touch.map { bounds.contains($0.location(in: self)) } ?? false
-            adapter?.release(inside: inside && !cancelled)
+            if let token { adapter?.release(token, inside: inside && !cancelled) }
+            token = nil
             isHighlighted = false
         }
-        override func cancelTracking(with event: UIEvent?) { adapter?.cancelGesture(); isHighlighted = false }
+        override func cancelTracking(with event: UIEvent?) {
+            if let token { adapter?.cancelGesture(token) }
+            token = nil
+            isHighlighted = false
+        }
         override func accessibilityActivate() -> Bool { adapter?.activate(action); return true }
     }
 
@@ -147,6 +154,15 @@
         public var showsNextKeyboard = false { didSet { if oldValue != showsNextKeyboard { rebuildKeys() } } }
         public var landscape = false { didSet { if oldValue != landscape { adapter.rotate(); setNeedsLayout() } } }
         public private(set) var panelHeight: CGFloat = 319
+        #if DEBUG
+            public var debugFixture = "" { didSet { updateDebugMetadata() } }
+            public var debugBuild = "unversioned" { didSet { updateDebugMetadata() } }
+            private let debugFixtureButton = UIButton(type: .system)
+            private func updateDebugMetadata() {
+                status.accessibilityValue = "build=\(debugBuild);" + debugFixture
+                debugFixtureButton.accessibilityLabel = "Debug fixtures;build=\(debugBuild);" + debugFixture
+            }
+        #endif
         private let status = UILabel()
         private let caption = UILabel()
         private let editor = PrivateDraftView()
@@ -174,6 +190,7 @@
         public init(adapter: KeyboardInputAdapter = KeyboardInputAdapter()) {
             self.adapter = adapter
             super.init(frame: .zero)
+            accessibilityIdentifier = "keyboard.panel"
             backgroundColor = Self.color(0xD1D5DB, 0x24262B)
             status.textColor = .secondaryLabel
             status.numberOfLines = 2
@@ -203,6 +220,32 @@
             nextKeyboardButton.tintColor = .label
             nextKeyboardButton.layer.cornerRadius = 5
             for item in [status, caption, editor, meter, error, nextKeyboardButton, popup] { addSubview(item) }
+            #if DEBUG
+                debugFixtureButton.isAccessibilityElement = true
+                debugFixtureButton.accessibilityTraits = .button
+                debugFixtureButton.accessibilityIdentifier = "keyboard.debugFixtures"
+                updateDebugMetadata()
+                debugFixtureButton.showsMenuAsPrimaryAction = true
+                let groups = [
+                    ("Макет", ["ru-empty", "ru-text", "shift", "caps", "en", "numbers", "symbols"]),
+                    (
+                        "Состояния",
+                        ["alternate-e", "alternate-softsign", "multiline", "limit", "preview", "clear", "canary"]
+                    ), ("Статусы", ["no-access", "no-key", "key-error", "contacts-error"]),
+                ]
+                debugFixtureButton.menu = UIMenu(
+                    children: groups.map { title, names in
+                        UIMenu(
+                            title: title,
+                            children: names.map { name in
+                                UIAction(title: name) { [weak self] _ in
+                                    guard let self else { return }
+                                    KeyboardDebugFixture.apply(to: self, name: name)
+                                }
+                            })
+                    })
+                addSubview(debugFixtureButton)
+            #endif
             editor.cursorTapped = { [weak adapter] in adapter?.moveCursor(to: $0) }
             adapter.onChange = { [weak self] in self?.refresh() }
             rebuildKeys()
@@ -244,6 +287,9 @@
             status.text = ([statusText] + [contactsText].compactMap { $0 }).filter { !$0.isEmpty }.joined(
                 separator: " · ")
             editor.display(input, landscape: landscape)
+            #if DEBUG
+                editor.accessibilityHint = "cursor=\(input.cursor);timers=\(adapter.activeTimerCount)"
+            #endif
             editor.needsScrollToCaret = true
             meter.text = input.counter
             error.text = input.limitError ? KeyboardInput.limitMessage : nil
@@ -305,6 +351,9 @@
             let statusHeight = max(
                 landscape ? 14 : 18, status.sizeThatFits(CGSize(width: width - 10, height: 40)).height)
             status.frame = CGRect(x: side + 5, y: y, width: width - 10, height: statusHeight)
+            #if DEBUG
+                debugFixtureButton.frame = status.frame
+            #endif
             y += statusHeight
             caption.frame = CGRect(x: side + 6, y: y, width: width - 12, height: landscape ? 14 : 16)
             y += landscape ? 14 : 16
