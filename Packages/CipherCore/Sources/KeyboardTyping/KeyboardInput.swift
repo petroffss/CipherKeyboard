@@ -122,28 +122,33 @@ public enum KeyboardAction: Equatable, Sendable {
 /// Production adapter used by both UIKit shells. Intentionally has no host document capability.
 @MainActor public final class KeyboardInputAdapter {
     public private(set) var input = KeyboardInput()
-    public private(set) var alternative: String?
+    public var alternative: String? {
+        gestureOrder.reversed().compactMap { gestures[$0]?.alternative }.first
+    }
     public var onChange: (() -> Void)?
     private let clock: any KeyboardClock
-    private var pending: UUID?
-    private var pressed: KeyboardAction?
-    private var gestureToken: UUID?
-    public var activeTimerCount: Int { pending == nil ? 0 : 1 }
+    private struct Gesture {
+        let action: KeyboardAction
+        var timer: UUID?
+        var alternative: String?
+    }
+    private var gestures: [UUID: Gesture] = [:]
+    private var gestureOrder: [UUID] = []
+    public var activeTimerCount: Int { gestures.values.filter { $0.timer != nil }.count }
     public init(clock: any KeyboardClock = SystemKeyboardClock()) { self.clock = clock }
     public func moveCursor(to position: Int) { input.moveCursor(to: position); onChange?() }
     @discardableResult public func press(_ action: KeyboardAction) -> UUID {
-        cancelGesture()
         let token = UUID()
-        gestureToken = token
-        pressed = action
+        gestures[token] = Gesture(action: action)
+        gestureOrder.append(token)
         if action == .delete {
             input.deleteBackward()
-            scheduleDelete(after: 0.400)
+            scheduleDelete(token, after: 0.400)
         } else if case .character(let key) = action, key == "е" || key == "ь" {
-            pending = clock.schedule(after: 0.450) { [weak self] in
-                guard let self else { return }
-                self.pending = nil
-                self.alternative = key == "е" ? "ё" : "ъ"
+            gestures[token]?.timer = clock.schedule(after: 0.450) { [weak self] in
+                guard let self, self.gestures[token] != nil else { return }
+                self.gestures[token]?.timer = nil
+                self.gestures[token]?.alternative = key == "е" ? "ё" : "ъ"
                 self.onChange?()
             }
         }
@@ -151,13 +156,11 @@ public enum KeyboardAction: Equatable, Sendable {
         return token
     }
     public func release(_ token: UUID, inside: Bool) {
-        guard gestureToken == token else { return }
-        let action = pressed
-        let alternate = alternative
-        cancelGesture()
-        guard inside, let action else { return }
-        switch action {
-        case .character(let value): input.typeKey(alternate ?? value)
+        guard let gesture = gestures[token] else { return }
+        cancelGesture(token)
+        guard inside else { return }
+        switch gesture.action {
+        case .character(let value): input.typeKey(gesture.alternative ?? value)
         case .delete: break
         case .shift: input.tapShift(at: clock.now)
         case .language: input.toggleLanguage()
@@ -170,22 +173,21 @@ public enum KeyboardAction: Equatable, Sendable {
     }
     public func activate(_ action: KeyboardAction) { let token = press(action); release(token, inside: true) }
     public func cancelGesture(_ token: UUID? = nil) {
-        if let token, gestureToken != token { return }
-        if let pending { clock.cancel(pending) }
-        pending = nil
-        pressed = nil
-        gestureToken = nil
-        alternative = nil
+        let cancelled = token.map { [$0] } ?? gestureOrder
+        for id in cancelled {
+            if let timer = gestures.removeValue(forKey: id)?.timer { clock.cancel(timer) }
+        }
+        gestureOrder.removeAll { gestures[$0] == nil }
         onChange?()
     }
     public func hide() { cancelGesture(); input.reset(); onChange?() }
     public func rotate() { cancelGesture() }
-    private func scheduleDelete(after delay: TimeInterval) {
-        pending = clock.schedule(after: delay) { [weak self] in
-            guard let self, self.pressed == .delete else { return }
-            self.pending = nil
+    private func scheduleDelete(_ token: UUID, after delay: TimeInterval) {
+        gestures[token]?.timer = clock.schedule(after: delay) { [weak self] in
+            guard let self, self.gestures[token]?.action == .delete else { return }
+            self.gestures[token]?.timer = nil
             self.input.deleteBackward()
-            self.scheduleDelete(after: 0.080)
+            self.scheduleDelete(token, after: 0.080)
             self.onChange?()
         }
     }

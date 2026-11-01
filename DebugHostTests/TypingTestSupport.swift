@@ -28,14 +28,22 @@ import Foundation
         }
         XCTAssertTrue(cipher.waitForExistence(timeout: 5), settings.debugDescription)
         cipher.tap()
-        let toggle = settings.switches.firstMatch
-        XCTAssertTrue(toggle.waitForExistence(timeout: 5), settings.debugDescription)
+        let row = settings.switches.matching(
+            NSPredicate(format: "label CONTAINS[c] %@ OR label CONTAINS[c] %@", "доступ", "access")
+        ).firstMatch
+        XCTAssertTrue(row.waitForExistence(timeout: 5), settings.debugDescription)
+        let nested = row.switches.firstMatch
+        let toggle = nested.exists ? nested : row
         XCTAssertTrue(
-            toggle.label.localizedCaseInsensitiveContains("доступ")
-                || toggle.label.localizedCaseInsensitiveContains("access"))
+            row.label.localizedCaseInsensitiveContains("доступ")
+                || row.label.localizedCaseInsensitiveContains("access"))
         let wanted = fullAccess ? "1" : "0"
         if toggle.value as? String != wanted {
-            toggle.tap()
+            if nested.exists {
+                toggle.tap()
+            } else {
+                toggle.coordinate(withNormalizedOffset: CGVector(dx: 0.95, dy: 0.5)).tap()
+            }
             let allow = settings.alerts.buttons.matching(
                 NSPredicate(format: "label == %@ OR label == %@", "Разрешить", "Allow")
             ).firstMatch
@@ -57,13 +65,33 @@ import Foundation
         if introduction.waitForExistence(timeout: 1) { introduction.tap() }
         let editor = host.descendants(matching: .any)["keyboard.editor"].firstMatch
         if editor.waitForExistence(timeout: 2) { verifyBuild(in: host); return }
-        let globe = host.buttons.matching(
-            NSPredicate(format: "label == %@ OR label == %@", "Next keyboard", "Следующая клавиатура")
-        ).firstMatch
-        XCTAssertTrue(globe.waitForExistence(timeout: 5), host.debugDescription)
-        globe.press(forDuration: 0.8)
-        host.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "CipherKeyboard")).firstMatch.tap()
-        XCTAssertTrue(editor.waitForExistence(timeout: 10), host.debugDescription)
+        for attempt in 0..<2 {
+            let globe = host.buttons.matching(
+                NSPredicate(format: "label == %@ OR label == %@", "Next keyboard", "Следующая клавиатура")
+            ).firstMatch
+            XCTAssertTrue(globe.waitForExistence(timeout: 5), host.debugDescription)
+            globe.press(forDuration: 0.8)
+            let choice = host.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "CipherKeyboard"))
+                .firstMatch
+            XCTAssertTrue(choice.waitForExistence(timeout: 5), host.debugDescription)
+            choice.tap()
+            if editor.waitForExistence(timeout: 5) { break }
+            let blankInputView = host.otherElements["inputView"].exists && host.keyboards.keys.count == 0
+            guard attempt == 0, blankInputView else { break }
+            if blankInputView {
+                XCTContext.runActivity(named: "Keyboard activation after Settings change required reopen") { activity in
+                    let screenshot = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
+                    screenshot.lifetime = .keepAlways; activity.add(screenshot)
+                    let hierarchy = XCTAttachment(string: host.debugDescription)
+                    hierarchy.lifetime = .keepAlways; activity.add(hierarchy)
+                }
+                host.buttons["Скрыть"].tap()
+                XCTAssertTrue(editor.waitForNonExistence(timeout: 3))
+                host.buttons["Открыть"].tap()
+                if editor.waitForExistence(timeout: 3) { break }
+            }
+        }
+        XCTAssertTrue(editor.exists, host.debugDescription)
         verifyBuild(in: host)
     }
 
@@ -75,7 +103,15 @@ import Foundation
                 ? "Состояния" : "Макет")
         app.buttons["keyboard.debugFixtures"].tap()
         app.buttons[group].tap()
-        app.buttons[name].tap()
+        let item = app.buttons[name]
+        let menu = app.collectionViews.containing(.button, identifier: group).firstMatch
+        for _ in 0..<3 {
+            if item.exists && item.isHittable { break }
+            XCTAssertTrue(menu.exists, app.debugDescription)
+            menu.swipeUp()
+        }
+        XCTAssertTrue(item.exists && item.isHittable, app.debugDescription)
+        item.tap()
         let status = app.buttons["keyboard.debugFixtures"]
         let received = XCTNSPredicateExpectation(
             predicate: NSPredicate(format: "label CONTAINS %@", "fixture=" + name), object: status)
