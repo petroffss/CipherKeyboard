@@ -8,7 +8,7 @@
 - **Ожидается:** Текст точно соответствует последовательности; курсор всегда на границе Character, поле хозяина не требуется.
 - **Почему провалит плохую работу:** ловит редактор, который всегда дописывает в конец.
 - **Статус:** pass
-- **Доказательство:** Round4 2c7726e/source956018778 insertsAtGraphemeBoundary: exact text/cursor; current independent core15typing+135core,exit0; evidence/verifier-round4/core.log.
+- **Доказательство:** Round5 1db6b7e/source248220564 insertsAtGraphemeBoundary exact text/cursor; independent core15typing+135core exit0; core.log. evidence/verifier-round5/.
 
 ## E2 · Точные страницы
 - **Тип:** test
@@ -16,7 +16,7 @@
 - **Ожидается:** Ряды совпадают полностью; курсор и текст сохранены; возврат по АБВ/ABC и смена языка соответствуют AC2.
 - **Почему провалит плохую работу:** ловит отсутствующие символы и потерю текста.
 - **Статус:** pass
-- **Доказательство:** Round4 2c7726e/source956018778 layoutsAndTransitions: all4exactpages/transitions,text+cursor preserved; core15+135,exit0; evidence/verifier-round4/core.log.
+- **Доказательство:** Round5 1db6b7e/source248220564 layoutsAndTransitions all4exactpages/transitions, text+cursor preserved; core150 exit0; core.log. evidence/verifier-round5/.
 
 ## E3 · Регистр
 - **Тип:** test
@@ -24,7 +24,7 @@
 - **Ожидается:** Автоматический и одноразовый регистры соответствуют AC3; 299 включает Caps, 301 не включает; буква расходует one-shot, цифра и пробел нет.
 - **Почему провалит плохую работу:** ловит декоративный Shift и всегда заглавную букву.
 - **Статус:** pass
-- **Доказательство:** Round4 2c7726e/source956018778 shiftStateMachine: auto/one-shot/Caps,299/301ms,explicitoff andpage transitions; core15+135,exit0; evidence/verifier-round4/core.log.
+- **Доказательство:** Round5 1db6b7e/source248220564 shiftStateMachine auto/one-shot/Caps,299/301ms,explicitoff/page transitions; core150 exit0; core.log. evidence/verifier-round5/.
 
 ## E4 · Альтернативы и отмена [negative]
 - **Тип:** test
@@ -32,7 +32,7 @@
 - **Ожидается:** 449 даёт основную букву; 450 и отпускание внутри — только ё/ъ; отмена ничего не вставляет и не оставляет активный таймер.
 - **Почему провалит плохую работу:** ловит двойной ввод основной и альтернативной буквы.
 - **Статус:** pass
-- **Доказательство:** Round4 2c7726e/source956018778 alternateTimingAndCancellation:449/450ms,е/ь,bothcases,inside/outside/hide/rotate,zero timers; core15+135,exit0; evidence/verifier-round4/core.log.
+- **Доказательство:** Round5 1db6b7e/source248220564 alternateTimingAndCancellation449/450ms,bothcases,inside/outside/hide/rotate/zero timers; core.log exit0. evidence/verifier-round5/.
 
 ## E5 · Удаление целых символов [negative]
 - **Тип:** test
@@ -40,7 +40,7 @@
 - **Ожидается:** Каждый пример удаляется целиком за одно действие, текст справа от курсора сохраняется, в начале нет изменений.
 - **Почему провалит плохую работу:** ловит удаление UTF-16 единиц и порчу emoji.
 - **Статус:** pass
-- **Доказательство:** Round4 2c7726e/source956018778 deletesCharacters: composed/skin-tone/flag/ZWJ whole Character,beginning unchanged; core15+135,exit0; evidence/verifier-round4/core.log.
+- **Доказательство:** Round5 1db6b7e/source248220564 deletesCharacters whole composed/skin-tone/flag/ZWJ, beginning unchanged; core.log exit0. evidence/verifier-round5/.
 
 ## E6 · Повтор удаления
 - **Тип:** test
@@ -48,7 +48,7 @@
 - **Ожидается:** Удалений соответственно 1/2/3; после остановки ни одного нового; удержание прочих обычных клавиш не повторяет ввод.
 - **Почему провалит плохую работу:** ловит неотменённый таймер.
 - **Статус:** pass
-- **Доказательство:** Round4 2c7726e/source956018778 repeatStops:399/400/480ms counts1/2/3,cancellation/hide stop timers,ordinarykeys no repeat; evidence/verifier-round4/core.log,exit0.
+- **Доказательство:** Round5 1db6b7e/source248220564 repeatStops399/400/480ms counts1/2/3, cancellation/hide stop, ordinarykeys no repeat; core.log exit0. evidence/verifier-round5/.
 
 ## E7 · Байтовая граница [negative]
 - **Тип:** test
@@ -56,7 +56,7 @@
 - **Ожидается:** Счётчик только >3500; 4096 допустимы; переполнение отклонено целиком с точным текстом AC11 и неизменным курсором; удаление снимает ошибку.
 - **Почему провалит плохую работу:** ловит подсчёт букв вместо байтов и частичное принятие.
 - **Статус:** pass
-- **Доказательство:** Round4 2c7726e/source956018778 utf8Limit:3500/3501/4096 boundaries,atomic rejection/cursor unchanged,exacterror,deletion reset; evidence/verifier-round4/core.log,exit0.
+- **Доказательство:** Round5 1db6b7e/source248220564 utf8Limit3500/3501/4096 atomic rejection/cursor unchanged/exacterror/deletion reset; core.log exit0. evidence/verifier-round5/.
 
 ## E8 · Изоляция от хозяина [security]
 - **Тип:** test
@@ -64,7 +64,7 @@
 - **Ожидается:** Ноль чтений контекста и ноль перечисленных вызовов; проверен production adapter, а не отдельная заглушка.
 - **Почему провалит плохую работу:** ловит скрытые вызовы proxy при Backspace.
 - **Статус:** pass
-- **Доказательство:** Round4 2c7726e/source956018778 Production controller/panel/adapter proxy-spy UI passed in full suite andclean3/3;0calls; evidence/verifier-round4/full-ui-first-case-results.json,clean-supplement-tests.json.
+- **Доказательство:** Round5 1db6b7e/source248220564 Actual production controller/panel/adapter proxy-spy UI passed in unfiltered clean30;0calls; full-ui-case-results.json. evidence/verifier-round5/.
 
 ## E9 · Превью общим компонентом
 - **Тип:** ui
@@ -72,7 +72,7 @@
 - **Ожидается:** Тексты AC10, поле «До встречи!» неизменно; набор работает, повторное открытие пустое; нет второй клавиатуры и глобуса, статус подключения не изменён.
 - **Почему провалит плохую работу:** ловит картинку вместо общей клавиатуры.
 - **Статус:** pass
-- **Доказательство:** Round4 2c7726e/source956018778 Real preview-key typing/reset/status/fingerprint/proxy-host invariance passed full UI andclean3/3 onfresh device withkeyboardneverenabled; evidence/verifier-round4/clean-supplement-summary.json.
+- **Доказательство:** Round5 1db6b7e/source248220564 Real previewkeys/Back/tab/background/reset/status/fingerprint/host invariance passed full unfiltered30 on BRANDNEW clean E0F7device, extensionneverenabled; full-ui-summary.json. evidence/verifier-round5/.
 
 ## E10 · Настоящее расширение [security]
 - **Тип:** ui
@@ -80,7 +80,7 @@
 - **Ожидается:** Черновик меняется внутри панели, текст и диапазон выделения хозяина неизменны; работает и без доступа; подтверждение подключения не содержит черновик.
 - **Почему провалит плохую работу:** ловит успех только внутри preview.
 - **Статус:** pass
-- **Доказательство:** Round4 2c7726e/source956018778 Independent runtime7/7,exit0: actualFullAccessON/OFF×empty/selected host,full sequence,unchangedhost text+selection,ordinarySettings; receipt onlydate/version; evidence/verifier-round4/runtime-summary.json,receipt-schema.json.
+- **Доказательство:** Round5 1db6b7e/source248220564 Runtime7/7 exit0; actualSettingsFullAccessON/OFF xempty/selectedhost, sequence/ordinarySettings, unchangedhost text+selection; receipt onlydate/version; runtime-summary.json,receipt-schema.json. evidence/verifier-round5/.
 
 ## E11 · Стирание и поворот [negative] [security]
 - **Тип:** ui
@@ -88,7 +88,7 @@
 - **Ожидается:** После закрытий пусто, русский и auto Shift; поворот сохраняет текст/курсор и отменяет незавершённые жесты; отложенный ввод не появляется.
 - **Почему провалит плохую работу:** ловит сохранение состояния живущего процесса.
 - **Статус:** pass
-- **Доказательство:** Round4 2c7726e/source956018778 Runtime actualhide/focusfalse/panelabsence/reopen,rotation,background/globe reset; realpreviewback/tab/background andcoretimercancel passed; evidence/verifier-round4/runtime-summary.json,clean-supplement-summary.json,core.log.
+- **Доказательство:** Round5 1db6b7e/source248220564 Actual hide focus=false/panelabsent/reopen,rotation,background/globe andpreviewBack/tab/background resets passed; corecancel/zero timers; runtime-summary.json,full-ui-case-results.json,core.log. evidence/verifier-round5/.
 
 ## E12 · Нет экспорта или записи [security]
 - **Тип:** ui
@@ -96,7 +96,7 @@
 - **Ожидается:** Нет меню экспорта/вставки и drag-export, clipboard неизменен; canary нигде не записан. Ключи/контакты неизменны; допустима только штатная запись даты/версии подключения04 без текста.
 - **Почему провалит плохую работу:** ловит утечку через стандартный UITextView и логи.
 - **Статус:** pass
-- **Доказательство:** Round4 2c7726e/source956018778 Finalsource isolatedauditPASS:setup2/2+canary1/1,actualsentineltrueboth,knownidentity1rowboth withattributes-only proof,15files/metadata/defaults/clipboard unchanged exceptdate/versionreceipt,no canary/logmatches; evidence/verifier-round4/audit/result.json.
+- **Доказательство:** Round5 1db6b7e/source248220564 IsolatedauditPASS setup2/2+canary1/1: actualsentineltrueboth, exactknown1identityattribute-onlyproof,15files/defaults/metadata/clipboard unchanged exceptdate/versionreceipt, no canary/logmatches,no reinstall between; audit/result.json. evidence/verifier-round5/.
 
 ## E13 · Статусы не блокируют набор [negative]
 - **Тип:** ui
@@ -104,7 +104,7 @@
 - **Ожидается:** Точные предупреждения AC9; набор во всех случаях; no-access не создаёт фабрик чтения общих хранилищ; расширение не создаёт ключ.
 - **Почему провалит плохую работу:** ловит регрессию защит02–04.
 - **Статус:** pass
-- **Доказательство:** Round4 2c7726e/source956018778 Runtime five-status scenario passed;typed/deleted each,host unchanged,no-accessreaders0; lazyfactory coretest passed; evidence/verifier-round4/runtime-summary.json,core.log.
+- **Доказательство:** Round5 1db6b7e/source248220564 Runtimefive-status typed/deleted each, exactwarnings/no-accessreaders0, hostunchanged; lazyfactorycorepass; runtime-summary.json,core.log. evidence/verifier-round5/.
 
 ## E14 · Все состояния и размеры [design]
 - **Тип:** design
@@ -112,7 +112,7 @@
 - **Ожидается:** Блоки/тексты/цвета совпадают; четыре ряда целиком, safe area учтена, ограничения размеров AC8 выполнены; буквы≥26pt, высоты≥44/32; нет переполнения или скачка счётчика. Preview только портрет.
 - **Почему провалит плохую работу:** ловит проверку лишь одного удобного размера.
 - **Статус:** fail
-- **Доказательство:** Round4 2c7726e/source956018778 FAIL:78/186unique pairs(all78reviewed),108missing;375completed62,402coordinator-canceled16,440notcaptured. D1uppercase multiline/limit,D2mutedwarnings,D3darkpreviewactuallylight,D4hostfieldhiddenlandscape. Strictexport1,matrix75; evidence/verifier-round4/design-review.json,fix-list.md.
+- **Доказательство:** Round5 1db6b7e/source248220564 FAIL D5:186/186freshuniqueactualpairs andall186individuallyreviewedpass, actualtheme/host48pt/caret/style checks pass; actualscroll/caretpass. Normal375preview real5lineinputclipsAC10instruction,2settledframes gui20/gui21; design-review.json,fix-list.md. evidence/verifier-round5/.
 
 ## E15 · Доступность и системный глобус
 - **Тип:** ui
@@ -120,7 +120,7 @@
 - **Ожидается:** Имена/состояния/IDs из AC12 доступны; собственный глобус только при true, вызывает стандартное переключение/список; двойного глобуса нет.
 - **Почему провалит плохую работу:** ловит недоступные символы и тупиковый переключатель.
 - **Статус:** pass
-- **Доказательство:** Round4 2c7726e/source956018778 Actual controller labels/ShiftCaps/hints/customactions/needsInputModeSwitchKey probe passed; real375globe hold/list/switch passed; metadata375own=true,402own=false,previewfalse; evidence/verifier-round4/accessibility-frame-metadata.json,runtime-summary.json,clean-supplement-summary.json.
+- **Доказательство:** Round5 1db6b7e/source248220564 Actual production labels/ShiftCaps/hints/IDs/needsInputModeSwitchKeytruefalse probe passed full30; realglobehold/list/switch runtimepass;375owntrue,402/440systemonly,previewfalse; runtime-summary.json,matrix-integrity.json. evidence/verifier-round5/.
 
 ## E16 · Нагрузка и жизненный цикл
 - **Тип:** test
@@ -128,15 +128,15 @@
 - **Ожидается:** Результаты точно совпадают, нет crash/hang; после закрытия активных повторов0; одинаковый ввод даёт одинаковый черновик в обеих оболочках.
 - **Почему провалит плохую работу:** ловит гонки и различающиеся реализации.
 - **Статус:** pass
-- **Доказательство:** Round4 2c7726e/source956018778 stressAndReset500actions/10resets/0timers plusindependent overlappingtouch tests passed; actualpreview/extension parity passed; evidence/verifier-round4/core.log,runtime-summary.json.
+- **Доказательство:** Round5 1db6b7e/source248220564 stressAndReset500actions/10resets/0timers+overlappingtouchtests passed; actualpreview/extension parity runtimepass; core.log,runtime-summary.json. evidence/verifier-round5/.
 
 ## E17 · Регрессии и Release
 - **Тип:** command
 - **Шаги:** scripts/test.sh core; scripts/test.sh ui; scripts/lint.sh; scripts/build.sh. Собрать Release и проверить отсутствие Debug host/seed/diagnostics и запрещённых сетевых API; сохранить команды и результаты.
 - **Ожидается:** Все тесты и команды завершаются0; Debug/Release собираются, новые тесты реально выполнены; Release не открывает тестовые пути.
 - **Почему провалит плохую работу:** ловит непроверенные тесты и диагностический доступ в релизе.
-- **Статус:** fail
-- **Доказательство:** Round4 2c7726e/source956018778 FAIL:fullunfilteredUI29pass/1fail/0skip,exit65(Contactstestexpectsapp.keyboards whileCipherpanelpresent). Cleancontrol3/3 doesNOTreplacefullsuite;canceledcleanfullretry0tests/75. Core150/lint67/Debug+Release+binaryaudit pass; evidence/verifier-round4/report.md.
+- **Статус:** pass
+- **Доказательство:** Round5 1db6b7e/source248220564 PASS fullUNFILTERED30pass0fail0skip exit0 onBRANDNEW E0F7 cleanneverextensionenabled; exact30uniqueIDs. Core150/lint67/explicitDebugRelease exit0, Release0of24Debugmarkers/network0,actual4entitlementslices; full-ui-contract-coverage.json,release-binary-audit.json. evidence/verifier-round5/.
 
 ## Покрытие
 AC1: E1,E9,E14; AC2: E2,E10; AC3: E3; AC4: E4,E10; AC5: E5,E6; AC6: E8,E10,E12; AC7: E11,E12,E16; AC8: E14; AC9: E10,E13,E15; AC10: E9; AC11: E7,E14; AC12: E15,E16.
