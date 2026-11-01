@@ -43,8 +43,9 @@ final class SetupUITests: XCTestCase {
                 }
             }
             for step in [
-                "1. Откройте Настройки → CipherKeyboard → Клавиатуры", "2. Включите CipherKeyboard",
+                "1. Откройте Настройки → Приложения → CipherKeyboard → Клавиатуры", "2. Включите CipherKeyboard",
                 "3. Включите «Полный доступ»",
+                "4. Откройте поле ввода в любом приложении, удерживайте 🌐 и выберите CipherKeyboard",
             ] { XCTAssertTrue(app.staticTexts[step].exists) }
             let open = app.buttons["setup.openSettings"]
             XCTAssertTrue(open.exists)

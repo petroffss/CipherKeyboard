@@ -80,9 +80,10 @@ struct SetupView: View {
 
     private var steps: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("1. Откройте Настройки → CipherKeyboard → Клавиатуры")
+            Text("1. Откройте Настройки → Приложения → CipherKeyboard → Клавиатуры")
             Text("2. Включите CipherKeyboard")
             Text("3. Включите «Полный доступ»")
+            Text("4. Откройте поле ввода в любом приложении, удерживайте 🌐 и выберите CipherKeyboard")
         }
         .accessibilityIdentifier("setup.steps")
     }
