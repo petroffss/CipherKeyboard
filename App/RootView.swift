@@ -24,13 +24,19 @@ enum AppTab: Hashable {
 struct MainTabs: View {
     let info: MyKeyInfo
     @State private var selection: AppTab = .myKey
+    @State private var contacts: ContactsModel
+
+    init(info: MyKeyInfo) {
+        self.info = info
+        _contacts = State(initialValue: ContactsModel(store: LaunchStorage.contactStore(), ownKey: info.publicKey))
+    }
 
     var body: some View {
         TabView(selection: $selection) {
             MyKeyView(info: info)
                 .tabItem { tabLabel("Мой ключ", systemImage: "key", id: "tab.myKey") }
                 .tag(AppTab.myKey)
-            PlaceholderTabView(title: "Контакты")
+            ContactsView(model: contacts)
                 .tabItem { tabLabel("Контакты", systemImage: "person.2", id: "tab.contacts") }
                 .tag(AppTab.contacts)
             PlaceholderTabView(title: "Расшифровать")
@@ -170,15 +176,18 @@ struct PrimaryButtonStyle: ButtonStyle {
     }
 }
 
-/// Вторичная кнопка: контур 1,5 pt акцентом, текст акцентом, высота 50.
+/// Вторичная кнопка: контур 1,5 pt акцентом (или другим цветом — красным для «Удалить»), текст тем же цветом, высота 50.
 struct SecondaryButtonStyle: ButtonStyle {
+    var color: Color = .accentColor
+    var minHeight: CGFloat = 50
+
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(.body.weight(.semibold))
-            .foregroundStyle(Color.accentColor)
+            .foregroundStyle(color)
             .padding(.horizontal, 16)
-            .frame(maxWidth: .infinity, minHeight: 50)
-            .overlay(RoundedRectangle(cornerRadius: 14).strokeBorder(Color.accentColor, lineWidth: 1.5))
+            .frame(maxWidth: .infinity, minHeight: minHeight)
+            .overlay(RoundedRectangle(cornerRadius: 14).strokeBorder(color, lineWidth: 1.5))
             .opacity(configuration.isPressed ? 0.6 : 1)
             .contentShape(RoundedRectangle(cornerRadius: 14))
     }
