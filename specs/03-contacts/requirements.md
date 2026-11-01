@@ -1,12 +1,13 @@
 ---
 feature: 03-contacts
 title: Контакты — ключи собеседников
-status: verified        # draft → in-review → approved → building → verified → done
+status: done        # draft → in-review → approved → building → verified → done
 risk: high           # low | medium | high — ставит classify-risk
 risk_reason: "если сломается — сообщение зашифруется чужому ключу под знакомым именем или контакты пропадут"
 ui: yes              # yes, если у фичи есть экран; no — API, фоновая задача, CLI
 depends_on: [01-crypto-core, 02-my-key]
 approved_at: 2026-11-01
+done_at: 2026-11-01
 ---
 
 # Контакты — ключи собеседников
