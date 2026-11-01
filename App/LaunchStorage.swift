@@ -36,7 +36,7 @@ enum LaunchStorage {
         return .appGroup
     }
 
-    /// Строка, которую сканер отдаёт вместо камеры (03 AC20, `-contacts-scan`). В Release всегда `nil`.
+    /// Строка, которую сканер отдаёт вместо камеры (03 AC20, аргумент запуска только в Debug). В Release всегда `nil`.
     static var scannerOverride: String? {
         #if DEBUG
             return argument(after: "-contacts-scan")

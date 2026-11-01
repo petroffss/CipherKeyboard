@@ -55,7 +55,8 @@ struct AddContactSheet: View {
 
     private var nameCheck: NameCheck {
         // Пока идёт запись, имя проверяется по книге без нового контакта (иначе оно стало бы «дублем» самого себя).
-        NameCheck(name: name, touched: nameTouched, book: savingKey == nil ? model.book : bookBeforeSave, excluding: nil)
+        NameCheck(
+            name: name, touched: nameTouched, book: savingKey == nil ? model.book : bookBeforeSave, excluding: nil)
     }
 
     @State private var bookBeforeSave = ContactBook()
