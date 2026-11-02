@@ -26,6 +26,38 @@ final class EncryptRuntimeTests: XCTestCase {
         XCTAssertTrue(anna.waitForExistence(timeout: 4), host.debugDescription)
         anna.tap()
     }
+    /// Establish ordinary-touch arrival before observing the editor restored by selection.
+    @MainActor private func activateVisibleLongRecipient(
+        _ row: XCUIElement, in host: XCUIApplication, list: XCUIElement, proofName: String
+    ) {
+        list.swipeUp()
+        var previousFrame = CGRect.null
+        var previousViewport = CGRect.null
+        var stableSince = Date()
+        let settled = XCTNSPredicateExpectation(
+            predicate: NSPredicate { _, _ in
+                guard row.exists, list.exists else { stableSince = Date(); return false }
+                let frame = row.frame, viewport = list.frame
+                let intersection = viewport.intersection(frame)
+                let fullyVisible =
+                    frame.width > 0 && frame.height > 0
+                    && intersection.width >= frame.width - 0.5 && intersection.height >= frame.height - 0.5
+                let ready = fullyVisible && row.isHittable
+                if frame != previousFrame || viewport != previousViewport || !ready {
+                    previousFrame = frame; previousViewport = viewport; stableSince = Date()
+                }
+                return ready && Date().timeIntervalSince(stableSince) >= 0.25
+            }, object: nil)
+        XCTAssertEqual(
+            XCTWaiter.wait(for: [settled], timeout: 5), .completed,
+            "Recipient row must be fully visible and stable before activation")
+        let geometry = XCTAttachment(string: "stable row=\(row.frame); viewport=\(list.frame)")
+        geometry.name = proofName; geometry.lifetime = .keepAlways; add(geometry)
+        row.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.35)).tap()
+        XCTAssertTrue(list.waitForNonExistence(timeout: 5), "Recipient picker must close after ordinary touch")
+        XCTAssertEqual(host.buttons["keyboard.recipient"].label, "Кому: " + String(repeating: "Я", count: 40))
+        XCTAssertTrue(TypingTestSupport.draft(in: host).waitForExistence(timeout: 5))
+    }
     @MainActor private func nativeCiphertext(from result: String) -> String {
         let prefix = "До ", suffix = "встречи!"
         XCTAssertTrue(result.hasPrefix(prefix)); XCTAssertTrue(result.hasSuffix(suffix))
@@ -290,7 +322,9 @@ final class EncryptRuntimeTests: XCTestCase {
                     format: "identifier BEGINSWITH %@ AND label BEGINSWITH %@", "keyboard.recipient.",
                     String(repeating: "Я", count: 40))
             ).firstMatch
-            XCTAssertTrue(long.isHittable); long.tap()
+            XCTAssertTrue(long.isHittable)
+            activateVisibleLongRecipient(
+                long, in: host, list: list, proofName: "encrypt-native-caret-\(theme)-long-row-before-activation")
             try assertNativeCaretAfterResize(
                 in: host, text: draft, cursor: draft.count, theme: theme, landscape: false,
                 proofName: "encrypt-native-caret-\(theme)-portrait-before")
@@ -443,7 +477,9 @@ final class EncryptRuntimeTests: XCTestCase {
                 format: "identifier BEGINSWITH %@ AND label BEGINSWITH %@", "keyboard.recipient.",
                 String(repeating: "Я", count: 40))
         ).firstMatch
-        XCTAssertTrue(long.isHittable); long.tap()
+        XCTAssertTrue(long.isHittable)
+        activateVisibleLongRecipient(
+            long, in: host, list: list, proofName: "encrypt-native-multiline-long-row-before-activation")
         XCTAssertTrue(host.buttons["keyboard.recipient"].label.contains(String(repeating: "Я", count: 40)))
         XCTAssertEqual(TypingTestSupport.draft(in: host).value as? String, draft)
         for landscape in [true, false] {
