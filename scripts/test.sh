@@ -14,12 +14,12 @@ if [ "$what" = all ] || [ "$what" = core ]; then
     swift test --package-path "$CORE_PACKAGE" --scratch-path "$ROOT/.build/core" "$@"
 fi
 if [ "$what" = all ] || [ "$what" = ui ]; then
-    echo "== Приложение: xcodebuild test на «$DEVICE»"
+    echo "== Приложение: xcodebuild test на «${DEVICE}»"
     RESULT="$ROOT/.build/TestResults/ui-$(date +%Y%m%d-%H%M%S).xcresult"
     status=0
     xcodebuild test -project "$PROJECT" -scheme "$SCHEME" \
         -destination "platform=iOS Simulator,name=$DEVICE" \
-        -derivedDataPath "$DERIVED" -resultBundlePath "$RESULT" -quiet "$@" || status=$?
+        -derivedDataPath "$DERIVED" "CURRENT_PROJECT_VERSION=$(typing_revision)" -resultBundlePath "$RESULT" -quiet "$@" || status=$?
     if [ -d "$RESULT" ]; then
         xcrun xcresulttool get test-results summary --path "$RESULT" | python3 -c '
 import json, sys

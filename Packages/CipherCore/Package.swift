@@ -5,6 +5,7 @@ let package = Package(
     name: "CipherCore",
     platforms: [.iOS(.v18), .macOS(.v15)],
     products: [
+        .library(name: "KeyboardTyping", targets: ["KeyboardTyping"]),
         .library(name: "CipherCore", targets: ["CipherCore"]),
         // Создание личности — только для приложения. Клавиатура этот продукт не линкует.
         .library(name: "CipherCoreIdentityStore", targets: ["CipherCoreIdentityStore"]),
@@ -12,6 +13,8 @@ let package = Package(
         .library(name: "CipherCoreContactStore", targets: ["CipherCoreContactStore"]),
     ],
     targets: [
+        .target(name: "KeyboardTyping", dependencies: ["CipherCore"]),
+        .testTarget(name: "KeyboardTypingTests", dependencies: ["KeyboardTyping"]),
         .target(name: "CipherCore"),
         .target(name: "CipherCoreIdentityStore", dependencies: ["CipherCore"]),
         .target(name: "CipherCoreContactStore", dependencies: ["CipherCore"]),

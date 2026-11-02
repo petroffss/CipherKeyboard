@@ -12,6 +12,8 @@
 		CA000000000000000000011E /* CipherCoreContactStore in Frameworks */ = {isa = PBXBuildFile; productRef = CA000000000000000000011D /* CipherCoreContactStore */; };
 		CA000000000000000000010F /* CipherKeyboardExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = CA0000000000000000000202 /* CipherKeyboardExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		CA000000000000000000020C /* CipherCore in Frameworks */ = {isa = PBXBuildFile; productRef = CA000000000000000000020B /* CipherCore */; };
+		CA000000000000000000012C /* KeyboardTyping in Frameworks */ = {isa = PBXBuildFile; productRef = CA000000000000000000012B /* KeyboardTyping */; };
+		CA000000000000000000022C /* KeyboardTyping in Frameworks */ = {isa = PBXBuildFile; productRef = CA000000000000000000022B /* KeyboardTyping */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -23,6 +25,13 @@
 			remoteInfo = CipherKeyboardExtension;
 		};
 		CA000000000000000000030E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CA0000000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = CA0000000000000000000101;
+			remoteInfo = CipherKeyboard;
+		};
+		CA000000000000000000040E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = CA0000000000000000000001 /* Project object */;
 			proxyType = 1;
@@ -49,6 +58,7 @@
 		CA0000000000000000000102 /* CipherKeyboard.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CipherKeyboard.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CA0000000000000000000202 /* CipherKeyboardExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = CipherKeyboardExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		CA0000000000000000000302 /* CipherKeyboardUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CipherKeyboardUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		CA0000000000000000000402 /* TypingIntegrationTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TypingIntegrationTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -80,6 +90,11 @@
 			path = UITests;
 			sourceTree = "<group>";
 		};
+		CA0000000000000000000403 /* DebugHostTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = DebugHostTests;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -88,6 +103,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CA000000000000000000010C /* CipherCore in Frameworks */,
+				CA000000000000000000012C /* KeyboardTyping in Frameworks */,
 				CA000000000000000000011C /* CipherCoreIdentityStore in Frameworks */,
 				CA000000000000000000011E /* CipherCoreContactStore in Frameworks */,
 			);
@@ -98,10 +114,18 @@
 			buildActionMask = 2147483647;
 			files = (
 				CA000000000000000000020C /* CipherCore in Frameworks */,
+				CA000000000000000000022C /* KeyboardTyping in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		CA0000000000000000000305 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CA0000000000000000000405 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -117,6 +141,7 @@
 				CA0000000000000000000103 /* App */,
 				CA0000000000000000000203 /* Keyboard */,
 				CA0000000000000000000303 /* UITests */,
+				CA0000000000000000000403 /* DebugHostTests */,
 				CA0000000000000000000003 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -127,6 +152,7 @@
 				CA0000000000000000000102 /* CipherKeyboard.app */,
 				CA0000000000000000000202 /* CipherKeyboardExtension.appex */,
 				CA0000000000000000000302 /* CipherKeyboardUITests.xctest */,
+				CA0000000000000000000402 /* TypingIntegrationTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -154,6 +180,7 @@
 			name = CipherKeyboard;
 			packageProductDependencies = (
 				CA000000000000000000010B /* CipherCore */,
+				CA000000000000000000012B /* KeyboardTyping */,
 				CA000000000000000000011B /* CipherCoreIdentityStore */,
 				CA000000000000000000011D /* CipherCoreContactStore */,
 			);
@@ -179,6 +206,7 @@
 			name = CipherKeyboardExtension;
 			packageProductDependencies = (
 				CA000000000000000000020B /* CipherCore */,
+				CA000000000000000000022B /* KeyboardTyping */,
 			);
 			productName = CipherKeyboardExtension;
 			productReference = CA0000000000000000000202 /* CipherKeyboardExtension.appex */;
@@ -203,6 +231,27 @@
 			name = CipherKeyboardUITests;
 			productName = CipherKeyboardUITests;
 			productReference = CA0000000000000000000302 /* CipherKeyboardUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+		CA0000000000000000000401 /* TypingIntegrationTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CA0000000000000000000408 /* Build configuration list for PBXNativeTarget "TypingIntegrationTests" */;
+			buildPhases = (
+				CA0000000000000000000404 /* Sources */,
+				CA0000000000000000000405 /* Frameworks */,
+				CA0000000000000000000406 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				CA000000000000000000040D /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				CA0000000000000000000403 /* DebugHostTests */,
+			);
+			name = TypingIntegrationTests;
+			productName = TypingIntegrationTests;
+			productReference = CA0000000000000000000402 /* TypingIntegrationTests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -248,6 +297,7 @@
 				CA0000000000000000000101 /* CipherKeyboard */,
 				CA0000000000000000000201 /* CipherKeyboardExtension */,
 				CA0000000000000000000301 /* CipherKeyboardUITests */,
+				CA0000000000000000000401 /* TypingIntegrationTests */,
 			);
 		};
 /* End PBXProject section */
@@ -268,6 +318,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		CA0000000000000000000306 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CA0000000000000000000406 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -298,6 +355,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		CA0000000000000000000404 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -310,6 +374,11 @@
 			isa = PBXTargetDependency;
 			target = CA0000000000000000000101 /* CipherKeyboard */;
 			targetProxy = CA000000000000000000030E /* PBXContainerItemProxy */;
+		};
+		CA000000000000000000040D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = CA0000000000000000000101 /* CipherKeyboard */;
+			targetProxy = CA000000000000000000040E /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -474,6 +543,28 @@
 			};
 			name = Release;
 		};
+		CA0000000000000000000409 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GENERATE_INFOPLIST_FILE = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.cipherkeyboard.app.typingintegrationtests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				TEST_TARGET_NAME = CipherKeyboard;
+			};
+			name = Debug;
+		};
+		CA000000000000000000040A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GENERATE_INFOPLIST_FILE = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.cipherkeyboard.app.typingintegrationtests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				TEST_TARGET_NAME = CipherKeyboard;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -513,6 +604,15 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		CA0000000000000000000408 /* Build configuration list for PBXNativeTarget "TypingIntegrationTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CA0000000000000000000409 /* Debug */,
+				CA000000000000000000040A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
@@ -539,6 +639,8 @@
 			isa = XCSwiftPackageProductDependency;
 			productName = CipherCoreContactStore;
 		};
+		CA000000000000000000012B /* KeyboardTyping */ = {isa = XCSwiftPackageProductDependency; productName = KeyboardTyping; };
+		CA000000000000000000022B /* KeyboardTyping */ = {isa = XCSwiftPackageProductDependency; productName = KeyboardTyping; };
 /* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = CA0000000000000000000001 /* Project object */;
