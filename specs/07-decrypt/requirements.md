@@ -1,11 +1,12 @@
 ---
 feature: 07-decrypt
 title: Расшифровка полученных сообщений
-status: in-review
+status: approved
 risk: high
 risk_reason: "если сломается — подделка покажется подлинной, отправитель определится неверно или открытый текст утечёт из панели"
 ui: yes
 depends_on: [01-crypto-core, 02-my-key, 03-contacts, 04-keyboard-setup, 05-keyboard-typing, 06-encrypt-insert]
+approved_at: 2026-11-02
 ---
 
 # Расшифровка полученных сообщений
@@ -63,4 +64,4 @@ Builder → независимые verifier/reviewer и security review по REV
 Apple: [UIPasteControl](https://developer.apple.com/documentation/uikit/uipastecontrol), [UIPasteboard.string](https://developer.apple.com/documentation/uikit/uipasteboard/string), [полный доступ](https://developer.apple.com/documentation/uikit/configuring-open-access-for-a-custom-keyboard). Программное чтение и системная вставка различаются по механике согласия; фактическое поведение SDK/iOS проверяет E7.
 
 ## Открытые вопросы
-Открытых вопросов нет. Контракт и решения ожидают одобрения пользователя; код приложения ещё не разрешён.
+Открытых вопросов нет. Пользователь одобрил контракт и решения командой `/approve 07-decrypt` 2026-11-02. Реализация разрешена.
