@@ -1,12 +1,13 @@
 ---
 feature: 05-keyboard-typing
 title: Клавиатура — набор текста внутри клавиатуры
-status: verified
+status: done
 risk: high
 risk_reason: "ошибка может раскрыть открытый текст приложению-хозяину"
 ui: yes
 depends_on: [01-crypto-core, 02-my-key, 03-contacts, 04-keyboard-setup]
 approved_at: 2026-11-01
+done_at: 2026-11-02
 ---
 
 # Набор текста внутри клавиатуры
