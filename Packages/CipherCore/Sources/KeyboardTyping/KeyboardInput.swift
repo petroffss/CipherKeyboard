@@ -88,6 +88,13 @@ public struct KeyboardInput: Sendable {
     public mutating func toggleNumbers() { page = page == .letters ? .numbers : .letters }
     public mutating func toggleSymbols() { page = page == .symbols ? .numbers : .symbols }
     public mutating func reset() { self = KeyboardInput() }
+    #if DEBUG
+        fileprivate static func defensiveLimitFixture() -> Self {
+            var value = KeyboardInput()
+            value.text = String(repeating: "a", count: 4097); value.cursor = 0
+            return value
+        }
+    #endif
 }
 
 /// Injectable monotonic clock. Cancellation must also remove pending callbacks.
@@ -126,6 +133,7 @@ public enum KeyboardAction: Equatable, Sendable {
         gestureOrder.reversed().compactMap { gestures[$0]?.alternative }.first
     }
     public var onChange: (() -> Void)?
+    public var interactionEnabled = true { didSet { if !interactionEnabled { cancelGesture() } } }
     private let clock: any KeyboardClock
     private struct Gesture {
         let action: KeyboardAction
@@ -136,9 +144,12 @@ public enum KeyboardAction: Equatable, Sendable {
     private var gestureOrder: [UUID] = []
     public var activeTimerCount: Int { gestures.values.filter { $0.timer != nil }.count }
     public init(clock: any KeyboardClock = SystemKeyboardClock()) { self.clock = clock }
-    public func moveCursor(to position: Int) { input.moveCursor(to: position); onChange?() }
+    public func moveCursor(to position: Int) {
+        guard interactionEnabled else { return }; input.moveCursor(to: position); onChange?()
+    }
     @discardableResult public func press(_ action: KeyboardAction) -> UUID {
         let token = UUID()
+        guard interactionEnabled else { return token }
         gestures[token] = Gesture(action: action)
         gestureOrder.append(token)
         if action == .delete {
@@ -193,6 +204,9 @@ public enum KeyboardAction: Equatable, Sendable {
     }
     #if DEBUG
         /// Synthetic fixtures only. This API is not compiled in Release.
+        public func seedDefensiveLimitForTesting() {
+            hide(); input = .defensiveLimitFixture(); onChange?()
+        }
         public func seedForTesting(_ text: String, cursor: Int? = nil) {
             hide()
             input.insert(text)

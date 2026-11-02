@@ -8,6 +8,20 @@
         private static let referenceExcerpt =
             "Привет, Анна!\nВстречаемся завтра.\nЯ буду у входа.\nНапиши, когда придёшь.\nДо встречи!"
         public static func apply(to panel: KeyboardPanel, name: String) {
+            if ["enc-delay", "enc-fault", "enc-normal", "enc-canary"].contains(name) {
+                panel.debugFaults.delay = name == "enc-delay" ? 2 : 0
+                panel.debugFaults.fails = name == "enc-fault"
+                if name == "enc-canary" { panel.adapter.seedForTesting("EncryptCanary06-Ж-20261102") }
+                panel.debugFixture = "fixture=\(name);"; return
+            }
+            if name == "enc-bytes4096" {
+                panel.adapter.seedForTesting(String(repeating: "a", count: 4096));
+                panel.debugFixture = "fixture=enc-bytes4096;"; return
+            }
+            if name.hasPrefix("enc-") {
+                KeyboardEncryptFixture.apply(to: panel, state: String(name.dropFirst(4))); return
+            }
+            panel.disableEncryptionForTesting()
             let adapter = panel.adapter
             if name == "clear" { adapter.hide(); panel.debugFixture = "fixture=clear"; return }
             if name == "canary" {

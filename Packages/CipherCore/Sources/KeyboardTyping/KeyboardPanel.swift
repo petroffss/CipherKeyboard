@@ -1,5 +1,6 @@
 #if canImport(UIKit)
     import UIKit
+    import CipherCore
 
     /// A display-only text view: never a text-input responder and never offers system editing interactions.
     /// TextKit provides wrapping/hit testing; all edits and cursor positions belong to KeyboardInput.
@@ -161,6 +162,17 @@
     /// Shared production panel, embedded unchanged in the extension and the app preview.
     @MainActor public final class KeyboardPanel: UIView {
         public let adapter: KeyboardInputAdapter
+        public private(set) var encryption: EncryptInsertCoordinator?
+        private var encryptionControls: EncryptionControls?
+        public func enableEncryption(_ coordinator: EncryptInsertCoordinator) {
+            encryption = coordinator
+            let controls = EncryptionControls(coordinator: coordinator)
+            encryptionControls?.removeFromSuperview()
+            encryptionControls = controls
+            addSubview(controls)
+            coordinator.onChange = { [weak self] in self?.refresh() }
+            refresh()
+        }
         public let nextKeyboardButton = UIButton(type: .system)
         public var heightChanged: ((CGFloat) -> Void)?
         public var statusText = "" { didSet { refresh() } }
@@ -170,6 +182,10 @@
         public var landscape = false { didSet { if oldValue != landscape { adapter.rotate(); setNeedsLayout() } } }
         public private(set) var panelHeight: CGFloat = 319
         #if DEBUG
+            let debugFaults = KeyboardEncryptFaults()
+            weak var debugHost: (any CiphertextHost)?
+            var debugAccess: (() -> Bool)?
+            var debugEncryptionContext: KeyboardEncryptFixture.Context?
             public var debugFixture = "" { didSet { updateDebugMetadata() } }
             public var debugBuild = "unversioned" { didSet { updateDebugMetadata() } }
             private let debugFixtureButton = UIButton(type: .system)
@@ -185,6 +201,11 @@
                     "ru-empty", "ru-text", "shift", "caps", "en", "numbers", "symbols", "alternate-e",
                     "alternate-softsign", "multiline", "limit", "preview", "no-access", "no-key",
                     "key-error", "contacts-error", "clear", "canary",
+                    "enc-delay", "enc-fault", "enc-normal", "enc-canary", "enc-bytes4096", "enc-unselected",
+                    "enc-empty", "enc-ready", "enc-picker", "enc-no-contacts",
+                    "enc-sending",
+                    "enc-success", "enc-limit", "enc-no-key", "enc-key-error", "enc-contacts-error", "enc-no-access",
+                    "enc-changed", "enc-selection", "enc-failure", "enc-document-changed", "enc-long-name",
                 ]
                 debugChoices = names.map { name in
                     let button = UIButton(type: .system)
@@ -210,6 +231,14 @@
                 debugPicker = nil
                 debugChoices.removeAll()
             }
+            public func disableEncryptionForTesting() {
+                encryption?.hide(); encryption = nil
+                encryptionControls?.removeFromSuperview(); encryptionControls = nil
+                error.isHidden = false; status.isHidden = false; caption.isHidden = false; editor.isHidden = false;
+                meter.isHidden = false
+                for key in rows.flatMap({ $0 }) { key.isHidden = false; key.isEnabled = true }
+                editor.isUserInteractionEnabled = true; refresh()
+            }
             private func updateDebugMetadata() {
                 status.accessibilityValue = "build=\(debugBuild);" + debugFixture
                 debugFixtureButton.accessibilityLabel = "Debug fixtures;build=\(debugBuild);" + debugFixture
@@ -225,6 +254,10 @@
                     "statusLineHeight": lineHeight, "statusColor": [red, green, blue, alpha],
                     "caretVisible": editor.debugCaretVisible, "cursor": adapter.input.cursor,
                     "byteCount": adapter.input.byteCount,
+                    "systemFullAccess": debugAccess?() ?? false,
+                    "modelFullAccess": encryption?.permitted ?? false,
+                    "sessionActive": encryption?.sessionActive ?? false,
+                    "encryptionStatus": encryption?.status ?? "typing-only",
                 ]
                 if let data = try? JSONSerialization.data(withJSONObject: values, options: [.sortedKeys]) {
                     debugFixtureButton.accessibilityValue = String(data: data, encoding: .utf8)
@@ -247,6 +280,7 @@
                     : UIColor(red: 0.184, green: 0.357, blue: 0.918, alpha: 1)
             }
         }
+        static var danger: UIColor { color(0xD92D20, 0xFF6961) }
         private static func color(_ light: UInt32, _ dark: UInt32) -> UIColor {
             UIColor { traits in
                 let hex = traits.userInterfaceStyle == .dark ? dark : light
@@ -305,7 +339,7 @@
             #if DEBUG
                 dismissDebugFixtures()
             #endif
-            adapter.hide()
+            if let encryption { encryption.hide() } else { adapter.hide() }
         }
         private func rebuildKeys() {
             for key in rows.flatMap({ $0 }) { key.removeFromSuperview() }
@@ -380,22 +414,134 @@
                 key.backgroundColor =
                     activeShift
                     ? .secondarySystemGroupedBackground
-                    : (special ? Self.color(0xADB4BF, 0x32343B) : Self.color(0xFFFFFF, 0x45474E))
+                    : (special
+                        ? Self.color(encryption == nil ? 0xADB4BF : 0xADB4C0, encryption == nil ? 0x32343B : 0x303035)
+                        : Self.color(0xFFFFFF, encryption == nil ? 0x45474E : 0x505056))
                 key.setTitleColor(activeShift ? Self.accent : .label, for: .normal)
+            }
+            if let encryption {
+                encryptionControls?.refresh()
+                if !encryption.permitted {
+                    status.text = EncryptInsertCoordinator.accessMessage
+                } else {
+                    status.text =
+                        encryption.identityKey.map {
+                            "Ваш ключ: " + $0.fingerprint.short + " · Контактов: \(encryption.contacts.count)"
+                        } ?? "CipherKeyboard"
+                }
+                caption.text = "Черновик · стирается при закрытии"
+                for key in rows.flatMap({ $0 }) {
+                    key.isEnabled = !encryption.busy && !encryption.pickerOpen
+                    key.accessibilityTraits = key.isEnabled ? .button : [.button, .notEnabled]
+                }
+                editor.isUserInteractionEnabled = !encryption.busy && !encryption.pickerOpen
             }
             popup.isHidden = adapter.alternative == nil
             popup.text = adapter.alternative.map { input.uppercase ? $0.uppercased() : $0 }
             popup.accessibilityLabel = popup.text
             nextKeyboardButton.isHidden = !showsNextKeyboard
-            nextKeyboardButton.backgroundColor = Self.color(0xADB4BF, 0x32343B)
+            nextKeyboardButton.backgroundColor = Self.color(
+                encryption == nil ? 0xADB4BF : 0xADB4C0, encryption == nil ? 0x32343B : 0x303035)
             bringSubviewToFront(popup)
             setNeedsLayout()
         }
+        private func layoutEncryption(_ model: EncryptInsertCoordinator, controls: EncryptionControls) {
+            backgroundColor = .systemGroupedBackground
+            let side: CGFloat = landscape ? max(6, safeAreaInsets.left, safeAreaInsets.right) : 6
+            let available = bounds.width - side * 2
+            // 11 Russian keys retain at least 26pt even on the narrow 667pt landscape profile.
+            let keyWidth: CGFloat = landscape ? max(352, available * 0.55) : available
+            let composeWidth = landscape ? available - keyWidth - 12 : available
+            let height: CGFloat = landscape ? 198 : 420
+            let metadataY: CGFloat = landscape ? 12 : 6
+            status.font = .systemFont(ofSize: landscape ? 10 : 11)
+            status.textColor = .secondaryLabel
+            status.numberOfLines = 1
+            status.frame = CGRect(x: side + 4, y: metadataY, width: composeWidth - 8, height: 13)
+            caption.frame = CGRect(x: side + 4, y: metadataY + 13, width: composeWidth - 8, height: 13)
+            let rowY = metadataY + 28
+            controls.frame = bounds
+            controls.layoutToolbar(x: side, y: rowY, width: composeWidth, landscape: landscape)
+            editor.frame = CGRect(x: side, y: rowY + 46, width: composeWidth, height: landscape ? 38 : 48)
+            let draftHeight: CGFloat = landscape ? 38 : min(100, max(48, editor.measuredHeight))
+            editor.frame.size.height = draftHeight
+            let noticeY = rowY + 48 + draftHeight
+            controls.layoutNotice(x: side, y: noticeY, width: composeWidth, height: landscape ? 52 : 44)
+            // Counter has a permanent slot in the notice, regardless of byte count.
+            meter.frame = CGRect(x: side + 4, y: noticeY + 30, width: composeWidth - 8, height: 13)
+            error.isHidden = true
+            let keyHeight: CGFloat = landscape ? 32 : 44
+            let keyX = landscape ? side + composeWidth + 12 : side
+            var y: CGFloat = landscape ? 30 : height - 6 - 185
+            for (index, row) in rows.enumerated() {
+                let bottom = index == 3
+                let hasGlobe = bottom && showsNextKeyboard
+                let count = row.count + (hasGlobe ? 1 : 0)
+                let specialWidth: CGFloat = 44
+                let fixedCount = bottom ? 3 + (hasGlobe ? 1 : 0) : (index == 2 ? 2 : 0)
+                let letter =
+                    (keyWidth - CGFloat(count - 1) * 3 - CGFloat(fixedCount) * specialWidth)
+                    / CGFloat(count - fixedCount)
+                var x = keyX
+                for (column, key) in row.enumerated() {
+                    if hasGlobe && column == 2 {
+                        nextKeyboardButton.frame = CGRect(x: x, y: y, width: 44, height: keyHeight); x += 47
+                    }
+                    let fixed = bottom ? key.action != .space : (index == 2 && (column == 0 || column == row.count - 1))
+                    key.frame = CGRect(x: x, y: y, width: fixed ? specialWidth : letter, height: keyHeight)
+                    key.titleLabel?.font = .systemFont(
+                        ofSize: bottom || fixed ? (landscape ? 12 : 15) : (landscape ? 18 : 21))
+                    key.isHidden = model.pickerOpen
+                    x = key.frame.maxX + 3
+                }
+                y += keyHeight + 3
+            }
+            nextKeyboardButton.isHidden = !showsNextKeyboard || model.pickerOpen
+            for view in [status, caption, editor, meter] { view.isHidden = model.pickerOpen }
+            controls.layoutPicker(
+                in: CGRect(x: side, y: 6, width: available, height: height - 12), landscape: landscape)
+            if let alternate = adapter.alternative,
+                let key = rows.flatMap({ $0 }).first(where: { $0.action == .character(alternate == "ё" ? "е" : "ь") })
+            {
+                popup.frame = CGRect(
+                    x: max(side, min(bounds.width - side - 52, key.frame.midX - 26)), y: key.frame.minY - 46, width: 52,
+                    height: 44)
+            }
+            bringSubviewToFront(controls)
+            // Controls only intercept their own buttons/list; the draft and keys remain directly interactive.
+            bringSubviewToFront(popup)
+            #if DEBUG
+                debugFixtureButton.frame = status.frame
+                bringSubviewToFront(debugFixtureButton)
+                layoutDebugPicker()
+                updateCaptureMetadata(lineHeight: status.font.lineHeight)
+            #endif
+            if panelHeight != height { panelHeight = height; heightChanged?(height) }
+        }
+        #if DEBUG
+            private func layoutDebugPicker() {
+                guard let picker = debugPicker else { return }
+                picker.frame = bounds
+                let columns = landscape ? 6 : 3
+                let count = (debugChoices.count + columns - 1) / columns
+                for (i, button) in debugChoices.enumerated() {
+                    button.frame = CGRect(
+                        x: CGFloat(i % columns) * bounds.width / CGFloat(columns),
+                        y: CGFloat(i / columns) * bounds.height / CGFloat(count),
+                        width: bounds.width / CGFloat(columns), height: bounds.height / CGFloat(count))
+                }
+                bringSubviewToFront(picker)
+            }
+        #endif
         public override func layoutSubviews() {
             super.layoutSubviews()
             if lastSize.width != bounds.width {
                 if lastSize.width > 0 { adapter.rotate() }
                 lastSize = bounds.size
+            }
+            if let encryption, let controls = encryptionControls {
+                layoutEncryption(encryption, controls: controls)
+                return
             }
             let side = max(5, safeAreaInsets.left, safeAreaInsets.right)
             let width = bounds.width - side * 2
