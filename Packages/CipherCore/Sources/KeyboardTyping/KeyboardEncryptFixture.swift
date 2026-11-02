@@ -13,10 +13,9 @@
         @MainActor final class Context: CiphertextHost, RecipientPreference {
             weak var host: (any CiphertextHost)?
             var recipientID: UUID?
-            var selection = false
             var document = UUID()
             var documentIdentifier: UUID { document }
-            var hasSelection: Bool { selection }
+            var hasSelection: Bool { host?.hasSelection ?? false }
             var identity: IdentityReadResult
             var contacts: ContactsReadResult
             let sender = Identity.generate()
@@ -46,9 +45,7 @@
             panel.debugEncryptionContext = context
             if state == "no-key" { context.identity = .missing }
             if state == "key-error" { context.identity = .unavailable(.unavailable(status: -1)) }
-            if state == "contacts-error" { context.contacts = .unreadable }
             if state == "no-contacts" { context.contacts = .contacts([]) }
-            if state == "selection" { context.selection = true }
             let clock: any KeyboardClock = state == "success" ? FrozenClock() : SystemKeyboardClock()
             let model = EncryptInsertCoordinator(
                 adapter: panel.adapter, host: context, preference: context,
@@ -65,12 +62,20 @@
             panel.enableEncryption(model)
             model.open()
             let firstID = UUID(uuidString: "06000000-0000-0000-0000-000000000001") ?? UUID()
-            if !["unselected", "no-contacts", "no-access", "contacts-error"].contains(state) {
+            if !["unselected", "no-contacts", "no-access"].contains(state) {
                 model.select(
                     state == "long-name"
                         ? (UUID(uuidString: "06000000-0000-0000-0000-000000000020") ?? UUID()) : firstID)
             }
-            panel.adapter.seedForTesting(state == "empty" ? "" : "Привет, Анна!")
+            let draft =
+                state == "long-name"
+                ? "Привет!\nВстречаемся завтра.\nВозьми документы.\nОбсудим детали при встрече."
+                : (state == "empty" ? "" : "Привет, Анна!")
+            panel.adapter.seedForTesting(draft)
+            if state == "contacts-error" {
+                // Start from a validated selection, then fail the book read without changing its identity.
+                context.contacts = .unreadable; model.refresh()
+            }
             if state == "picker" { model.openPicker() }
             if state == "limit" {
                 panel.adapter.seedDefensiveLimitForTesting()

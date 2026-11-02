@@ -27,19 +27,45 @@
             override var textDocumentProxy: any UITextDocumentProxy { proxy }
             override var hasFullAccess: Bool { true }
         }
+        /// Closed public IDs select constants already used by synthetic runtime proof scenarios.
+        /// No expected plaintext is accepted from launch arguments, environment, files or UI.
+        private enum SelfOpenCase: String {
+            case settingsA = "settings-a"
+            case nativeHello = "native-hello"
+            case nativeASCII4096 = "native-ascii4096"
+            case nativeLiteralAnna = "native-literal-anna"
+            case nativeWhitespaceUnicode = "native-whitespace-unicode"
+            var expectedText: String {
+                switch self {
+                case .settingsA: "А"
+                case .nativeHello: "Привет"
+                case .nativeASCII4096: String(repeating: "a", count: 4096)
+                case .nativeLiteralAnna: "Привет, Анна!"
+                case .nativeWhitespaceUnicode: "  Привет, Анна! 👨‍👩‍👧‍👦\nе\u{301}  \n"
+                }
+            }
+        }
         /// Opens only the synthetic ciphertext passed by a retained real-extension UI scenario.
         /// The actual sender identity stays in Keychain; only a boolean verdict/public key leaves this probe.
         static func openInserted(_ ciphertext: String) -> String {
+            let caseID =
+                ProcessInfo.processInfo.environment["CIPHER_INSERTED_SYNTHETIC_CASE"]
+                ?? SelfOpenCase.settingsA.rawValue
+            guard let proofCase = SelfOpenCase(rawValue: caseID) else { return "FAIL: unsupported synthetic case" }
             guard case .identity(let sender) = IdentityReader.keychain.read() else {
                 return "FAIL: missing real identity"
             }
             do {
                 let opened = try CipherMessage.open(ciphertext, as: sender, contacts: [])
-                guard opened.text == "А", opened.sender == .me, opened.senderKey == sender.publicKey else {
+                guard Array(opened.text.utf8) == Array(proofCase.expectedText.utf8),
+                    opened.sender == .me, opened.senderKey == sender.publicKey
+                else {
                     return "FAIL: self-open verification"
                 }
-                return "PASS: actual inserted ciphertext; Keychain sender self-open; exact UTF-8; sender.me; "
+                let verdict =
+                    "PASS: actual inserted ciphertext; Keychain sender self-open; exact UTF-8; sender.me; "
                     + sender.publicKey.string
+                return proofCase == .settingsA ? verdict : verdict + "; case=" + proofCase.rawValue
             } catch { return "FAIL: self-open" }
         }
         static func run() async -> String {

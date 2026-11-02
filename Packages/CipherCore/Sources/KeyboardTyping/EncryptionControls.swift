@@ -2,6 +2,62 @@
     import CipherCore
     import UIKit
 
+    /// Labels share the same leading edge; selection reserves a separate far-trailing check column.
+    @MainActor private final class RecipientRowButton: UIButton {
+        private let name = UILabel()
+        private let fingerprint = UILabel()
+        private let check = UILabel()
+        private let separator = UIView()
+        init(contact: Contact, selected: Bool) {
+            super.init(frame: .zero)
+            isSelected = selected
+            name.text = contact.name; name.font = .systemFont(ofSize: 16); name.numberOfLines = 0
+            name.lineBreakMode = .byWordWrapping
+            name.textColor = .label
+            fingerprint.text = contact.publicKey.fingerprint.short
+            fingerprint.font = .monospacedSystemFont(ofSize: 12, weight: .regular)
+            fingerprint.textColor = KeyboardPanel.encryptionSecondary
+            check.text = "✓"; check.font = .systemFont(ofSize: 17); check.textColor = KeyboardPanel.accent
+            check.isHidden = !selected
+            separator.backgroundColor = KeyboardPanel.encryptionSeparator
+            for view in [name, fingerprint, check, separator] {
+                view.isUserInteractionEnabled = false; view.isAccessibilityElement = false; addSubview(view)
+            }
+            isAccessibilityElement = true
+            accessibilityIdentifier = "keyboard.recipient." + contact.id.uuidString
+            accessibilityLabel = contact.name + ", " + contact.publicKey.fingerprint.short
+            accessibilityTraits = selected ? [.button, .selected] : [.button]
+        }
+        required init?(coder: NSCoder) { nil }
+        private func textWidth(_ width: CGFloat) -> CGFloat { max(0, width - 24 - (isSelected ? 32 : 0)) }
+        override func sizeThatFits(_ size: CGSize) -> CGSize {
+            let nameHeight = name.sizeThatFits(CGSize(width: textWidth(size.width), height: .greatestFiniteMagnitude))
+                .height
+            return CGSize(width: size.width, height: max(56, 14 + nameHeight + 3 + fingerprint.font.lineHeight))
+        }
+        override func layoutSubviews() {
+            super.layoutSubviews()
+            let width = textWidth(bounds.width)
+            let nameHeight = name.sizeThatFits(CGSize(width: width, height: .greatestFiniteMagnitude)).height
+            let textHeight = nameHeight + 3 + fingerprint.font.lineHeight
+            let top = (bounds.height - textHeight) / 2
+            name.frame = CGRect(x: 12, y: top, width: width, height: nameHeight)
+            fingerprint.frame = CGRect(x: 12, y: name.frame.maxY + 3, width: width, height: fingerprint.font.lineHeight)
+            check.frame = CGRect(x: bounds.width - 32, y: (bounds.height - 22) / 2, width: 20, height: 22)
+            separator.frame = CGRect(x: 0, y: bounds.height - 1, width: bounds.width, height: 1)
+        }
+        #if DEBUG
+            var captureGeometry: [String: Any] {
+                [
+                    "id": accessibilityIdentifier ?? "", "selected": isSelected,
+                    "nameMinX": name.frame.minX, "fingerprintMinX": fingerprint.frame.minX,
+                    "checkMaxX": check.frame.maxX, "width": bounds.width, "height": bounds.height,
+                    "separatorHeight": separator.frame.height,
+                ]
+            }
+        #endif
+    }
+
     /// Transparent hit testing keeps the private editor and typing controls accessible below this layer.
     @MainActor final class EncryptionControls: UIView {
         let model: EncryptInsertCoordinator
@@ -15,7 +71,8 @@
         private let list = UIScrollView()
         private let hint = UILabel()
         private var lastAnnouncement = ""
-        private var contactButtons: [UIButton] = []
+        private var contactButtons: [RecipientRowButton] = []
+        var showsRetry: Bool { !retry.isHidden && !model.pickerOpen }
         private var signature = ""
         init(coordinator: EncryptInsertCoordinator) {
             model = coordinator
@@ -40,13 +97,21 @@
             notice.accessibilityTraits = .updatesFrequently
             retry.backgroundColor = .secondarySystemGroupedBackground; retry.layer.cornerRadius = 8
             retry.setTitle("Повторить", for: .normal); retry.titleLabel?.font = .systemFont(ofSize: 14)
-            back.setTitle("Назад", for: .normal)
-            title.text = "Получатель"; title.font = .systemFont(ofSize: 17, weight: .semibold)
+            var backStyle = UIButton.Configuration.plain()
+            backStyle.title = "‹ Назад"; backStyle.baseForegroundColor = KeyboardPanel.accent
+            backStyle.contentInsets = .init(top: 0, leading: 10, bottom: 0, trailing: 0)
+            backStyle.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { attrs in
+                var attrs = attrs; attrs.font = .systemFont(ofSize: 15); return attrs
+            }
+            back.configuration = backStyle; back.contentHorizontalAlignment = .leading
+            back.accessibilityLabel = "Назад"
+            title.text = "Кому зашифровать"; title.font = .systemFont(ofSize: 17, weight: .semibold)
             picker.backgroundColor = .systemGroupedBackground
             list.backgroundColor = .secondarySystemGroupedBackground; list.layer.cornerRadius = 10
             for view in [recipient, encrypt, notice, retry, picker] { addSubview(view) }
             hint.text = "Выберите контакт. Черновик и его курсор сохранятся."
-            hint.font = .systemFont(ofSize: 13); hint.textColor = .secondaryLabel; hint.numberOfLines = 2
+            hint.font = .systemFont(ofSize: 13); hint.textColor = KeyboardPanel.encryptionSecondary;
+            hint.numberOfLines = 2
             for view in [back, title, list, hint] { picker.addSubview(view) }
             recipient.addAction(UIAction { [weak self] _ in self?.model.openPicker() }, for: .touchUpInside)
             encrypt.addAction(UIAction { [weak self] _ in self?.model.encrypt() }, for: .touchUpInside)
@@ -75,9 +140,14 @@
                     UIAccessibility.post(notification: .announcement, argument: model.status)
                 }
             }
-            notice.textColor =
-                (model.error != nil || model.adapter.input.limitError)
-                ? KeyboardPanel.danger : (model.success != nil ? KeyboardPanel.accent : .secondaryLabel)
+            if !model.permitted || model.error == EncryptInsertCoordinator.missingMessage {
+                notice.textColor = KeyboardPanel.encryptionSecondary
+            } else {
+                notice.textColor =
+                    (model.error != nil || model.adapter.input.limitError)
+                    ? KeyboardPanel.danger
+                    : (model.success != nil ? KeyboardPanel.accent : KeyboardPanel.encryptionSecondary)
+            }
             retry.isHidden = !model.contactsUnreadable || !model.permitted || model.busy
             picker.isHidden = !model.pickerOpen
             for view in [recipient, encrypt, notice, retry] { if model.pickerOpen { view.isHidden = true } }
@@ -91,31 +161,7 @@
                 signature = newSignature
                 contactButtons.forEach { $0.removeFromSuperview() }
                 contactButtons = model.contacts.map { contact in
-                    let button = UIButton(type: .system)
-                    var config = UIButton.Configuration.plain()
-                    config.baseForegroundColor = .label
-                    let accent = KeyboardPanel.accent
-                    config.imageColorTransformer = UIConfigurationColorTransformer { _ in accent }
-                    config.titleLineBreakMode = .byWordWrapping
-                    config.title = contact.name
-                    config.subtitle = contact.publicKey.fingerprint.short
-                    config.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { attrs in
-                        var attrs = attrs; attrs.font = .systemFont(ofSize: 16); return attrs
-                    }
-                    config.subtitleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { attrs in
-                        var attrs = attrs; attrs.font = .monospacedSystemFont(ofSize: 12, weight: .regular);
-                        attrs.foregroundColor = .secondaryLabel; return attrs
-                    }
-                    config.contentInsets = .init(top: 7, leading: 12, bottom: 7, trailing: 12)
-                    if model.selected?.id == contact.id {
-                        config.image = UIImage(systemName: "checkmark"); config.imagePlacement = .trailing
-                    }
-                    button.configuration = config
-                    button.contentHorizontalAlignment = .leading
-                    button.titleLabel?.numberOfLines = 0
-                    button.accessibilityIdentifier = "keyboard.recipient." + contact.id.uuidString
-                    button.accessibilityLabel = contact.name + ", " + contact.publicKey.fingerprint.short
-                    button.accessibilityTraits = model.selected?.id == contact.id ? [.button, .selected] : [.button]
+                    let button = RecipientRowButton(contact: contact, selected: model.selected?.id == contact.id)
                     button.addAction(UIAction { [weak self] _ in self?.model.select(contact.id) }, for: .touchUpInside)
                     list.addSubview(button)
                     return button
@@ -132,11 +178,24 @@
             encrypt.titleLabel?.font = recipient.titleLabel?.font
         }
         func layoutNotice(x: CGFloat, y: CGFloat, width: CGFloat, height: CGFloat) {
+            let counterHeight: CGFloat = model.adapter.input.counter == nil ? 0 : 12
             notice.frame = CGRect(
-                x: x + 4, y: y, width: width - (retry.isHidden ? 8 : 102),
-                height: height - (model.adapter.input.counter == nil ? 0 : 12))
+                x: x + 4, y: y + counterHeight, width: width - (retry.isHidden ? 8 : 102),
+                height: height - counterHeight)
             retry.frame = CGRect(x: x + width - 94, y: y, width: 94, height: 44)
         }
+        #if DEBUG
+            var captureMetadata: [String: Any] {
+                var red: CGFloat = 0, green: CGFloat = 0, blue: CGFloat = 0, alpha: CGFloat = 0
+                notice.textColor.resolvedColor(with: traitCollection).getRed(
+                    &red, green: &green, blue: &blue, alpha: &alpha)
+                return [
+                    "noticeColor": [red, green, blue, alpha], "noticeMinY": notice.frame.minY,
+                    "pickerTitle": title.text ?? "", "retryVisible": showsRetry,
+                    "pickerRows": contactButtons.map { $0.captureGeometry },
+                ]
+            }
+        #endif
         func layoutPicker(in rect: CGRect, landscape: Bool) {
             picker.frame = rect
             back.frame = CGRect(x: 0, y: 0, width: 74, height: 44)
@@ -160,6 +219,7 @@
                 let measured = button.sizeThatFits(CGSize(width: width, height: .greatestFiniteMagnitude)).height
                 let height = max(56, measured)
                 button.frame = CGRect(x: CGFloat(col) * width, y: tops[col], width: width, height: height)
+                button.layoutIfNeeded()
                 tops[col] += height
             }
             list.contentSize = CGSize(width: list.bounds.width, height: tops.max() ?? 0)

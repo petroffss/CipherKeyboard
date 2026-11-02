@@ -46,23 +46,40 @@
             caret.isUserInteractionEnabled = false
             addSubview(caret)
             addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tapped(_:))))
+            panGestureRecognizer.addTarget(self, action: #selector(manualPanChanged(_:)))
+            #if DEBUG
+                delegate = self
+            #endif
         }
         required init?(coder: NSCoder) { nil }
         private var draft = ""
         private var position = 0
-        func display(_ input: KeyboardInput, landscape: Bool) {
+        func display(_ input: KeyboardInput, landscape: Bool, secondaryColor: UIColor = .secondaryLabel) {
             draft = input.text
             position = input.cursor
             textContainerInset.top = landscape ? 4 : 8
             textContainerInset.bottom = landscape ? 4 : 8
             let displayed = draft.isEmpty ? "Текст будет зашифрован" : draft
             if text != displayed { text = displayed }
-            textColor = draft.isEmpty ? .secondaryLabel : .label
+            textColor = draft.isEmpty ? secondaryColor : .label
             accessibilityValue = draft
             setNeedsLayout()
         }
         var measuredHeight: CGFloat {
             sizeThatFits(CGSize(width: bounds.width, height: .greatestFiniteMagnitude)).height
+        }
+        var requiresFourLineViewport: Bool {
+            guard !draft.isEmpty else { return false }
+            layoutManager.ensureLayout(for: textContainer)
+            var lines = 0
+            layoutManager.enumerateLineFragments(
+                forGlyphRange: NSRange(location: 0, length: layoutManager.numberOfGlyphs)
+            ) { _, _, _, _, stop in
+                lines += 1
+                if lines >= 4 { stop.pointee = true }
+            }
+            if layoutManager.extraLineFragmentRect.height > 0 { lines += 1 }
+            return lines >= 4
         }
         override func layoutSubviews() {
             super.layoutSubviews()
@@ -85,15 +102,35 @@
             caret.frame = CGRect(
                 x: rect.minX + textContainerInset.left, y: rect.minY + textContainerInset.top,
                 width: 2, height: 22)
+            #if DEBUG
+                let requested = needsScrollToCaret
+            #endif
             if needsScrollToCaret {
                 needsScrollToCaret = false
                 scrollRectToVisible(caret.frame.insetBy(dx: -4, dy: -2), animated: false)
             }
+            #if DEBUG
+                debugLayoutSamples.append([
+                    "requested": requested ? 1 : 0, "width": bounds.width, "height": bounds.height,
+                    "contentHeight": contentSize.height, "offsetY": contentOffset.y,
+                    "caretMinY": caret.frame.minY, "caretMaxY": caret.frame.maxY,
+                ])
+                if debugLayoutSamples.count > 8 { debugLayoutSamples.removeFirst() }
+                viewportDidLayout?()
+            #endif
         }
         var needsScrollToCaret = true
+        private(set) var manualScrollEpoch: UInt64 = 0
+        var isModelCaretVisible: Bool { bounds.insetBy(dx: -0.5, dy: -0.5).contains(caret.frame) }
+        @objc private func manualPanChanged(_ gesture: UIPanGestureRecognizer) {
+            if gesture.state == .began || gesture.state == .changed { manualScrollEpoch &+= 1 }
+        }
         #if DEBUG
+            var viewportDidLayout: (() -> Void)?
+            private(set) var debugLayoutSamples: [[String: CGFloat]] = []
+            var debugCaretFrame: CGRect { caret.frame }
             var debugCaretVisible: Bool {
-                bounds.insetBy(dx: -0.5, dy: -0.5).contains(caret.frame)
+                isModelCaretVisible
             }
         #endif
         @objc private func tapped(_ gesture: UITapGestureRecognizer) {
@@ -112,6 +149,12 @@
             cursorTapped?(nearest)
         }
     }
+
+    #if DEBUG
+        extension PrivateDraftView: UITextViewDelegate {
+            func scrollViewDidScroll(_ scrollView: UIScrollView) { viewportDidLayout?() }
+        }
+    #endif
 
     @MainActor final class DraftKey: UIButton {
         let action: KeyboardAction
@@ -165,6 +208,7 @@
         public private(set) var encryption: EncryptInsertCoordinator?
         private var encryptionControls: EncryptionControls?
         public func enableEncryption(_ coordinator: EncryptInsertCoordinator) {
+            viewportTransitionEpoch = UUID()
             encryption = coordinator
             let controls = EncryptionControls(coordinator: coordinator)
             encryptionControls?.removeFromSuperview()
@@ -201,7 +245,8 @@
                     "ru-empty", "ru-text", "shift", "caps", "en", "numbers", "symbols", "alternate-e",
                     "alternate-softsign", "multiline", "limit", "preview", "no-access", "no-key",
                     "key-error", "contacts-error", "clear", "canary",
-                    "enc-delay", "enc-fault", "enc-normal", "enc-canary", "enc-bytes4096", "enc-unselected",
+                    "enc-delay", "enc-fault", "enc-normal", "enc-canary", "enc-bytes4096", "enc-proof-unicode",
+                    "enc-unselected",
                     "enc-empty", "enc-ready", "enc-picker", "enc-no-contacts",
                     "enc-sending",
                     "enc-success", "enc-limit", "enc-no-key", "enc-key-error", "enc-contacts-error", "enc-no-access",
@@ -243,12 +288,12 @@
                 status.accessibilityValue = "build=\(debugBuild);" + debugFixture
                 debugFixtureButton.accessibilityLabel = "Debug fixtures;build=\(debugBuild);" + debugFixture
             }
-            private func updateCaptureMetadata(lineHeight: CGFloat) {
-                editor.layoutIfNeeded()
+            private func updateCaptureMetadata(lineHeight: CGFloat, synchronizeEditor: Bool = true) {
+                if synchronizeEditor { editor.layoutIfNeeded() }
                 var red: CGFloat = 0, green: CGFloat = 0, blue: CGFloat = 0, alpha: CGFloat = 0
                 status.textColor.resolvedColor(with: traitCollection).getRed(
                     &red, green: &green, blue: &blue, alpha: &alpha)
-                let values: [String: Any] = [
+                var values: [String: Any] = [
                     "resolvedTheme": traitCollection.userInterfaceStyle == .dark ? "dark" : "light",
                     "warning": statusIsWarning, "statusFont": status.font.pointSize,
                     "statusLineHeight": lineHeight, "statusColor": [red, green, blue, alpha],
@@ -259,6 +304,18 @@
                     "sessionActive": encryption?.sessionActive ?? false,
                     "encryptionStatus": encryption?.status ?? "typing-only",
                 ]
+                values["encryption"] = encryptionControls?.captureMetadata
+                values["counterMaxY"] = meter.frame.maxY
+                values["editorViewportWidth"] = editor.bounds.width
+                values["editorViewportHeight"] = editor.bounds.height
+                values["editorOffsetY"] = editor.contentOffset.y
+                values["editorContentHeight"] = editor.contentSize.height
+                values["editorSystemSelection"] = editor.selectedRange.location
+                values["editorCaretMinY"] = editor.debugCaretFrame.minY
+                values["editorCaretMaxY"] = editor.debugCaretFrame.maxY
+                values["editorNeedsScroll"] = editor.needsScrollToCaret
+                values["editorLayoutSamples"] = editor.debugLayoutSamples
+                values["viewportTransitionState"] = viewportTransitionState
                 if let data = try? JSONSerialization.data(withJSONObject: values, options: [.sortedKeys]) {
                     debugFixtureButton.accessibilityValue = String(data: data, encoding: .utf8)
                 }
@@ -270,6 +327,10 @@
         private let meter = UILabel()
         private let error = UILabel()
         private let popup = UILabel()
+        private var viewportTransitionEpoch = UUID()
+        #if DEBUG
+            private var viewportTransitionState = "idle"
+        #endif
         private var rows: [[DraftKey]] = []
         private var signature = ""
         private var lastSize = CGSize.zero
@@ -281,6 +342,8 @@
             }
         }
         static var danger: UIColor { color(0xD92D20, 0xFF6961) }
+        static var encryptionSecondary: UIColor { color(0x6C6C70, 0x98989F) }
+        static var encryptionSeparator: UIColor { color(0xC6C6C8, 0x38383A) }
         private static func color(_ light: UInt32, _ dark: UInt32) -> UIColor {
             UIColor { traits in
                 let hex = traits.userInterfaceStyle == .dark ? dark : light
@@ -329,6 +392,10 @@
                 updateDebugMetadata()
                 debugFixtureButton.addTarget(self, action: #selector(showDebugFixtures), for: .touchUpInside)
                 addSubview(debugFixtureButton)
+                editor.viewportDidLayout = { [weak self] in
+                    guard let self, self.encryption != nil else { return }
+                    self.updateCaptureMetadata(lineHeight: self.status.font.lineHeight, synchronizeEditor: false)
+                }
             #endif
             editor.cursorTapped = { [weak adapter] in adapter?.moveCursor(to: $0) }
             adapter.onChange = { [weak self] in self?.refresh() }
@@ -336,10 +403,61 @@
         }
         required init?(coder: NSCoder) { nil }
         public func clearSession() {
+            viewportTransitionEpoch = UUID()
             #if DEBUG
                 dismissDebugFixtures()
             #endif
             if let encryption { encryption.hide() } else { adapter.hide() }
+        }
+        /// One post-transition reconciliation, cancelled by a new session/transition or manual scroll intent.
+        func makeViewportTransitionReveal() -> @MainActor () -> Void {
+            viewportTransitionEpoch = UUID()
+            let epoch = viewportTransitionEpoch
+            let previousSize = editor.bounds.size
+            let manualEpoch = editor.manualScrollEpoch
+            #if DEBUG
+                viewportTransitionState = "scheduled"
+            #endif
+            var consumed = false
+            return { [weak self] in
+                guard let self, !consumed, self.viewportTransitionEpoch == epoch else { return }
+                consumed = true
+                #if DEBUG
+                    defer {
+                        self.updateCaptureMetadata(lineHeight: self.status.font.lineHeight, synchronizeEditor: false)
+                    }
+                #endif
+                guard self.window != nil, !self.isHidden, let model = self.encryption,
+                    model.sessionActive, !model.pickerOpen
+                else {
+                    #if DEBUG
+                        self.viewportTransitionState = "inactive"
+                    #endif
+                    return
+                }
+                self.layoutIfNeeded()
+                guard !self.editor.isHidden, self.editor.bounds.size != previousSize,
+                    self.editor.manualScrollEpoch == manualEpoch,
+                    !self.editor.isDragging, !self.editor.isDecelerating, !self.editor.isTracking
+                else {
+                    #if DEBUG
+                        self.viewportTransitionState = "unchanged-or-manual"
+                    #endif
+                    return
+                }
+                guard !self.editor.isModelCaretVisible else {
+                    #if DEBUG
+                        self.viewportTransitionState = "already-visible"
+                    #endif
+                    return
+                }
+                self.editor.needsScrollToCaret = true
+                self.editor.setNeedsLayout()
+                self.editor.layoutIfNeeded()
+                #if DEBUG
+                    self.viewportTransitionState = self.editor.isModelCaretVisible ? "revealed" : "not-visible"
+                #endif
+            }
         }
         private func rebuildKeys() {
             for key in rows.flatMap({ $0 }) { key.removeFromSuperview() }
@@ -375,7 +493,9 @@
             if signature != "\(input.language)-\(input.page)" { rebuildKeys(); return }
             status.text = ([statusText] + [contactsText].compactMap { $0 }).filter { !$0.isEmpty }.joined(
                 separator: " · ")
-            editor.display(input, landscape: landscape)
+            let secondary: UIColor = encryption == nil ? .secondaryLabel : Self.encryptionSecondary
+            caption.textColor = secondary; meter.textColor = secondary
+            editor.display(input, landscape: landscape, secondaryColor: secondary)
             #if DEBUG
                 editor.accessibilityHint = "cursor=\(input.cursor);timers=\(adapter.activeTimerCount)"
             #endif
@@ -421,14 +541,7 @@
             }
             if let encryption {
                 encryptionControls?.refresh()
-                if !encryption.permitted {
-                    status.text = EncryptInsertCoordinator.accessMessage
-                } else {
-                    status.text =
-                        encryption.identityKey.map {
-                            "Ваш ключ: " + $0.fingerprint.short + " · Контактов: \(encryption.contacts.count)"
-                        } ?? "CipherKeyboard"
-                }
+                status.text = encryption.identityMetadata
                 caption.text = "Черновик · стирается при закрытии"
                 for key in rows.flatMap({ $0 }) {
                     key.isEnabled = !encryption.busy && !encryption.pickerOpen
@@ -447,28 +560,46 @@
         }
         private func layoutEncryption(_ model: EncryptInsertCoordinator, controls: EncryptionControls) {
             backgroundColor = .systemGroupedBackground
-            let side: CGFloat = landscape ? max(6, safeAreaInsets.left, safeAreaInsets.right) : 6
+            // Internal CSS padding; the system already frames this panel in the native input surface.
+            let side: CGFloat = landscape ? 44 : 6
             let available = bounds.width - side * 2
             // 11 Russian keys retain at least 26pt even on the narrow 667pt landscape profile.
-            let keyWidth: CGFloat = landscape ? max(352, available * 0.55) : available
+            let keyWidth: CGFloat = landscape ? max(352, (available - 12) / 1.75) : available
             let composeWidth = landscape ? available - keyWidth - 12 : available
             let height: CGFloat = landscape ? 198 : 420
             let metadataY: CGFloat = landscape ? 12 : 6
             status.font = .systemFont(ofSize: landscape ? 10 : 11)
-            status.textColor = .secondaryLabel
+            status.textColor = Self.encryptionSecondary
             status.numberOfLines = 1
             status.frame = CGRect(x: side + 4, y: metadataY, width: composeWidth - 8, height: 13)
             caption.frame = CGRect(x: side + 4, y: metadataY + 13, width: composeWidth - 8, height: 13)
             let rowY = metadataY + 28
             controls.frame = bounds
             controls.layoutToolbar(x: side, y: rowY, width: composeWidth, landscape: landscape)
-            editor.frame = CGRect(x: side, y: rowY + 46, width: composeWidth, height: landscape ? 38 : 48)
-            let draftHeight: CGFloat = landscape ? 38 : min(100, max(48, editor.measuredHeight))
+            let previousViewport = editor.bounds.size
+            let initialHeight = previousViewport.height > 0 ? previousViewport.height : (landscape ? 38 : 48)
+            editor.frame = CGRect(x: side, y: rowY + 46, width: composeWidth, height: initialHeight)
+            let draftHeight: CGFloat
+            if controls.showsRetry {
+                draftHeight = 40
+            } else if landscape {
+                draftHeight = 38
+            } else {
+                let measured = editor.measuredHeight
+                draftHeight = editor.requiresFourLineViewport ? 100 : min(100, max(48, measured))
+            }
             editor.frame.size.height = draftHeight
+            if editor.bounds.size != previousViewport {
+                // A refresh may have consumed the request against the old viewport before rotation settled.
+                // Re-arm only for an actual final size change; ordinary/manual scrolling keeps its offset.
+                editor.needsScrollToCaret = true
+                editor.setNeedsLayout()
+                editor.layoutIfNeeded()
+            }
             let noticeY = rowY + 48 + draftHeight
             controls.layoutNotice(x: side, y: noticeY, width: composeWidth, height: landscape ? 52 : 44)
             // Counter has a permanent slot in the notice, regardless of byte count.
-            meter.frame = CGRect(x: side + 4, y: noticeY + 30, width: composeWidth - 8, height: 13)
+            meter.frame = CGRect(x: side + 4, y: noticeY, width: composeWidth - 8, height: 12)
             error.isHidden = true
             let keyHeight: CGFloat = landscape ? 32 : 44
             let keyX = landscape ? side + composeWidth + 12 : side

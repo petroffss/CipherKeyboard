@@ -271,6 +271,217 @@ private actor SealGate {
                     ][mutation])
         }
     }
+    @Test func identityRecoveryRequiresExplicitSelection() async throws {
+        for failedRead in 0..<3 {
+            for signingOnly in [false, true] {
+                for recovery in 0..<5 {
+                    let counter = SealCounter(), r = Rig(seal: { try await counter.run($0, $1, $2) })
+                    r.ready("  Привет 👋\n  ")
+                    let text = r.input.input.text, cursor = r.input.input.cursor
+                    var replacement = r.c
+                    if signingOnly {
+                        replacement = try Identity(
+                            privateKeyData: Data(r.a.privateKeyData().prefix(32) + r.c.privateKeyData().suffix(32)))
+                        #expect(replacement.publicKey.agreementRaw == r.a.publicKey.agreementRaw)
+                        #expect(replacement.publicKey.signingRaw != r.a.publicKey.signingRaw)
+                    }
+                    if failedRead < 2 {
+                        // Repeated failures through every synchronous reader entry must retain the baseline.
+                        for attempt in 0..<4 {
+                            r.identity =
+                                (failedRead + attempt) % 2 == 0
+                                ? .missing : .unavailable(.unavailable(status: -1))
+                            switch attempt {
+                            case 0: r.coordinator.encrypt()
+                            case 1: r.coordinator.refresh()
+                            case 2: r.coordinator.openPicker(); r.coordinator.closePicker()
+                            default: r.coordinator.select(r.contact.id)
+                            }
+                            #expect(
+                                r.coordinator.error
+                                    == ((failedRead + attempt) % 2 == 0
+                                        ? EncryptInsertCoordinator.missingMessage
+                                        : EncryptInsertCoordinator.keyErrorMessage))
+                            #expect(r.coordinator.identityKey == nil)
+                            #expect(!r.coordinator.canEncrypt)
+                            #expect(r.coordinator.selected?.id == r.contact.id)
+                            #expect(r.preference.recipientID == r.contact.id)
+                            #expect(r.input.input.text == text); #expect(r.input.input.cursor == cursor)
+                            #expect(r.host.inserted.isEmpty); #expect(await counter.calls == 0)
+                        }
+                    }
+                    r.identity = .identity(replacement)
+                    switch recovery {
+                    case 0: r.coordinator.encrypt()
+                    case 1: r.coordinator.refresh()
+                    case 2: r.coordinator.openPicker(); r.coordinator.closePicker()
+                    case 3: r.coordinator.select(r.contact.id)
+                    default: r.coordinator.open()  // An already active open performs refresh.
+                    }
+                    await r.settle()
+                    #expect(r.coordinator.error == EncryptInsertCoordinator.changedMessage)
+                    #expect(r.coordinator.selected == nil); #expect(r.preference.recipientID == nil)
+                    #expect(r.preference.writtenValues.last == .some(nil))
+                    #expect(r.coordinator.identityKey == replacement.publicKey)
+                    #expect(!r.coordinator.canEncrypt)
+                    #expect(r.host.inserted.isEmpty); #expect(await counter.calls == 0)
+                    #expect(r.input.input.text == text); #expect(r.input.input.cursor == cursor)
+                    // A direct retry must not accept a remembered choice; a new explicit choice must.
+                    r.coordinator.encrypt(); await r.settle()
+                    #expect(r.host.inserted.isEmpty); #expect(await counter.calls == 0)
+                    r.coordinator.select(r.contact.id)
+                    #expect(r.coordinator.canEncrypt)
+                    #expect(r.preference.recipientID == r.contact.id)
+                    #expect(r.input.input.text == text); #expect(r.input.input.cursor == cursor)
+                    r.coordinator.encrypt(); await r.settle()
+                    #expect(await counter.calls == 1)
+                    let opened = try CipherMessage.open(#require(r.host.inserted.only), as: r.b, contacts: [])
+                    #expect(opened.senderKey == replacement.publicKey)
+                    #expect(Array(opened.text.utf8) == Array(text.utf8))
+                    #expect(r.input.input.text.isEmpty); #expect(r.input.input.cursor == 0)
+                }
+            }
+        }
+    }
+    @Test func identityRecoveryWithSameKeyRetries() async throws {
+        for failedRead in 0..<2 {
+            for recovery in 0..<3 {
+                let counter = SealCounter(), r = Rig(seal: { try await counter.run($0, $1, $2) })
+                r.ready(); let text = r.input.input.text, cursor = r.input.input.cursor
+                r.identity = failedRead == 0 ? .missing : .unavailable(.unavailable(status: -1))
+                r.coordinator.encrypt(); r.coordinator.refresh()
+                #expect(r.coordinator.identityKey == nil); #expect(!r.coordinator.canEncrypt)
+                #expect(r.coordinator.selected?.id == r.contact.id)
+                #expect(r.preference.recipientID == r.contact.id)
+                #expect(r.input.input.text == text); #expect(r.input.input.cursor == cursor)
+                #expect(r.host.inserted.isEmpty); #expect(await counter.calls == 0)
+                r.identity = .identity(r.a)
+                if recovery == 1 { r.coordinator.refresh() }
+                if recovery == 2 { r.coordinator.openPicker(); r.coordinator.closePicker() }
+                if recovery > 0 {
+                    #expect(r.coordinator.error == nil); #expect(r.coordinator.canEncrypt)
+                    #expect(r.input.input.text == text); #expect(r.input.input.cursor == cursor)
+                }
+                r.coordinator.encrypt(); await r.settle()
+                #expect(await counter.calls == 1); #expect(r.preference.writes == 1)
+                let opened = try CipherMessage.open(#require(r.host.inserted.only), as: r.b, contacts: [])
+                #expect(opened.senderKey == r.a.publicKey); #expect(opened.text == text)
+            }
+        }
+    }
+    @Test func identityReadFailureAtCommitRetainsBaseline() async throws {
+        for failedRead in 0..<2 {
+            for replacement in 0..<3 {
+                let gate = SealGate(), r = Rig(seal: { try await gate.run($0, $1, $2) })
+                r.ready(); let text = r.input.input.text, cursor = r.input.input.cursor
+                r.coordinator.encrypt(); while await gate.calls == 0 { await Task.yield() }
+                r.identity = failedRead == 0 ? .missing : .unavailable(.unavailable(status: -1))
+                await gate.finish(); await r.settle()
+                #expect(
+                    r.coordinator.error
+                        == (failedRead == 0
+                            ? EncryptInsertCoordinator.missingMessage : EncryptInsertCoordinator.keyErrorMessage))
+                #expect(r.host.inserted.isEmpty); #expect(r.coordinator.selected?.id == r.contact.id)
+                #expect(r.coordinator.identityKey == nil); #expect(!r.coordinator.canEncrypt)
+                #expect(r.preference.recipientID == r.contact.id)
+                #expect(r.input.input.text == text); #expect(r.input.input.cursor == cursor)
+                let restored: Identity
+                switch replacement {
+                case 0: restored = r.a
+                case 1: restored = r.c
+                default:
+                    restored = try Identity(
+                        privateKeyData: Data(r.a.privateKeyData().prefix(32) + r.c.privateKeyData().suffix(32)))
+                }
+                r.identity = .identity(restored); r.coordinator.encrypt()
+                if replacement > 0 {
+                    #expect(r.coordinator.error == EncryptInsertCoordinator.changedMessage)
+                    #expect(r.coordinator.selected == nil); #expect(r.preference.recipientID == nil)
+                    #expect(r.host.inserted.isEmpty); #expect(await gate.calls == 1)
+                    #expect(r.input.input.text == text); #expect(r.input.input.cursor == cursor)
+                    r.coordinator.select(r.contact.id); r.coordinator.encrypt()
+                }
+                while await gate.calls < 2 { await Task.yield() }
+                await gate.finish(); await r.settle()
+                let opened = try CipherMessage.open(#require(r.host.inserted.only), as: r.b, contacts: [])
+                #expect(opened.senderKey == restored.publicKey); #expect(opened.text == text)
+            }
+        }
+    }
+    @Test func firstAvailableIdentityDoesNotCountAsReplacement() async throws {
+        for failedRead in 0..<2 {
+            for remembered in [false, true] {
+                let r = Rig()
+                if remembered { r.preference.recipientID = r.contact.id }
+                r.identity = failedRead == 0 ? .missing : .unavailable(.unavailable(status: -1))
+                r.coordinator.open()
+                #expect((r.coordinator.selected != nil) == remembered)
+                if !remembered { r.coordinator.select(r.contact.id) }
+                r.input.seedForTesting("черновик", cursor: 3)
+                r.coordinator.refresh(); r.identity = .identity(r.a); r.coordinator.refresh()
+                #expect(r.coordinator.error == nil); #expect(r.coordinator.canEncrypt)
+                #expect(r.coordinator.selected?.id == r.contact.id)
+                #expect(r.preference.recipientID == r.contact.id)
+                #expect(r.input.input.text == "черновик"); #expect(r.input.input.cursor == 3)
+                r.coordinator.encrypt(); await r.settle()
+                let opened = try CipherMessage.open(#require(r.host.inserted.only), as: r.b, contacts: [])
+                #expect(opened.senderKey == r.a.publicKey); #expect(opened.text == "черновик")
+            }
+        }
+    }
+    @Test func identityBaselineEndsWithSession() async throws {
+        for failedRead in 0..<2 {
+            let r = Rig(); r.ready()
+            r.identity = failedRead == 0 ? .missing : .unavailable(.unavailable(status: -1))
+            r.coordinator.encrypt(); r.coordinator.hide()
+            #expect(r.input.input.text.isEmpty); #expect(r.input.input.cursor == 0)
+            #expect(r.coordinator.identityKey == nil); #expect(r.coordinator.selected == nil)
+            r.identity = .identity(r.c); r.coordinator.open()
+            #expect(r.coordinator.error == nil); #expect(r.coordinator.selected?.id == r.contact.id)
+            r.input.seedForTesting("новая сессия", cursor: 4)
+            r.coordinator.encrypt(); await r.settle()
+            let opened = try CipherMessage.open(#require(r.host.inserted.only), as: r.b, contacts: [])
+            #expect(opened.senderKey == r.c.publicKey); #expect(opened.text == "новая сессия")
+        }
+    }
+    @Test func identityMetadataTracksCurrentReadWithoutLosingRecoveryBaseline() {
+        let r = Rig(); r.ready()
+        let valid = "Ваш ключ: " + r.a.publicKey.fingerprint.short
+        #expect(r.coordinator.identityMetadata == valid + " · Контактов: 1")
+        for failure in 0..<2 {
+            r.identity = failure == 0 ? .missing : .unavailable(.unavailable(status: -1))
+            r.coordinator.refresh()
+            #expect(r.coordinator.identityKey == nil); #expect(!r.coordinator.canEncrypt)
+            #expect(
+                r.coordinator.identityMetadata
+                    == (failure == 0
+                        ? "Личный ключ ещё не создан" : "Не удалось открыть хранилище ключей"))
+            #expect(r.coordinator.selected?.id == r.contact.id)
+        }
+        r.identity = .identity(r.a); r.book = .unreadable; r.coordinator.refresh()
+        #expect(r.coordinator.identityMetadata == valid)
+        #expect(r.coordinator.selected?.id == r.contact.id)
+        r.book = .contacts([r.contact]); r.coordinator.refresh()
+        #expect(r.coordinator.identityMetadata == valid + " · Контактов: 1")
+        r.permitted = false
+        let reads = r.identityReads + r.bookReads, preferences = r.preference.reads + r.preference.writes
+        r.coordinator.refresh()
+        #expect(r.coordinator.identityMetadata == "Общие данные недоступны")
+        #expect(r.identityReads + r.bookReads == reads)
+        #expect(r.preference.reads + r.preference.writes == preferences)
+    }
+    @Test func defensiveLimitFixtureContainsRealApprovedExcerptAnd4097Bytes() {
+        let r = Rig(); r.ready()
+        r.input.seedDefensiveLimitForTesting()
+        let excerpt = "Синтетический черновик: 4097 байт…\n(полный текст — в тестовой зависимости)\n"
+        #expect(r.input.input.text.hasPrefix(excerpt))
+        #expect(r.input.input.byteCount == 4097); #expect(r.input.input.counter == "4097 / 4096 байт")
+        let text = r.input.input.text, cursor = r.input.input.cursor
+        r.coordinator.encrypt()
+        #expect(r.coordinator.error == "Слишком длинное сообщение: 4097 из 4096 байт")
+        #expect(r.host.inserted.isEmpty); #expect(!r.coordinator.busy)
+        #expect(r.input.input.text == text); #expect(r.input.input.cursor == cursor)
+    }
     @Test func accessGate() async {
         let r = Rig(); r.permitted = false
         r.coordinator.open(); r.coordinator.openPicker(); r.coordinator.select(r.contact.id)

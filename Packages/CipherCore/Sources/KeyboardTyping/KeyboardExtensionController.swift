@@ -92,8 +92,14 @@
         public override func viewWillTransition(
             to size: CGSize, with coordinator: any UIViewControllerTransitionCoordinator
         ) {
+            let reveal = panel.makeViewportTransitionReveal()
             panel.adapter.rotate()
             super.viewWillTransition(to: size, with: coordinator)
+            coordinator.animate(alongsideTransition: nil) { [weak self] context in
+                guard let self, !context.isCancelled else { return }
+                self.view.layoutIfNeeded()
+                reveal()
+            }
         }
         public override func viewWillLayoutSubviews() {
             super.viewWillLayoutSubviews()

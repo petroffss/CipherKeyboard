@@ -32,6 +32,7 @@ import Foundation
 /// Session-local state machine. Stores and host are checked again after every suspension, before commit.
 @MainActor public final class EncryptInsertCoordinator {
     public typealias Sealer = @Sendable (String, Identity, PublicKey) async throws -> String
+    private enum IdentityAvailability { case unknown, available, missing, unavailable }
     public static let accessMessage = "Включите «Полный доступ» в Настройках, чтобы шифровать"
     public static let changedMessage = "Данные изменились — выберите получателя заново"
     public static let missingMessage = "Откройте приложение CipherKeyboard, чтобы создать ключ"
@@ -50,6 +51,19 @@ import Foundation
     public private(set) var success: String?
     public private(set) var contactsUnreadable = false
     public private(set) var identityKey: PublicKey?
+    private var identityAvailability = IdentityAvailability.unknown
+    public var identityMetadata: String {
+        guard access() else { return "Общие данные недоступны" }
+        switch identityAvailability {
+        case .missing: return "Личный ключ ещё не создан"
+        case .unavailable: return "Не удалось открыть хранилище ключей"
+        case .unknown: return "CipherKeyboard"
+        case .available:
+            guard let identityKey else { return "CipherKeyboard" }
+            let own = "Ваш ключ: " + identityKey.fingerprint.short
+            return contactsUnreadable ? own : own + " · Контактов: \(contacts.count)"
+        }
+    }
     public var onChange: (() -> Void)?
     private let access: () -> Bool
     private let identityReader: () -> IdentityReadResult
@@ -60,6 +74,8 @@ import Foundation
     private let clock: any KeyboardClock
     private var session = UUID()
     private var active = false
+    // Session-local full key survives failed reads; identityKey tracks current availability only.
+    private var lastValidatedIdentityKey: PublicKey?
     private var operation: UUID?
     private var task: Task<Void, Never>?
     private var successTimer: UUID?
@@ -110,9 +126,7 @@ import Foundation
     public func refresh() {
         guard active, !busy, gate() else { return }
         error = nil
-        let oldIdentity = identityKey
         _ = readIdentity()
-        if let oldIdentity, let identityKey, oldIdentity != identityKey { invalidateRecipient() }
         _ = readContacts()
         onChange?()
     }
@@ -133,6 +147,7 @@ import Foundation
     public func hide() {
         active = false; session = UUID(); operation = nil; task?.cancel(); task = nil
         busy = false; pickerOpen = false; selected = nil; contacts = []; identityKey = nil
+        lastValidatedIdentityKey = nil; identityAvailability = .unknown
         error = nil; success = nil; contactsUnreadable = false
         if let successTimer { clock.cancel(successTimer) }; successTimer = nil
         adapter.interactionEnabled = true; adapter.hide(); onChange?()
@@ -147,9 +162,7 @@ import Foundation
         guard text.utf8.count <= CipherMessage.maxPlaintextBytes else {
             error = "Слишком длинное сообщение: \(text.utf8.count) из 4096 байт"; onChange?(); return
         }
-        let previousIdentity = identityKey
         guard let sender = readIdentity() else { onChange?(); return }
-        if let previousIdentity, sender.publicKey != previousIdentity { invalidateRecipient(); onChange?(); return }
         guard readContacts(), let recipient = selected else { onChange?(); return }
         guard !host.hasSelection else { error = Self.selectionMessage; onChange?(); return }
         let document = host.documentIdentifier
@@ -201,6 +214,7 @@ import Foundation
     @discardableResult private func gate() -> Bool {
         guard access() else {
             contacts = []; selected = nil; identityKey = nil; pickerOpen = false
+            identityAvailability = .unknown
             error = Self.accessMessage; onChange?(); return false
         }
         return true
@@ -208,9 +222,16 @@ import Foundation
     private func readIdentity() -> Identity? {
         guard gate() else { return nil }
         switch identityReader() {
-        case .identity(let identity): identityKey = identity.publicKey; return identity
-        case .missing: identityKey = nil; error = Self.missingMessage
-        case .unavailable: identityKey = nil; error = Self.keyErrorMessage
+        case .identity(let identity):
+            let previous = lastValidatedIdentityKey
+            identityKey = identity.publicKey; lastValidatedIdentityKey = identity.publicKey
+            identityAvailability = .available
+            if let previous, previous != identity.publicKey {
+                invalidateRecipient(); return nil
+            }
+            return identity
+        case .missing: identityKey = nil; identityAvailability = .missing; error = Self.missingMessage
+        case .unavailable: identityKey = nil; identityAvailability = .unavailable; error = Self.keyErrorMessage
         }
         return nil
     }

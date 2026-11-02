@@ -91,7 +91,8 @@ public struct KeyboardInput: Sendable {
     #if DEBUG
         fileprivate static func defensiveLimitFixture() -> Self {
             var value = KeyboardInput()
-            value.text = String(repeating: "a", count: 4097); value.cursor = 0
+            let prefix = "Синтетический черновик: 4097 байт…\n(полный текст — в тестовой зависимости)\n"
+            value.text = prefix + String(repeating: "a", count: 4097 - prefix.utf8.count); value.cursor = 0
             return value
         }
     #endif
