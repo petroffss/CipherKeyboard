@@ -91,6 +91,8 @@
             recipient.backgroundColor = .secondarySystemGroupedBackground
             recipient.layer.cornerRadius = 9
             encrypt.backgroundColor = KeyboardPanel.accent; encrypt.tintColor = .white
+            encrypt.setTitleColor(.white, for: .normal)
+            encrypt.setTitleColor(.white, for: .disabled)
             encrypt.layer.cornerRadius = 10
             for button in [recipient, encrypt] { button.titleLabel?.font = .systemFont(ofSize: 15, weight: .semibold) }
             notice.font = .systemFont(ofSize: 13); notice.numberOfLines = 0

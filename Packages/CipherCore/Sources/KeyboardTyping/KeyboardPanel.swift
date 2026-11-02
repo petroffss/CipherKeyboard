@@ -445,6 +445,24 @@
                     #endif
                     return
                 }
+                // Repaint the final viewport once, including the already-visible caret branch.
+                defer {
+                    let rect = self.editor.bounds.offsetBy(
+                        dx: -self.editor.textContainerInset.left, dy: -self.editor.textContainerInset.top)
+                    if rect.origin.x.isFinite, rect.origin.y.isFinite,
+                        rect.width.isFinite, rect.height.isFinite, rect.width > 0, rect.height > 0
+                    {
+                        let manager = self.editor.layoutManager
+                        let glyphs = manager.glyphRange(
+                            forBoundingRectWithoutAdditionalLayout: rect, in: self.editor.textContainer)
+                        let count = manager.numberOfGlyphs
+                        if glyphs.location != NSNotFound, glyphs.location >= 0, glyphs.length > 0,
+                            glyphs.location < count, glyphs.length <= count - glyphs.location
+                        {
+                            manager.invalidateDisplay(forGlyphRange: glyphs)
+                        }
+                    }
+                }
                 guard !self.editor.isModelCaretVisible else {
                     #if DEBUG
                         self.viewportTransitionState = "already-visible"
