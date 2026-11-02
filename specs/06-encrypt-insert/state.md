@@ -33,5 +33,15 @@ last_reviewed_commit: "245e84773540c0c1ccdde2cc9a131abd832b8189"
 2026-11-02: пользователь ответил «Продолжай» после предложения согласовать контракт этапа 06. Это принято как явное одобрение контракта и разрешение реализации. Все зависимости done; контракт проверен, 20 evals pending. Ветка feature/06-encrypt-insert. Начат раунд 1, без изменения требований и evals.
 
 
+2026-11-02: для будущего first-time-user создана отдельная чистая песочница CipherKeyboard-Encrypt-FTUE-375, iPhone SE3/iOS27, UDID `79B18D1B-C3F5-4BEC-ABA0-5603B5DD8DF9` (пока Shutdown). Основной `CE56E4D3-8193-4BFA-8996-FA3AA4A628C9` не изменяется. Создание завершилось успешно через разрешённый simctl. Удаление/erase не выполнялись.
+
+2026-11-02, builder r1: первый полный core прошёл — 161 тест (KeyboardTyping 26 + CipherCore 135; прежние 150 + 11 новых). Debug build прошёл (.build/encrypt-core.log, .build/encrypt-debug.log). Это результаты builder, не независимые eval pass. Идёт подготовка runtime/matrix/audit06; все 20 evals ещё pending.
+
+2026-11-02: исправлен только числовой CSS минимум колонки клавиш альбомного mockup с 316 на 352 pt: 9×26 букв + 2×44 служебных + 10×3 промежутков. Это приведение эталона к уже одобренному AC13, не изменение требований, evals, числа/содержимого состояний или размеров рамок. В продукте builder независимо обнаружил и применил ту же границу.
+
+2026-11-02, промежуточный builder r1: Debug/Release и lint прошли. Реальный runtime06 attempt1 — 2/6 pass, 4 failures (.build/encrypt-runtime.log, encrypt-runtime-r1.xcresult): найдены disabled accessibility trait DraftKey и проблемы picker/DebugHost trace geometry. Исправляются до заморозки; это не независимый раунд и не pass evals. Варианты со старым source revision не будут финальным доказательством.
+
+2026-11-02, builder r1: повтор runtime06 — 6/6 pass, 391.6 с; ten-cycle 249.5 с, все10циклов и4096байт проходят. На последнем source revision1766062642: core161/161, lint79, Debug/Release pass, Debughooks отсутствуют в Release, entitlements/Info без расширений. Новый полныйUI идёт на отдельном чистом402 `4A12701F-B08C-4332-BDCA-142628C8796A` (software-keyboard readback0); discovery32base→33current, removed[]. Это промежуточные результаты builder, не независимый eval pass.
+
 ## Отчёт для человека
 <!-- заполняется при паузе: что сделано, что не проходит, что пробовали, варианты с рекомендацией -->
