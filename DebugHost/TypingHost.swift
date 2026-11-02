@@ -27,7 +27,15 @@
     }
     final class TypingHostController: UIViewController, UITextViewDelegate {
         private let field = UITextView()
+        private let secondField = UITextView()
+        private var secondActive = false
+        private var activeField: UITextView { secondActive ? secondField : field }
         private let diagnostics = UILabel()
+        private let trace = UILabel()
+        private var insertions = 0
+        private var deletions = 0
+        private var replacements = 0
+        private var lastCiphertext = ""
         private let focus = UILabel()
         private let geometry = UILabel()
         private let auditClipboard = UILabel()
@@ -52,7 +60,7 @@
             buttons.distribution = .fillEqually
             for (name, action) in [
                 ("Пустое", #selector(empty)), ("С выделением", #selector(seed)), ("Скрыть", #selector(hide)),
-                ("Открыть", #selector(showKeyboard)),
+                ("Открыть", #selector(showKeyboard)), ("Курсор", #selector(caret)), ("Поле2", #selector(switchField)),
             ] {
                 let button = UIButton(type: .system)
                 button.setTitle(name, for: .normal)
@@ -60,11 +68,20 @@
                 buttons.addArrangedSubview(button)
                 controls[name] = button
             }
+            secondField.font = .systemFont(ofSize: 17)
+            secondField.backgroundColor = .secondarySystemGroupedBackground
+            secondField.accessibilityIdentifier = "host.editor2"
+            secondField.delegate = self; secondField.autocorrectionType = .no
+            secondField.text = "Второе поле"; secondField.isHidden = true
+            secondField.translatesAutoresizingMaskIntoConstraints = false
+            view.addSubview(secondField)
             field.font = .systemFont(ofSize: 17)
             field.backgroundColor = .secondarySystemGroupedBackground
             field.accessibilityIdentifier = "host.editor"
             field.delegate = self
             field.autocorrectionType = .no
+            trace.accessibilityIdentifier = "host.trace"
+            trace.font = .monospacedSystemFont(ofSize: 8, weight: .regular)
             diagnostics.numberOfLines = 3
             diagnostics.font = .monospacedSystemFont(ofSize: 12, weight: .regular)
             diagnostics.accessibilityIdentifier = "host.diagnostics"
@@ -74,8 +91,9 @@
             geometry.font = .systemFont(ofSize: 8)
             // Keep controls and actual editable field above the keyboard even on 667×375.
             // Diagnostic labels remain available to AX, but cannot push the field under the panel.
-            let details = UIStackView(arrangedSubviews: [focus, geometry])
+            let details = UIStackView(arrangedSubviews: [focus, geometry, trace])
             details.spacing = 4
+            details.distribution = .fillEqually
             focus.setContentCompressionResistancePriority(.required, for: .horizontal)
             geometry.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
             let stack = UIStackView(arrangedSubviews: [hostTitle, buttons, diagnostics, details])
@@ -111,6 +129,10 @@
                 field.topAnchor.constraint(greaterThanOrEqualTo: stack.bottomAnchor, constant: 4),
                 field.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor, constant: -4),
                 field.heightAnchor.constraint(equalToConstant: 48),
+                secondField.leadingAnchor.constraint(equalTo: field.leadingAnchor),
+                secondField.trailingAnchor.constraint(equalTo: field.trailingAnchor),
+                secondField.topAnchor.constraint(equalTo: field.topAnchor),
+                secondField.heightAnchor.constraint(equalTo: field.heightAnchor),
             ])
             seed()
         }
@@ -135,21 +157,39 @@
                 }.joined(separator: ";")
             if geometry.text != value { geometry.text = value }
         }
-        @objc private func empty() { field.text = ""; field.selectedRange = NSRange(location: 0, length: 0); update() }
+        @objc private func empty() {
+            resetTrace(); activeField.text = ""; activeField.selectedRange = NSRange(location: 0, length: 0); update()
+        }
         @objc private func seed() {
-            field.text = "До встречи!"; field.selectedRange = NSRange(location: 3, length: 7); update()
+            resetTrace(); activeField.text = "До встречи!"; activeField.selectedRange = NSRange(location: 3, length: 7);
+            update()
+        }
+        @objc private func caret() { activeField.selectedRange = NSRange(location: 3, length: 0); update() }
+        @objc private func switchField() {
+            secondActive.toggle()
+            field.isHidden = secondActive; secondField.isHidden = !secondActive
+            activeField.becomeFirstResponder(); update()
         }
         @objc private func hide() {
-            let result = field.resignFirstResponder()
-            focus.text = "hide=\(result); focused=\(field.isFirstResponder)"
+            let result = activeField.resignFirstResponder()
+            focus.text = "hide=\(result); focused=\(activeField.isFirstResponder)"
         }
         @objc private func showKeyboard() {
-            let result = field.becomeFirstResponder()
-            focus.text = "show=\(result); focused=\(field.isFirstResponder)"
+            let result = activeField.becomeFirstResponder()
+            focus.text = "show=\(result); focused=\(activeField.isFirstResponder)"
+        }
+        private func resetTrace() { insertions = 0; deletions = 0; replacements = 0; lastCiphertext = "" }
+        func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+            if text.isEmpty { deletions += 1 } else { insertions += 1 }
+            if range.length > 0 { replacements += 1 }
+            lastCiphertext = text
+            trace.text =
+                "insertions=\(insertions);deletions=\(deletions);replacements=\(replacements);ciphertext=\(text.hasPrefix("ckmsg1:"));length=\(text.utf8.count)"
+            return true
         }
         private func update() {
             diagnostics.text =
-                "Текст: \(field.text ?? "")\nВыделение UTF-16: \(field.selectedRange.location), \(field.selectedRange.length)"
+                "Текст: \(activeField.text ?? "")\nВыделение UTF-16: \(activeField.selectedRange.location), \(activeField.selectedRange.length)"
         }
         func textViewDidChange(_ textView: UITextView) { update() }
         func textViewDidChangeSelection(_ textView: UITextView) { update() }

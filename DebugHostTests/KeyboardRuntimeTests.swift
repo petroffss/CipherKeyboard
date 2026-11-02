@@ -56,7 +56,11 @@ final class KeyboardRuntimeTests: XCTestCase {
             if !fullAccess {
                 XCTAssertEqual(
                     host.staticTexts["keyboard.identityStatus"].label,
-                    "Включите «Полный доступ» в Настройках, чтобы шифровать")
+                    "Общие данные недоступны")
+                XCTAssertEqual(
+                    host.staticTexts["keyboard.encrypt.status"].label,
+                    "Включите «Полный доступ» в Настройках, чтобы шифровать",
+                    "Real extension metadata: " + String(describing: host.buttons["keyboard.debugFixtures"].value))
             }
             TypingTestSupport.assertReset(in: host)
             TypingTestSupport.sequence(in: host)

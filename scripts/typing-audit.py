@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 """Read-only before/after audit of the disposable simulator; never dumps key material."""
+import os
+import uuid
 import argparse
 import datetime
 import hashlib
@@ -10,7 +12,8 @@ import sqlite3
 import subprocess
 import sys
 
-CANARY = "TypingCanary05-Ж-20261101"
+ENCRYPT = os.environ.get("CIPHER_AUDIT_FEATURE") == "06"
+CANARY = "EncryptCanary06-Ж-20261102" if ENCRYPT else "TypingCanary05-Ж-20261101"
 SENTINEL = "TypingClipboardSentinel05-20261101"
 
 
@@ -49,7 +52,10 @@ def snapshot(udid, output):
         "group": container(udid, "dev.cipherkeyboard.app", "group.dev.cipherkeyboard"),
     }
     files, matches, defaults = {}, [], {}
+    recipient_preferences = {}
+    defaults_without_recipient = {}
     patterns = [CANARY.encode(), CANARY.encode("utf-16le"), CANARY.encode("utf-16be")]
+    if ENCRYPT: patterns += [b"ckmsg1:", "ckmsg1:".encode("utf-16le"), "ckmsg1:".encode("utf-16be")]
     for label, root in roots.items():
         for path in sorted(root.rglob("*")):
             if not path.is_file() or path.is_symlink():
@@ -61,7 +67,12 @@ def snapshot(udid, output):
                 matches.append(key)
             if "/Preferences/" in key and path.suffix == ".plist":
                 try:
-                    canonical = plistlib.dumps(plistlib.loads(data), sort_keys=True)
+                    values = plistlib.loads(data)
+                    if key == "extension/Library/Preferences/dev.cipherkeyboard.app.keyboard.plist":
+                        recipient_preferences = {k: v for k, v in values.items() if k == "keyboard.lastRecipientID"}
+                        values_without = {k: v for k, v in values.items() if k != "keyboard.lastRecipientID"}
+                        defaults_without_recipient[key] = hashlib.sha256(plistlib.dumps(values_without, sort_keys=True)).hexdigest()
+                    canonical = plistlib.dumps(values, sort_keys=True)
                     defaults[key] = hashlib.sha256(canonical).hexdigest()
                 except plistlib.InvalidFileException:
                     defaults[key] = "unreadable"
@@ -83,7 +94,7 @@ def snapshot(udid, output):
     result = {
         "timestamp": datetime.datetime.now().astimezone().isoformat(), "udid": udid, "device": device["name"],
         "roots": {key: str(value) for key, value in roots.items()}, "files": files,
-        "defaults": defaults, "keychainMetadataHashes": metadata, "canaryMatches": matches,
+        "defaults": defaults, "recipientPreference": recipient_preferences, "defaultsWithoutRecipient": defaults_without_recipient, "keychainMetadataHashes": metadata, "canaryMatches": matches,
         "clipboardSha256": hashlib.sha256(clipboard).hexdigest(),
         "clipboardIsSentinel": clipboard == SENTINEL.encode(),
     }
@@ -108,6 +119,16 @@ def compare(before_path, after_path, output):
             if set(record) == {"version", "date"} and record["version"] == 1 and isinstance(record["date"], (int, float)):
                 allowed.append(path)
                 continue
+        if ENCRYPT and path == "extension/Library/Preferences/dev.cipherkeyboard.app.keyboard.plist":
+            values = after.get("recipientPreference", {})
+            valid = set(values).issubset({"keyboard.lastRecipientID"})
+            if values:
+                try: uuid.UUID(values["keyboard.lastRecipientID"])
+                except (ValueError, TypeError): valid = False
+            empty_hash = hashlib.sha256(plistlib.dumps({}, sort_keys=True)).hexdigest()
+            unchanged_others = before.get("defaultsWithoutRecipient", {}).get(path, empty_hash) == after.get("defaultsWithoutRecipient", {}).get(path, empty_hash)
+            if valid and unchanged_others:
+                allowed.append(path); continue
         unexpected.append(path)
     logs = subprocess.run(["xcrun", "simctl", "spawn", before["udid"], "log", "show", "--style", "compact", "--start", datetime.datetime.fromisoformat(before["timestamp"]).strftime("%Y-%m-%d %H:%M:%S"), "--predicate", 'process == "CipherKeyboard" OR process == "CipherKeyboardExtension" OR process == "TypingHost"'], capture_output=True)
     logs_path = output.with_suffix(".log")
@@ -123,7 +144,8 @@ def compare(before_path, after_path, output):
     if before["clipboardSha256"] != after["clipboardSha256"] or not after["clipboardIsSentinel"]:
         failures.append("clipboard sentinel changed during test")
     if before["keychainMetadataHashes"] != after["keychainMetadataHashes"]: failures.append("keychain metadata changed")
-    if before["defaults"] != after["defaults"]: failures.append("defaults changed")
+    changed_defaults = {key for key in before["defaults"].keys() | after["defaults"].keys() if before["defaults"].get(key) != after["defaults"].get(key)}
+    if changed_defaults - set(allowed): failures.append("defaults changed outside the permitted recipient UUID")
     if unexpected: failures.append("unexpected file changes require investigation")
     result = {"result": "pass" if not failures else "fail", "failures": failures, "allowedReceiptChanges": allowed,
               "unexpectedChanges": unexpected, "canaryMatches": after["canaryMatches"], "logs": str(logs_path),

@@ -13,6 +13,7 @@ let package = Package(
         .library(name: "CipherCoreContactStore", targets: ["CipherCoreContactStore"]),
     ],
     targets: [
+        .executableTarget(name: "CipherInsertedProof", dependencies: ["CipherCore"], path: "Tools/CipherInsertedProof"),
         .target(name: "KeyboardTyping", dependencies: ["CipherCore"]),
         .testTarget(name: "KeyboardTypingTests", dependencies: ["KeyboardTyping"]),
         .target(name: "CipherCore"),
