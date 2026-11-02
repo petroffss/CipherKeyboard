@@ -1,10 +1,10 @@
 ---
 feature: 06-encrypt-insert
 loop: running            # running | needs-human | stopped | done
-round: 3
+round: 4
 max_rounds: 5
 base_commit: "245e84773540c0c1ccdde2cc9a131abd832b8189"
-last_reviewed_commit: "74cbb52276fd78b7ad0b913e1575c100cfed6b88"
+last_reviewed_commit: "d1df3f133ea839450c4d50003e1e7b16a2532f1e"
 ---
 # Цикл сборки: Шифрование и вставка в сообщение
 
@@ -13,16 +13,16 @@ last_reviewed_commit: "74cbb52276fd78b7ad0b913e1575c100cfed6b88"
 |---|---|---|---|---|
 | 1 | 16/20; E5/E17/E18 fail, E20 pending | 1 + 2 пробела proof/tooling; design D1–D11 | 6aa22f9 | Закрыт: независимые functional/design/reviewer; исправления в раунде 2 |
 | 2 | 16/20; E19 fail; E17/E18/E20 pending | 0; R4 stale test observer | 74cbb52 | Functional закрыт; нужен минимальный test-only R3, вся дизайн-проверка на конечной версии |
-| 3 | pending | pending | pending | Минимальная правка R4; далее все20evals/126frames на frozen R3 |
+| 3 | 17/20; E17 fail; E18/E20 pending | 0 security; D12 visual | d1df3f1 | Закрыт:126/126 matrix и116/116 live originals просмотрены; нужен R4 palette fix и ограниченный render experiment |
 
 ## Открытые проблемы
 <!-- Источник: eval (E3) или ревью (R2). «Подряд» — сколько раундов подряд проблема на месте.
      Подряд ≥ 3 (появилась и пережила 2 раунда исправлений) → цикл останавливается. -->
 | ID | Источник | Класс | Где | Суть | Впервые | Подряд |
 |---|---|---|---|---|---|---|
-| D1–D7,D9,D10 | design verifier r1 | расходится-с-макетом | evidence/verifier-round1-design/findings.md | Многострочный/limit/selection anchors, picker/metadata/retry, rebased landscape padding/grid и secondary palette расходятся с эталоном; динамические данные не дефекты | 1 | 1 |
-| D11 | design live E18 r1 | сломан-мобильный-вид | KeyboardPanel.swift, rotation/viewport; live375-landscape-after-failure.png | После4строк и поворота667×375 текст сохранён, caret вне viewport; picker→Back возвращает видимость | 1 | 1 |
-| R4 | functional r2, full legacy 6/7 | слабый-тест | DebugHostTests/KeyboardRuntimeTests.swift:57 | OFF assertion ищет длинный AC11 banner в metadata identityStatus; утверждённый D6 разделяет короткую metadata и фактический banner на encrypt.status. Нужно строго проверить оба канала, сохранив весь прежний input/host/lifecycle | 2 | 1 |
+| D12 | design R3 raw RGB | расходится-с-макетом | EncryptionControls.swift, disabled Encrypt foreground | Системный disabled tint даёт180,190,226/light и62,76,107/dark вместоCSSwhite+alpha.42≈248,248,250/107,107,107; фон/opacity совпадают. Требуется explicitnormal+disabledwhite, не platform waiver | 3 | 1 |
+| O1 | design R3 live | unresolved display observation | evidence/verifier-round3-design/cross402-once-review.json | После rotation loop402/440 последняяА отсутствует в original pixels при сохранённых AX/model/selection/offset; bounded402light XCUIScreen+simctl4/4 подтверждает наблюдение, механизм не доказан. Не объявляется потерей текста; нужен ограниченный эксперимент по reviewer approach-r4-render-observation.md | 3 | 1 |
+| ENV1 | CUA | environment boundary | evidence/verifier-round3-design/E18-live-review.md | Mac locked: actual VO speech/navigation доказаны, native AX activation и UI-only FTUE ждут ручной разблокировки. Async вопрос пользователю pending, блокировка не обходится | 3 | 1 |
 
 ## Закрытые
 | ID | Класс | Как исправлено | Раунд |
@@ -30,6 +30,9 @@ last_reviewed_commit: "74cbb52276fd78b7ad0b913e1575c100cfed6b88"
 | R1 | нет-валидации | Последний проверенный полный PublicKey переживает missing/unavailable; recovery30/4inflight/старыйCLI наR2: changed+reselect,0insert, sameA retry сохранён | 2 |
 | R2 | слабый-тест | Exact prefix/suffix extraction + canonical single-line ASCII ckmsg1; independent Python4+128positive/1024negative PASS | 2 |
 | R3 | слабый-тест | Closed DEBUG cases, actual Keychain A exactUTF8/fullsender + actualB/knownunknown/third по15реальнымC, включая ordinarySettings | 2 |
+| R4 | слабый-тест | +3 строки test-only: exact metadata + прежний exact AC11 на encrypt.status; assertions27→28, removed0. Independent R3 fulllegacy7/7/0skip, OFF68.273с со всеми прежними input/host/lifecycle | 3 |
+| D1–D7,D9,D10 | расходится-с-макетом | Исправления R2 независимо проверены R3 на всех126 originals; новых literal discrepancy по этим классам нет. D8 reference corrections сохранены, без waiver | 3 |
+| D11 | сломан-мобильный-вид | R3 все6 full live technical PASS: caret/rotation/manual-pan geometry исправлены. Отдельное новое наблюдение рисунка glyph O1 остаётся открытым, полного E18pass нет | 3 |
 
 ## Было до нас
 <!-- находки «Было до нас»: не чиним в этом цикле, не блокируют -->
@@ -38,6 +41,9 @@ last_reviewed_commit: "74cbb52276fd78b7ad0b913e1575c100cfed6b88"
 <!-- повторы одного класса; в конце цикла предложить пользователю одной строкой для REVIEW.md -->
 
 - Не добавлено без одобрения: `2026-11-02 · [слабый-тест] Сохраняй метаданные XCUI-элемента до действия, которое его скрывает; после перехода заново проверяй существование и видимость элементов · 06-encrypt-insert, picker matrix и независимый E1 driver`.
+
+- Не добавлено без одобрения: `2026-11-02 · [слабый-тест] Перед полным UI suite докажи начальные данные и настройки на фактическом UDID; повторное использование sandbox допустимо только с проверенными предусловиями · 06-encrypt-insert, R1/R2 full-UI readiness`.
+- Не добавлено без одобрения: `2026-11-02 · [слабый-тест] После UI-активации проверяй фактическое постусловие; перед touch цель должна быть видима и стабильна, а неисполненные после failure assertions не считаются доказательством · 06-encrypt-insert, R2 preview/R3 long-name`.
 
 ## Журнал
 
@@ -93,6 +99,26 @@ last_reviewed_commit: "74cbb52276fd78b7ad0b913e1575c100cfed6b88"
 2026-11-02, independent functional r2: полный EncryptRuntimeTests10/10PASS,614.930с; exact14C+14actualAverdict+5negative retained, все10names/14app-ext+3hostbytes совпали. Legacy KeyboardRuntimeTests полный6/7FAIL наR4 staleobserver: realOFF header/notice соответствуют утверждённомуmockup/AC11, старыйassert line57 ждётbannerвmetadata. Внешний строгийOFFdiagnostic96.940сPASS проверилобаUIтекста/system+modelFullAccessfalse/disabledcontrols иПОЛНЫЙпрежнийinput/gestures/hostдляempty+selectedowner/hide-reopen. Никакогоacceptanceпоfocusedвместоfull6/7: E19fail. R3будетисправлятьтолькоtestobserver, безизмененийпродукта/контракта. FreshbuilderR3 готовитнеприменённыйpatchв/private/tmp/cipher06-r3-proposal; source74не меняетсядоaudit/ALLCLEAR. E17/E18R2не запускались, остаютсяpending; ВСЕ126кадров/весьE18будутпроверенынаконечнойисправленнойR3версии, безсокращенияфинальных20evals.
 
 2026-11-02: R2 functional финализирован: E1–E16pass(16/20), E19fail(R4), E17/E18/E20pending. IsolatedauditPASS: setup3/3+canary1/1, before/after sentineltrue, identity1тотжеfullpublickey+metadatahash, толькоreceipt04changed, failures/unexpected/canarymatches[]. Exact15nativeC actualA/B/fullsender/knownunknown/thirdPASS. Finalall14app-ext+3host bytes совпали; allsourceSwift/HEAD74проверены. ВсеownsimulatorsShutdown,runners0,послеauditUIне трогался. ЗакрытыR1/R2/R3; designD1–D11остаётсянаполнуюпроверкуR3(неpass/waived). Новыйраунд3вmax5разрешённогоцикла; freshbuilderподготовилнеприменённый+3linepatchR4,assertions27→28,removed0,7methodsиостальнойeditingMatrixbyte-identical. Freshfunctional/designR3готовыконтракту20/126,ждутновыйSHA/ALLCLEAR.
+
+2026-11-02: builder R3 frozen `d1df3f133ea839450c4d50003e1e7b16a2532f1e`, runtime527240558, worktreeчистый. Единственныйdiff+3/-0KeyboardRuntimeTests,assertions27→28,removed0,production/contractнеизменны. Core169/lint79/Python4/Debug/Release/hooks/signatures/permissionsPASS. Полныйlegacy7/7безfail/skip,276.014с,OFF69.096с, allnames/14app-ext+3hostbytesreconciled. Initialmin0/final1сохраненыбезпредположенияпричины, actualkeyboard/revisionво всехtestsPASS. Owner382Shutdown/runners0/UIclipboardALLCLEAR. FreshfunctionalR3началвсеfunctionalE1–E16/E19нановомSHA, freshreviewerR3newdiff/security; designR3ждётserialhandoffдлявсех126/E18. Handoff `.build/Builder06-R3/handoff.json`.
+
+2026-11-02: fresh reviewer/security R3 завершён наd1df3f1/runtime527240558: Important0/Minor0/Preexisting0,high подтверждён. Production49/Swift79attested, всеproductionbyte-identical74; единственный+3testdiffполностьюобратимкстаромутелу, assertions27→28,7methods. ActualDebugRelease4signatures/DEBUGpositive/Releasehooks0/permissionsPASS. Report `evidence/reviewer-round3/report.md`,summary.json. last_reviewed_commit=d1df3f1. FreshfunctionalR3:20pendingсcontractstripproof, core169/lint79/Python4/DebugReleasePASS; FRESHUI `7AEE5DA3-2987-43A0-92E8-746DE894A239` создаётсяснулевымиappGroupcontacts/безseedдляполногоUI33. НикакиеR2passнеперенесены.
+
+2026-11-02, independent R3 fullUI: GREEN33/33,0fail/skip/runtimeWarnings,exit0,987.280с `.build/TestResults/ui-20261102-134422.xcresult`. Все33actualnames==discovery, exactUI `7AEE5DA3-2987-43A0-92E8-746DE894A239`, all14app-extbytesbefore/after==ownDebug527240558. Initialmin0/final1сохранёнбезгипотезыпричины. UIштатноShutdown. FreshRuntimeR3 `8869D0D3-0973-4380-966C-DC3BDED84CE9` создандляpreflight2/E1firstunselected/native10/legacy7/supplement/noKey/audit. Source100files/HEADd1df3f1подтверждены. ДизайножидаетUIALLCLEAR, все126/E18ещёpending.
+
+2026-11-02, independent R3 runtime: полныйnative10/10безfail/skip,621.264с,allnames/14app-ext+3hostbyteproof matched.14canonicalactualC+14actualA+5negatives retained; D11 nestedgeometry12phases/10visibleviewport+2intentionalmanualhidden/cursor9allcorrect. Полныйlegacy7/7GREENбезfail/skip,279.348с,OFF68.273с; все7names/bytes/revision527240558сверены. R4закрытнезависимымполнымsuite. E19ещёpendingдоaudit/crash/прочихпредусловий. Supplement7начат(включаяSettingsC15); далееNoKey/audit, designждётALLCLEAR.
+
+2026-11-02, independent R3 supplement: original7case6/7FAIL retained — last40Яrow.tapнеактивировалчастичновидимуюстроку,pickerосталсяоткрыт, клавишещёнет,encryptневызван. Внешнийobserverбезproductchangeусиленfullyvisible/stable0.25с/ordinarycoordinateTap/postconditionspickerclosed+exactselectedname. Focusedlongname1/1PASS сполным40ЯsuccessAXи14+3byteproof; fullsupplement7greenНЕзаявляется. Остальные6наблюденийPASS; clockconservative1.766..2.156с/framesidentical, transientA-B-A1.052/1.779сдо2sec/0insert/draftpreserved. Exact15C actualAfullkeymatch иofflineactualBknownunknown/fullsender/thirdrejected15/15PASS. RuntimeвыключаетсядляcleanNoKeyC7ипоследнегоisolatedaudit.
+
+2026-11-02: independent R3 FUNCTIONAL ALLCLEAR, E1–E16+E19=17pass/0fail, E17/E18/E20pending. ПоследнийisolatedauditPASS/setup3/3+canary1/1: knownidentity1/fullpublicA==15nativeC/sentinelunchanged, failures/unexpected/canarymatches[]. РазрешённыеchangesТОЛЬКОUUIDpreference+receipt04 (это не отсутствие всехwrites). FinalSource79/100inventory==d1df3f1,7pairsapp14+host3byteproof,repeatReleaseinspectionPASS,newapp/ext/host/observercrashes0; Simulatornotphysicaljetsamclaim. ВсеTypingdevicesShutdown,runners0,mainCEBooted/FTUEShutdownне тронуты; послеauditUI/clipboardнет. FreshdesignR3получилSTARTвсех126full-screen/всегоE18наd1df3f1/runtime527240558, одновременныйUIтолькоуdesign. Functionalдописываетreport/read-only, evalstatus17/3зафиксирован.
+
+2026-11-02: final functional R3 report/handoff сохранены `evidence/verifier-round3-functional/{report.md,functional-handoff.json}`, evals17pass/0fail/3pending(E17/E18/E20), contractstrip==approved245e847; UIclipboardALLCLEARподтверждён. DesignR3 independent375preflight1/1PASS, realSettingsON/identity1/20contacts/visibleextension, all14+host3before/afterbytes,min0→0; matrix375lightвыполняется. Стороннийинструментальныйblocker: CUA.getState вернул Mac locked/auto-unlockfailed, требуетручнойunlock. ПользователюзаданasyncвопросразблокироватьMac; lockscreenнеобходится. Matrix/live/VOspeechчерезXCTestпродолжаются, nativeAX/Inspector/FTUEUIждутunlockedMac. Looprunning, полезнаянезависимаяпроверкаещёидёт, неclaimE18pass.
+
+2026-11-02, design R3: authoritative42/126оригиналов просмотрены, 375обаlive1751обычныхтапов→3502UTF8пройдены, VOactualspeech/navigationPASS1/1сдвумяenabledfalsecleanupattachments. Ранниеblank/partialglyphкандидатыОТОЗВАНЫкакvisual-readingmistakes:5originalRGBROIpairsdifferentChannelBytes0, SHAнеизменны, безimageedits/допUIburst; correction.jsonсохранён. ПриэтомD12disabledEncrypttitle—РЕАЛЬНЫЙrawRGBmismatch, RootстрогопоE17непринимаетnativeplatformwaiver/эталонне меняет. После3раундовreviewerпредложилсменуспособадоказательства: explicitUIControlstates+nativepixelpalette receipt ДОfreeze, см. `evidence/reviewer-round3/approach-r4.md`(дословно). FreshbuilderR4готовиттольконеприменённыйtmpPatch, никакихsource/build/UIпокаdesignR3выполняетполные126/4оставшихсяlive. MaclockedповторноподтверждёноднойразрешённойCUAstatecheck, nativeAX/FTUEждутuserunlock; lockнеобходится.
+
+2026-11-02: R3 design завершён наd1df3f1/runtime527240558:126/126matrix originals и116/116full-live originals лично просмотрены, missing0, SHA originals неизменны. E17FAIL толькоD12:54visualpass/72disabledtitlecolorfail, statecontent126pass. E18PENDING: все6live technicalPASS,375обетемы1751ordinarytaps→3502UTF8, actualVOspeech/navigationPASSи2actualfalsecleanup; nativeAXactivation/physicalgestureнеприняты из-заMaclock. ОтдельноеO1:402/440послеloopпоследняяАневиднавrawROIприцелоймодели; одинbounded402lightburst2XCUIScreen+2simctlдаёттотжеoriginalрисунок, AX/model/cursor/globalframe/orientation/offsetunchanged. Причинанедоказана, потериtextне заявляется. Все375blank/partialкандидатыотозваныкакvisual-readingmistakes, неcapture/productbug. Finalhandoff/cleanup/artifactintegrity вevidence/verifier-round3-design; всеown375/402/440Shutdown/runners0/clipboardnone, protectedmain/FTUEunchanged. D1–D11закрытывихисходнойгеометрическойобласти, O1отдельнооткрыт.
+
+2026-11-02: переходкR4впределахmax5безизмененияконтракта20/126. После3раундовreviewerпредложилсменуподхода; дословныерекомендациисохраненывevidence/reviewer-round3/{approach-r4.md,approach-r4-render-observation.md}ипереданыbuilder. В/private/tmp/cipher06-r4-proposal подготовленыраздельныенеприменённыеcolorpatch+2 иlayout-experiment+4; никакихsource/UI/buildпопредложениямдочекпойнтаR3. План:actualnativepalette receipt ДОfreeze; отдельныйboundedbefore/afterlayout experiment, безновогоскролла/таймеров/обходаmanualguards, толькоеслинепоможетотдельнаяадреснаяdisplaydiagnostic. Полныеfreshfunctional/design126/E18/reviewer/FTUEпо-прежнемуобязательны. Userunlockpending; полезнаяR4работапродолжаетсябезобходаMaclock.
 
 ## Отчёт для человека
 <!-- заполняется при паузе: что сделано, что не проходит, что пробовали, варианты с рекомендацией -->
