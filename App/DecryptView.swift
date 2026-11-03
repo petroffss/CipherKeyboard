@@ -240,17 +240,37 @@ private final class CiphertextEntryView: UITextView {
     private let placeholder = UILabel()
     override init(frame: CGRect, textContainer: NSTextContainer?) {
         super.init(frame: frame, textContainer: textContainer)
-        placeholder.text = "ckmsg1:…"; placeholder.font = .preferredFont(forTextStyle: .body)
-        placeholder.textColor = .placeholderText; placeholder.isUserInteractionEnabled = false
-        placeholder.isAccessibilityElement = false; addSubview(placeholder)
+        placeholder.text = "ckmsg1:…"
+        placeholder.textColor = .placeholderText
+        placeholder.numberOfLines = 0
+        placeholder.lineBreakMode = .byCharWrapping
+        placeholder.isUserInteractionEnabled = false
+        placeholder.isAccessibilityElement = false
+        addSubview(placeholder)
+        updatePlaceholderFont()
+        registerForTraitChanges([UITraitPreferredContentSizeCategory.self, UITraitLegibilityWeight.self]) {
+            (view: CiphertextEntryView, _) in view.updatePlaceholderFont()
+        }
     }
     required init?(coder: NSCoder) { nil }
+
+    private func updatePlaceholderFont() {
+        placeholder.font = .preferredFont(forTextStyle: .body, compatibleWith: traitCollection)
+        setNeedsLayout()
+    }
+
     override func layoutSubviews() {
         super.layoutSubviews()
-        placeholder.frame = CGRect(
-            x: textContainerInset.left + 5, y: textContainerInset.top,
-            width: bounds.width - textContainerInset.left - textContainerInset.right - 10, height: 28)
         placeholder.isHidden = !text.isEmpty
+        guard !placeholder.isHidden else { return }
+
+        let inset = textContainerInset
+        let padding = textContainer.lineFragmentPadding
+        let width = max(0, bounds.width - inset.left - inset.right - 2 * padding)
+        let size = placeholder.sizeThatFits(CGSize(width: width, height: .greatestFiniteMagnitude))
+        // Keep the baseline used by the regular layout and grow to fit larger text.
+        placeholder.frame = CGRect(
+            x: inset.left + padding, y: inset.top, width: width, height: max(28, ceil(size.height)))
     }
 }
 
