@@ -1,6 +1,8 @@
 import XCTest
 
 final class DecryptUITests: XCTestCase {
+    override func setUp() { continueAfterFailure = false }
+
     @MainActor private func launch(_ state: String = "contact") -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = ["-keystore", "memory", "-decrypt-fixture", "-decrypt-state", state]
@@ -90,13 +92,47 @@ final class DecryptUITests: XCTestCase {
         XCTAssertTrue(app.buttons["decrypt.submit"].isEnabled)
     }
     @MainActor func testExplicitClipboardRead() {
-        let app = launch()
-        let value = app.textViews["decrypt.input"].value as? String
-        XCUIDevice.shared.orientation = .landscapeLeft
         XCUIDevice.shared.orientation = .portrait
-        XCTAssertEqual(app.textViews["decrypt.input"].value as? String, value)
-        submit(app)
+        let app = launch()
+        let input = app.textViews["decrypt.input"]
+        let value = input.value as? String
+        XCTAssertTrue(value?.hasPrefix("ckmsg1:") == true)
+        let portrait = waitForLayout(in: app, landscape: false, requireSubmit: true)
+        XCUIDevice.shared.orientation = .landscapeLeft
+        let landscape = waitForLayout(in: app, landscape: true, requireSubmit: false)
+        XCTAssertEqual(landscape[0].size, CGSize(width: portrait[0].height, height: portrait[0].width))
+        XCTAssertEqual(input.value as? String, value)
+        XCUIDevice.shared.orientation = .portrait
+        let restored = waitForLayout(in: app, landscape: false, requireSubmit: true)
+        XCTAssertEqual(restored, portrait)
+        XCTAssertEqual(input.value as? String, value)
+        let window = restored[0], button = restored[2]
+        app.coordinate(withNormalizedOffset: .zero)
+            .withOffset(CGVector(dx: button.midX - window.minX, dy: button.midY - window.minY)).tap()
         XCTAssertTrue(app.staticTexts["decrypt.text"].waitForExistence(timeout: 5))
         // This path consumes the field. The real extension clipboard path is exercised by DebugHost runtime tests.
+    }
+
+    @MainActor private func waitForLayout(
+        in app: XCUIApplication, landscape: Bool, requireSubmit: Bool
+    ) -> [CGRect] {
+        let input = app.textViews["decrypt.input"], submit = app.buttons["decrypt.submit"]
+        var previous: [CGRect] = []
+        var stableSince = Date()
+        let settled = XCTNSPredicateExpectation(
+            predicate: NSPredicate { _, _ in
+                let window = app.frame, editor = input.frame, button = submit.frame
+                let geometry = [window, editor, button]
+                let ready =
+                    !window.isEmpty && (window.width > window.height) == landscape
+                    && XCUIDevice.shared.orientation.isLandscape == landscape
+                    && input.isHittable && window.intersects(editor) && submit.isEnabled
+                    && (!requireSubmit || (submit.isHittable && window.contains(button) && editor.maxY < button.minY))
+                if !ready || geometry != previous { stableSince = Date(); previous = geometry }
+                return ready && Date().timeIntervalSince(stableSince) >= 0.4
+            }, object: nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [settled], timeout: 8), .completed, app.debugDescription)
+        XCTAssertEqual([app.frame, input.frame, submit.frame], previous)
+        return previous
     }
 }

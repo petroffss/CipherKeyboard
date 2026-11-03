@@ -5,7 +5,20 @@ import Foundation
 final class DecryptRuntimeTests: XCTestCase {
     override func setUp() { continueAfterFailure = false }
     @MainActor func testResultSenderReadability() throws {
+        XCUIDevice.shared.orientation = .portrait
         let ciphertext = try prepare(); let host = host(ciphertext)
+        let layoutKeys = ["keyboard.key.й", "keyboard.key.q"]
+        let activeKeys = layoutKeys.filter { host.buttons[$0].exists }
+        XCTAssertEqual(activeKeys.count, 1)
+        let activeKey = try XCTUnwrap(activeKeys.first)
+        let editor = TypingTestSupport.draft(in: host)
+        XCTAssertTrue(editor.exists)
+        let draft = try XCTUnwrap(editor.value as? String)
+        let field = host.textViews["host.editor"]
+        let diagnostics = host.staticTexts["host.diagnostics"]
+        XCTAssertEqual(field.value as? String, "До встречи!")
+        let selection = diagnostics.label
+        XCTAssertTrue(selection.hasSuffix("Выделение UTF-16: 3, 7"), selection)
         host.buttons["keyboard.decrypt"].tap()
         let sender = host.staticTexts["keyboard.decrypt.sender"]
         XCTAssertTrue(sender.waitForExistence(timeout: 5), host.debugDescription)
@@ -19,7 +32,15 @@ final class DecryptRuntimeTests: XCTestCase {
         let geometry = XCTAttachment(string: host.debugDescription)
         geometry.name = "native402-sender-after-geometry"; geometry.lifetime = .keepAlways; add(geometry)
         host.buttons["keyboard.decrypt.close"].tap()
-        XCTAssertTrue(host.buttons["keyboard.key.q"].waitForExistence(timeout: 5))
+        XCTAssertTrue(host.buttons[activeKey].waitForExistence(timeout: 5))
+        XCTAssertEqual(layoutKeys.filter { host.buttons[$0].exists }, activeKeys)
+        XCTAssertTrue(editor.isHittable)
+        XCTAssertEqual(editor.value as? String, draft)
+        XCTAssertEqual(field.value as? String, "До встречи!")
+        XCTAssertEqual(diagnostics.label, selection)
+        XCTAssertFalse(sender.exists)
+        let restored = XCTAttachment(string: host.debugDescription)
+        restored.name = "native402-restored-compose-geometry"; restored.lifetime = .keepAlways; add(restored)
     }
     @MainActor private func prepare(_ mode: String = "contact") throws -> String {
         let app = XCUIApplication(bundleIdentifier: "dev.cipherkeyboard.app")
@@ -249,15 +270,20 @@ final class DecryptRuntimeTests: XCTestCase {
         app.buttons["decrypt.close"].tap()
     }
     @MainActor func testExplicitClipboardRead() throws {
+        XCUIDevice.shared.orientation = .portrait
         let ciphertext = try prepare(); try TypingTestSupport.configureKeyboard(fullAccess: true)
         let host = host(ciphertext)
+        let portrait = host.frame.size
+        XCTAssertGreaterThan(portrait.height, portrait.width)
         let before = try metrics(host)
         let initial = before["decryptClipboardContentReads"] as? Int ?? -1
         let initialMetadata = before["decryptClipboardMetadataReads"] as? Int ?? -1
         XCTAssertGreaterThanOrEqual(initial, 0); XCTAssertGreaterThanOrEqual(initialMetadata, 0)
         host.buttons["keyboard.language"].tap()
         XCUIDevice.shared.orientation = .landscapeLeft
+        TypingTestSupport.waitLayout(in: host, width: portrait.height)
         XCUIDevice.shared.orientation = .portrait
+        TypingTestSupport.waitLayout(in: host, width: portrait.width)
         // A bounded predicate waits for five seconds while continually asserting the observation stays zero.
         let deadline = Date().addingTimeInterval(5)
         while Date() < deadline {

@@ -178,13 +178,19 @@ private struct DecryptInput: UIViewRepresentable {
             guard acceptsInput, let view = supporting as? UITextView else { item.setNoResult(); return }
             let stamp = PasteStamp(model.inputGeneration, view.selectedRange)
             let output = PasteItem(item: item), key = Self.stampKey
-            item.itemProvider.loadObject(ofClass: NSString.self) { [weak self, weak view] value, _ in
+            item.itemProvider.loadObject(ofClass: NSString.self) { [weak self, weak view] value, error in
                 let text = value as? String
                 Task { @MainActor in
                     guard let self, let view, self.acceptsInput,
                         stamp.generation == self.model.inputGeneration,
-                        stamp.selection == view.selectedRange, let text
+                        stamp.selection == view.selectedRange, view.text == self.model.input
                     else { output.item.setNoResult(); return }
+                    if error != nil {
+                        self.model.pasteFailed()
+                        output.item.setNoResult()
+                        return
+                    }
+                    guard let text else { output.item.setNoResult(); return }
                     output.item.setResult(attributedString: NSAttributedString(string: text, attributes: [key: stamp]))
                 }
             }
