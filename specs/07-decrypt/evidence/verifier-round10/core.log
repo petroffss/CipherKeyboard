@@ -1,0 +1,520 @@
+== CipherCore: swift test
+Building for debugging...
+[1 / 5]
+Build complete! (0,39 с)
+Test Suite 'All tests' started at 2026-11-03 20:05:19.566.
+Test Suite 'All tests' passed at 2026-11-03 20:05:19.567.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.002) seconds
+Test Suite 'All tests' started at 2026-11-03 20:05:19.628.
+Test Suite 'All tests' passed at 2026-11-03 20:05:19.629.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.001) seconds
+◇ Test run started.
+↳ Testing Library Version: 2403
+↳ Target Platform: arm64e-apple-macos14.0
+◇ Suite EncryptInsertTests started.
+◇ Suite KeyboardLifecycleTests started.
+◇ Suite KeyboardInputTests started.
+◇ Suite KeyboardGestureTests started.
+◇ Suite DecryptTests started.
+◇ Suite KeyboardIsolationTests started.
+◇ Test accessGate() started.
+◇ Test stressAndReset() started.
+◇ Test sessionAndDocumentCancellation() started.
+◇ Test identityBaselineEndsWithSession() started.
+◇ Test identityReadFailureAtCommitRetainsBaseline() started.
+◇ Test firstAvailableIdentityDoesNotCountAsReplacement() started.
+◇ Test defensiveLimitFixtureContainsRealApprovedExcerptAnd4097Bytes() started.
+◇ Test selectionRechecked() started.
+◇ Test layoutsAndTransitions() started.
+◇ Test metadataDrivesStatusAndCommitWithoutReadingTheSecret() started.
+◇ Test tamperedInsertedMessage() started.
+◇ Test failurePreservesDraft() started.
+◇ Test eligibility() started.
+◇ Test shiftStateMachine() started.
+◇ Test singleFlight() started.
+◇ Test identityRevalidation() started.
+◇ Test deletesCharacters() started.
+◇ Test identityRecoveryRequiresExplicitSelection() started.
+◇ Test rememberedRecipientID() started.
+◇ Test identityRecoveryWithSameKeyRetries() started.
+◇ Test identityMetadataTracksCurrentReadWithoutLosingRecoveryBaseline() started.
+◇ Test insertsAtGraphemeBoundary() started.
+◇ Test utf8Boundaries() started.
+◇ Test utf8Bounds() started.
+◇ Test resultAgeUsesStrictSevenDayThreshold() started.
+◇ Test overlappingLettersCommitEveryValidReleaseInReleaseOrder() started.
+◇ Test explicitReadOnly() started.
+◇ Test cancelledTouchDoesNotDiscardAnotherValidTouch() started.
+◇ Test utf8Limit() started.
+◇ Test repeatStops() started.
+◇ Test recipientRevalidation() started.
+◇ Test tamperedBytesAndSenderNeverPublish() started.
+◇ Test overlappingControlReleasesRemainIndependent() started.
+◇ Test alternateTimingAndCancellation() started.
+◇ Test displayFingerprintCollisionDoesNotAssignContact() started.
+◇ Test overlappingAlternatesKeepIndependentDeadlinesAndCancellation() started.
+◇ Test insertedCiphertextRoundTrip() started.
+◇ Test firstEnvelopeMatchesCore() started.
+◇ Test overlappingDeleteDoesNotOwnAnotherKeysRelease() started.
+◇ Test cancelledCoordinatorIsReleased() started.
+◇ Test lifecycleInvalidatesGeneration() started.
+◇ Test inactiveNativeInputCannotRepopulateModel() started.
+◇ Test clipboardClassification() started.
+◇ Test noHostProxyCalls() started.
+◇ Test noAccessNeverConstructsSharedReaders() started.
+◇ Test singleFlightAndCancel() started.
+◇ Test metadataChecksDoNotLoadSecretAndMismatchesFailClosed() started.
+◇ Test senderIdentity() started.
+◇ Test accessAndIdentity() started.
+◇ Test rejectedMessagesNeverPublishText() started.
+◇ Test contactsRefresh() started.
+◇ Test identityFailureAfterSuccessClearsBothSurfaces() started.
+◇ Test identityChangesFenceErrorPublication() started.
+◇ Test preservesComposeAndHost() started.
+◇ Test synchronousSnapshotStillHonorsGates() started.
+◇ Test oldTimestampReachesBothDecryptSurfaces() started.
+✔ Test deletesCharacters() passed after 0.001 seconds.
+✔ Test insertsAtGraphemeBoundary() passed after 0.001 seconds.
+✔ Test layoutsAndTransitions() passed after 0.001 seconds.
+✔ Test shiftStateMachine() passed after 0.001 seconds.
+✔ Test utf8Limit() passed after 0.001 seconds.
+✔ Suite KeyboardInputTests passed after 0.001 seconds.
+✔ Test stressAndReset() passed after 0.019 seconds.
+✔ Test defensiveLimitFixtureContainsRealApprovedExcerptAnd4097Bytes() passed after 0.019 seconds.
+✔ Suite KeyboardLifecycleTests passed after 0.020 seconds.
+✔ Test rememberedRecipientID() passed after 0.020 seconds.
+✔ Test identityMetadataTracksCurrentReadWithoutLosingRecoveryBaseline() passed after 0.020 seconds.
+✔ Test overlappingLettersCommitEveryValidReleaseInReleaseOrder() passed after 0.020 seconds.
+✔ Test repeatStops() passed after 0.019 seconds.
+✔ Test cancelledTouchDoesNotDiscardAnotherValidTouch() passed after 0.019 seconds.
+✔ Test overlappingControlReleasesRemainIndependent() passed after 0.019 seconds.
+✔ Test resultAgeUsesStrictSevenDayThreshold() passed after 0.020 seconds.
+✔ Test alternateTimingAndCancellation() passed after 0.020 seconds.
+✔ Test overlappingAlternatesKeepIndependentDeadlinesAndCancellation() passed after 0.020 seconds.
+✔ Test overlappingDeleteDoesNotOwnAnotherKeysRelease() passed after 0.020 seconds.
+✔ Suite KeyboardGestureTests passed after 0.021 seconds.
+✔ Test inactiveNativeInputCannotRepopulateModel() passed after 0.020 seconds.
+✔ Test noHostProxyCalls() passed after 0.020 seconds.
+✔ Test noAccessNeverConstructsSharedReaders() passed after 0.020 seconds.
+✔ Suite KeyboardIsolationTests passed after 0.021 seconds.
+✔ Test tamperedInsertedMessage() passed after 0.022 seconds.
+✔ Test utf8Boundaries() passed after 0.023 seconds.
+✔ Test preservesComposeAndHost() passed after 0.024 seconds.
+✔ Test clipboardClassification() passed after 0.025 seconds.
+✔ Test synchronousSnapshotStillHonorsGates() passed after 0.025 seconds.
+✔ Test cancelledCoordinatorIsReleased() passed after 0.025 seconds.
+✔ Test accessGate() passed after 0.027 seconds.
+✔ Test selectionRechecked() passed after 0.027 seconds.
+✔ Test identityBaselineEndsWithSession() passed after 0.029 seconds.
+✔ Test metadataDrivesStatusAndCommitWithoutReadingTheSecret() passed after 0.030 seconds.
+✔ Test utf8Bounds() passed after 0.031 seconds.
+✔ Test oldTimestampReachesBothDecryptSurfaces() passed after 0.032 seconds.
+✔ Test metadataChecksDoNotLoadSecretAndMismatchesFailClosed() passed after 0.033 seconds.
+✔ Test singleFlight() passed after 0.034 seconds.
+✔ Test identityChangesFenceErrorPublication() passed after 0.034 seconds.
+✔ Test failurePreservesDraft() passed after 0.036 seconds.
+✔ Test displayFingerprintCollisionDoesNotAssignContact() passed after 0.036 seconds.
+✔ Test insertedCiphertextRoundTrip() passed after 0.041 seconds.
+✔ Test accessAndIdentity() passed after 0.040 seconds.
+✔ Test firstAvailableIdentityDoesNotCountAsReplacement() passed after 0.044 seconds.
+✔ Test senderIdentity() passed after 0.045 seconds.
+✔ Test sessionAndDocumentCancellation() passed after 0.047 seconds.
+✔ Test lifecycleInvalidatesGeneration() passed after 0.048 seconds.
+✔ Test explicitReadOnly() passed after 0.049 seconds.
+✔ Test identityRevalidation() passed after 0.050 seconds.
+✔ Test eligibility() passed after 0.052 seconds.
+✔ Test tamperedBytesAndSenderNeverPublish() passed after 0.053 seconds.
+✔ Test contactsRefresh() passed after 0.053 seconds.
+✔ Test firstEnvelopeMatchesCore() passed after 0.054 seconds.
+✔ Test singleFlightAndCancel() passed after 0.054 seconds.
+✔ Test recipientRevalidation() passed after 0.055 seconds.
+✔ Test identityRecoveryWithSameKeyRetries() passed after 0.056 seconds.
+✔ Test rejectedMessagesNeverPublishText() passed after 0.057 seconds.
+✔ Test identityReadFailureAtCommitRetainsBaseline() passed after 0.068 seconds.
+✔ Test identityFailureAfterSuccessClearsBothSurfaces() passed after 0.073 seconds.
+✔ Suite DecryptTests passed after 0.074 seconds.
+✔ Test identityRecoveryRequiresExplicitSelection() passed after 0.120 seconds.
+✔ Suite EncryptInsertTests passed after 0.121 seconds.
+✔ Test run with 56 tests in 6 suites passed after 0.121 seconds.
+◇ Test run started.
+↳ Testing Library Version: 2403
+↳ Target Platform: arm64e-apple-macos14.0
+◇ Suite "Длина текста скрыта с точностью до 32 байт" started.
+◇ Suite "Каркас" started.
+◇ Suite "ContactBook" started.
+◇ Suite "Получатели: отправитель добавляется сам, повторы — один раз" started.
+◇ Suite "Расшифровка байт в байт" started.
+◇ Suite "Вердикт отправителя: я, контакт или неизвестный ключ" started.
+◇ Suite "Отправителя нельзя подменить" started.
+◇ Suite "Личность: приватный ключ не утекает" started.
+◇ Suite "Не получатель не читает сообщение" started.
+◇ Suite "Шифротекст находится в тексте с переносами и словами вокруг" started.
+◇ Suite "Шифрование: лимиты и неверный ввод" started.
+◇ Suite "Испорченный или чужой текст — точная ошибка без падения" started.
+◇ Suite "Запросы Keychain для записи личности" started.
+◇ Suite "Шифротекст: одна строка без открытого текста и без получателей" started.
+◇ Suite "Открытый ключ: неверный ввод" started.
+◇ Suite "Одно сообщение не расшифровывается в разные тексты у разных получателей" started.
+◇ Suite SetupStateTests started.
+◇ Suite "Хранилище личности: прочитать или создать" started.
+◇ Suite "Чтение личности для клавиатуры" started.
+◇ Suite "Открытый ключ: строка ckpub1 и обратно" started.
+◇ Suite "Изменение любого байта или символа не проходит" started.
+◇ Suite "Личность: создание и восстановление" started.
+◇ Suite "Золотые векторы ckmsg1 и ckmsg2" started.
+◇ Test "Настоящая длина больше дополненной → tampered" started.
+◇ Test "Контроль: собранное вручную сообщение с честным дополнением открывается" started.
+◇ Test "4096 байт шифруются и открываются байт в байт" started.
+◇ Test "Настоящая длина 0 и дополнение длиннее необходимого → tampered" started.
+◇ Test "«Да» и «Нет», «ok» и «yes» неотличимы по длине" started.
+◇ Test "Ненулевой байт в дополнении → tampered" started.
+◇ Test "Модуль подключается и знает название продукта" started.
+◇ Test "100 символов «ж» для одного получателя — не длиннее 800 символов" started.
+◇ Test "В открытом заголовке — дополненная длина 32, а не настоящая" started.
+◇ Test writeFailureLeavesBookUnchanged() started.
+◇ Test "Тексты из 1…32 байт дают одну длину, 33 байта — длиннее" started.
+◇ Test validatesName() started.
+◇ Test renamesAndRemoves() started.
+◇ Test "Сообщение для B открывают и B, и отправитель A" started.
+◇ Test interruptedStagingIsRemovedWithoutChangingCommittedContacts() started.
+◇ Test rejectsBadKeysAndDuplicates() started.
+◇ Test renameAndRemoveNeverOverwriteUnreadableFile() started.
+◇ Test "Ключ отправителя с Ed25519 любой точки малого порядка → malformed" started.
+◇ Test "Разобранное и собранное заново сообщение открывается — подделки ниже собраны верно" started.
+◇ Test unreadableFileIsNeverOverwritten() started.
+◇ Test "100 символов кириллицы для одного получателя — не длиннее 800 символов" started.
+◇ Test addsSortsAndPersists() started.
+◇ Test fileWriteFailureKeepsOriginalFileByteForByte() started.
+◇ Test "Второй получатель удлиняет сообщение" started.
+◇ Test "Неканонический эфемерный ключ (старший бит), подпись пересчитана A → malformed" started.
+◇ Test "Получатель и отправитель получают исходные байты" started.
+◇ Test "Повторы и сам отправитель в списке не добавляют записей" started.
+◇ Test "Подпись из 64 нулевых байт → tampered" started.
+◇ Test "Смешанный текст — ровно 4096 байт" started.
+◇ Test "Контроль: сообщение, собранное вручную с честным ключом и подписью M, открывается как contact(M)" started.
+◇ Test "Честное сообщение M при контакте A → unknown(отпечаток M), а не contact(A)" started.
+◇ Test "Личность, восстановленная из данных C, → notARecipient" started.
+◇ Test "Ключ отправителя A с неканонической частью X25519 (старший бит), подпись пересчитана A → malformed" started.
+◇ Test "Ключ отправителя заменён на ключ M и подпись пересчитана M → tampered" started.
+◇ Test "Посторонний C без контактов → notARecipient" started.
+◇ Test "Подпись M над теми же байтами при ключе отправителя A → tampered" started.
+◇ Test "Личность из X25519 от C и Ed25519 от B → notARecipient (запись ищется по ключу согласования)" started.
+◇ Test "Ключ отправителя с Ed25519 = 01 00…00 и подпись 01 00…00 ‖ 00…00 → malformed, не contact" started.
+◇ Test "Сообщение только себе открывается отправителем" started.
+◇ Test "Контакт с тем же именем, но другим ключом → unknown(отпечаток A)" started.
+◇ Test "Без последнего символа → malformed" started.
+◇ Test "Описание, отладочное описание, интерполяция и dump показывают только отпечаток" started.
+◇ Test "Посторонний C с контактами A и B → notARecipient" started.
+◇ Test "Ключ отправителя совпал с контактом → contact(тот же контакт)" started.
+◇ Test malformedOrMismatchedMetadataCannotBeUsedOrMigrated() started.
+◇ Test "Ни одна половина приватного ключа не видна в hex, base64 и base64url" started.
+◇ Test "50 символов «A» → malformed" started.
+◇ Test "Только префикс → malformed" started.
+◇ Test "Из двух сообщений подряд открывается первое" started.
+◇ Test "Запрос добавления: класс, сервис, аккаунт, группа, защита, без iCloud, 64 байта" started.
+◇ Test "Эфемерный ключ — точка малого порядка, подпись пересчитана отправителем → malformed" started.
+◇ Test "Без контактов → unknown(отпечаток A)" started.
+◇ Test "Текст из пробелов и один символ шифруются и открываются" started.
+◇ Test "1 000 000 символов «A» → malformed быстрее 1 секунды" started.
+◇ Test "Все варианты вставки открываются в «Тест»" started.
+◇ Test "Ровно 4096 байт (2048 «ж») шифруется и открывается" started.
+◇ Test "Нет ckmsg<цифры>: → noMessage" started.
+◇ Test "Верный заголовок настоящего сообщения + 1 000 000 «A» → ошибка быстрее 1 секунды" started.
+◇ Test "15 получателей + отправитель (16) шифруется" started.
+◇ Test metadataRequestsOnlyAttributesOfSameRecord() started.
+◇ Test "16 получателей + отправитель (17) → tooManyRecipients" started.
+◇ Test "Текст вокруг ключа → invalidKey" started.
+◇ Test "Отправитель открывает своё сообщение → me при любых контактах" started.
+◇ Test legacyMigrationTargetsOnlyTheReadRowAndUpdatesOnlyPublicMetadata() started.
+◇ Test "Другая версия → unsupportedVersion" started.
+◇ Test "В байтах сообщения нет ключа получателя, его частей и отпечатка; ключ отправителя есть" started.
+◇ Test "Открытого текста нет ни как подстроки, ни в base64/base64url при сдвигах 0, 1, 2" started.
+◇ Test "Два шифрования одного текста одному получателю дают разные строки" started.
+◇ Test "* вместо символа в середине → malformed" started.
+◇ Test "Строка соответствует ^ckmsg2:[A-Za-z0-9_-]+$" started.
+◇ Test "Честное seal для B и C открывается у обоих одним текстом байт в байт" started.
+◇ Test "Чужой префикс → invalidKey" started.
+◇ Test "Контроль: та же сборка с настоящей частью Ed25519 разбирается" started.
+◇ Test "Пустой текст → emptyMessage" started.
+◇ Test "4097 байт ASCII → messageTooLong(byteCount: 4097)" started.
+◇ Test "Для B раскрываются две записи → tampered" started.
+◇ Test "Первая половина → malformed" started.
+◇ Test "Обязательство с изменённым байтом и пересчитанной подписью A → tampered у всех" started.
+◇ Test "Запрос чтения: те же атрибуты записи, одна запись с данными, без kSecAttrSynchronizableAny" started.
+◇ Test "Общий тег Poly1305 под K1 и K2 (подбор блока «мусорной» записи) → текст получает не больше одного" started.
+◇ Test "Обязательство от другого ключа при честных записях, тексте и подписи A → tampered" started.
+◇ Test "Записи B и C с разными K1 и K2, обязательство от K1, подпись A верна → у C tampered" started.
+◇ Test "2049 символов «ж» (4098 байт) → messageTooLong(byteCount: 4098)" started.
+◇ Test "Часть Ed25519 — любая точка малого порядка (и со знаковым битом) → invalidKey" started.
+◇ Test "Пустой список получателей → noRecipients" started.
+◇ Test "Хранилище в памяти для UI-тестов: сбой чтения один раз, затем работает; дубликат не перезаписывает" started.
+◇ Test "Записи нет — «ключа нет», ничего не создаётся" started.
+◇ Test recordsOnlySuccessfulAccess() started.
+◇ Test "Строка сообщения ckmsg1 → invalidKey" started.
+◇ Test "Часть Ed25519 — нейтральная точка 01 00…00 → invalidKey" started.
+◇ Test "Запись A есть — личность A" started.
+◇ Test "Личность не Encodable" started.
+◇ Test "Пробел после двоеточия не мешает" started.
+◇ Test "Часть Ed25519 с y ≥ p (вторая запись точки y = 3) → invalidKey; каноническая y = 3 разбирается" started.
+◇ Test "Неканонический base64: изменены только неиспользуемые биты последнего символа → invalidKey" started.
+◇ Test "Запись появилась у другого запуска (errSecDuplicateItem) — используется она, а не перезаписывается" started.
+◇ Test "Запись из 63 байт — «хранилище недоступно»" started.
+◇ Test "Паддинг == на конце принимается" started.
+◇ Test "Перевод строки каждые 20 символов не мешает" started.
+◇ Test "Неразрывный пробел внутри ckpub1 не мешает" started.
+◇ Test "Часть X25519 с выставленным старшим битом байта 31 → invalidKey" started.
+◇ Test "Keychain недоступен — «хранилище недоступно», а не «ключа нет»" started.
+◇ Test "Ошибка записи новой личности (errSecIOErr) — ошибка, а не несохранённая личность" started.
+◇ Test "Фиксированный вектор: приватные байты → строка ckpub1 и отпечаток" started.
+◇ Test "Часть X25519 из 32 нулевых байт → invalidKey" started.
+◇ Test case passing 1 argument length → 33 to "Настоящая длина больше дополненной → tampered" started.
+◇ Test "Запись не той длины — ошибка, запись не меняется и новая не создаётся" started.
+◇ Test "Строка разбирается обратно в равный ключ" started.
+◇ Test failedRemovalCannotReviveEvidenceAfterRelaunch() started.
+◇ Test fileRoundTripAndRemoval() started.
+◇ Test "Отпечаток — 8 групп по 4 HEX через пробел, short — первые 9 символов" started.
+◇ Test resolvesStates() started.
+◇ Test failedCutoffWriteStillDeletesSharedEvidence() started.
+◇ Test "17 записей получателей в заголовке → malformed" started.
+◇ Test "Каждый байт с инвертированным младшим битом → tampered или malformed, для B и для A" started.
+◇ Test "Два разных пустых хранилища дают разные личности" started.
+◇ Test "Только префикс → invalidKey" started.
+◇ Test "Строка ключа — ckpub1: и 86 символов base64url, всего 93" started.
+◇ Test "JSON: ключ кодируется строкой ckpub1 и декодируется обратно" started.
+◇ Test "privateKeyData — ровно 64 байта" started.
+◇ Test "Восстановленная личность расшифровывает сообщение для исходной и подписывает как она" started.
+◇ Test "С лишним символом → invalidKey" started.
+◇ Test "Повторная загрузка и перезапуск читают ту же личность, без новой записи" started.
+◇ Test "Каждый символ после ckmsg2:, заменённый следующим символом base64url, → ошибка" started.
+◇ Test "200 ключей из Identity.generate() разбираются из своих строк без отказа" started.
+◇ Test "Ошибка чтения Keychain — ошибка, а не новый ключ; запись A не тронута" started.
+◇ Test "Смена префикса между v1 и v2 даёт malformed" started.
+◇ Test case passing 1 argument length → 64 to "Настоящая длина больше дополненной → tampered" started.
+◇ Test "Пустое хранилище: личность создаётся и записывается одной записью из 64 байт" started.
+◇ Test "Другая версия ckpub2 → unsupportedVersion" started.
+◇ Test "Приватные данные не из 64 байт → invalidKey" started.
+◇ Test "Две генерации дают разные открытые ключи и отпечатки" started.
+◇ Test "Seal записывает целые секунды, сохраняя лимит 4096 байт текста" started.
+◇ Test case passing 1 argument position → 2 to "Ненулевой байт в дополнении → tampered" started.
+◇ Test case passing 1 argument length → 65535 to "Настоящая длина больше дополненной → tampered" started.
+◇ Test case passing 1 argument position → 31 to "Ненулевой байт в дополнении → tampered" started.
+◇ Test "Восстановленная личность имеет тот же открытый ключ" started.
+◇ Test "Литералы ключей A и B соответствуют приватным данным" started.
+◇ Test "Часть X25519 ≥ p (неканоническая запись 0…18) → invalidKey; каноническая 9 разбирается" started.
+◇ Test "Часть X25519 — точка малого порядка 01 00…00 → invalidKey" started.
+◇ Test "B открывает вектор: тот же текст байт в байт, отправитель — контакт «A»" started.
+◇ Test "Пустая строка → invalidKey" started.
+◇ Test "A открывает свой вектор: тот же текст, отправитель — me" started.
+◇ Test "Без последнего символа → invalidKey" started.
+◇ Test "Подмена байта даты ломает подпись, переподпись не восстанавливает тег" started.
+◇ Test case passing 1 argument point → "0000000000000000000000000000000000000000000000000000000000000000" to "Ключ отправителя с Ed25519 любой точки малого порядка → malformed" started.
+◇ Test case passing 1 argument point → "0100000000000000000000000000000000000000000000000000000000000000" to "Ключ отправителя с Ed25519 любой точки малого порядка → malformed" started.
+◇ Test case passing 1 argument point → "26e8958fc2b227b045c3f489f2ef98f0d5dfac05d3c63339b13802886d53fc05" to "Ключ отправителя с Ed25519 любой точки малого порядка → malformed" started.
+◇ Test "Независимый вектор v2 открывается с датой у отправителя и получателя" started.
+◇ Test case passing 1 argument point → "c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac037a" to "Ключ отправителя с Ed25519 любой точки малого порядка → malformed" started.
+◇ Test case passing 1 argument point → "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f" to "Ключ отправителя с Ed25519 любой точки малого порядка → malformed" started.
+◇ Test case passing 1 argument point → "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f" to "Ключ отправителя с Ed25519 любой точки малого порядка → malformed" started.
+◇ Test case passing 1 argument point → "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f" to "Ключ отправителя с Ed25519 любой точки малого порядка → malformed" started.
+◇ Test "Вектор с одним изменённым символом в середине не открывается" started.
+◇ Test case passing 1 argument text → "Привет, как дела?" to "Получатель и отправитель получают исходные байты" started.
+◇ Test case passing 1 argument text → "👨‍👩‍👧‍👦🏳️‍🌈👍🏽" to "Получатель и отправитель получают исходные байты" started.
+◇ Test case passing 1 argument text → "строка 1
+строка 2
+строка 3" to "Получатель и отправитель получают исходные байты" started.
+◇ Test case passing 1 argument text → "е́ж" to "Получатель и отправитель получают исходные байты" started.
+◇ Test case passing 1 argument text → "   " to "Получатель и отправитель получают исходные байты" started.
+◇ Test case passing 1 argument text → "a" to "Получатель и отправитель получают исходные байты" started.
+◇ Test case passing 1 argument text → "ж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aж👍aa" to "Получатель и отправитель получают исходные байты" started.
+◇ Test case passing 1 argument text → "   " to "Текст из пробелов и один символ шифруются и открываются" started.
+◇ Test case passing 1 argument text → "a" to "Текст из пробелов и один символ шифруются и открываются" started.
+◇ Test case passing 1 argument differentKeys → false to "Для B раскрываются две записи → tampered" started.
+◇ Test case passing 1 argument differentKeys → true to "Для B раскрываются две записи → tampered" started.
+◇ Test case passing 1 argument index → 0 to "Обязательство с изменённым байтом и пересчитанной подписью A → tampered у всех" started.
+◇ Test case passing 1 argument index → 13 to "Обязательство с изменённым байтом и пересчитанной подписью A → tampered у всех" started.
+◇ Test case passing 1 argument point → "0000000000000000000000000000000000000000000000000000000000000000" to "Часть Ed25519 — любая точка малого порядка (и со знаковым битом) → invalidKey" started.
+◇ Test case passing 1 argument index → 31 to "Обязательство с изменённым байтом и пересчитанной подписью A → tampered у всех" started.
+◇ Test case passing 1 argument point → "0100000000000000000000000000000000000000000000000000000000000000" to "Часть Ed25519 — любая точка малого порядка (и со знаковым битом) → invalidKey" started.
+◇ Test case passing 1 argument point → "26e8958fc2b227b045c3f489f2ef98f0d5dfac05d3c63339b13802886d53fc05" to "Часть Ed25519 — любая точка малого порядка (и со знаковым битом) → invalidKey" started.
+◇ Test case passing 1 argument point → "c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac037a" to "Часть Ed25519 — любая точка малого порядка (и со знаковым битом) → invalidKey" started.
+◇ Test case passing 1 argument point → "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f" to "Часть Ed25519 — любая точка малого порядка (и со знаковым битом) → invalidKey" started.
+◇ Test case passing 1 argument point → "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f" to "Часть Ed25519 — любая точка малого порядка (и со знаковым битом) → invalidKey" started.
+◇ Test case passing 1 argument point → "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f" to "Часть Ed25519 — любая точка малого порядка (и со знаковым битом) → invalidKey" started.
+◇ Test case passing 1 argument status → -25308 to "Keychain недоступен — «хранилище недоступно», а не «ключа нет»" started.
+◇ Test case passing 1 argument status → -34018 to "Keychain недоступен — «хранилище недоступно», а не «ключа нет»" started.
+◇ Test case passing 1 argument length → 0 to "Запись не той длины — ошибка, запись не меняется и новая не создаётся" started.
+◇ Test case passing 1 argument length → 63 to "Запись не той длины — ошибка, запись не меняется и новая не создаётся" started.
+◇ Test case passing 1 argument length → 65 to "Запись не той длины — ошибка, запись не меняется и новая не создаётся" started.
+◇ Test case passing 1 argument status → -25308 to "Ошибка чтения Keychain — ошибка, а не новый ключ; запись A не тронута" started.
+◇ Test case passing 1 argument status → -34018 to "Ошибка чтения Keychain — ошибка, а не новый ключ; запись A не тронута" started.
+◇ Test case passing 1 argument count → 0 to "Приватные данные не из 64 байт → invalidKey" started.
+◇ Test case passing 1 argument count → 63 to "Приватные данные не из 64 байт → invalidKey" started.
+◇ Test case passing 1 argument count → 65 to "Приватные данные не из 64 байт → invalidKey" started.
+◇ Test case passing 1 argument status → -25293 to "Ошибка чтения Keychain — ошибка, а не новый ключ; запись A не тронута" started.
+◇ Test case passing 1 argument status → -50 to "Ошибка чтения Keychain — ошибка, а не новый ключ; запись A не тронута" started.
+◇ Test case passing 1 argument status → -1 to "Ошибка чтения Keychain — ошибка, а не новый ключ; запись A не тронута" started.
+✔ Test "Модуль подключается и знает название продукта" passed after 0.025 seconds.
+✔ Test "100 символов «ж» для одного получателя — не длиннее 800 символов" passed after 0.025 seconds.
+✔ Test "Контроль: собранное вручную сообщение с честным дополнением открывается" passed after 0.025 seconds.
+✔ Test "Настоящая длина больше дополненной → tampered" with 3 test cases passed after 0.025 seconds.
+✔ Test "Ненулевой байт в дополнении → tampered" with 2 test cases passed after 0.025 seconds.
+✔ Test "«Да» и «Нет», «ok» и «yes» неотличимы по длине" passed after 0.025 seconds.
+✔ Test "В открытом заголовке — дополненная длина 32, а не настоящая" passed after 0.026 seconds.
+✔ Test "Настоящая длина 0 и дополнение длиннее необходимого → tampered" passed after 0.026 seconds.
+✔ Test "Сообщение для B открывают и B, и отправитель A" passed after 0.026 seconds.
+✔ Test "4096 байт шифруются и открываются байт в байт" passed after 0.026 seconds.
+✔ Test "Разобранное и собранное заново сообщение открывается — подделки ниже собраны верно" passed after 0.026 seconds.
+✔ Test "Ключ отправителя с Ed25519 любой точки малого порядка → malformed" with 7 test cases passed after 0.026 seconds.
+✔ Test unreadableFileIsNeverOverwritten() passed after 0.026 seconds.
+✔ Test "100 символов кириллицы для одного получателя — не длиннее 800 символов" passed after 0.026 seconds.
+✔ Test renamesAndRemoves() passed after 0.026 seconds.
+✔ Test rejectsBadKeysAndDuplicates() passed after 0.026 seconds.
+✔ Test validatesName() passed after 0.027 seconds.
+✔ Test "Второй получатель удлиняет сообщение" passed after 0.027 seconds.
+✔ Test addsSortsAndPersists() passed after 0.027 seconds.
+✔ Test "Неканонический эфемерный ключ (старший бит), подпись пересчитана A → malformed" passed after 0.027 seconds.
+✔ Test writeFailureLeavesBookUnchanged() passed after 0.027 seconds.
+✔ Test "Повторы и сам отправитель в списке не добавляют записей" passed after 0.027 seconds.
+✔ Test "Подпись из 64 нулевых байт → tampered" passed after 0.027 seconds.
+✔ Test "Смешанный текст — ровно 4096 байт" passed after 0.027 seconds.
+✔ Test "Контроль: сообщение, собранное вручную с честным ключом и подписью M, открывается как contact(M)" passed after 0.027 seconds.
+✔ Test "Получатель и отправитель получают исходные байты" with 7 test cases passed after 0.027 seconds.
+✔ Test "Честное сообщение M при контакте A → unknown(отпечаток M), а не contact(A)" passed after 0.027 seconds.
+✔ Test "Личность, восстановленная из данных C, → notARecipient" passed after 0.027 seconds.
+✔ Test "Ключ отправителя A с неканонической частью X25519 (старший бит), подпись пересчитана A → malformed" passed after 0.027 seconds.
+✔ Test "Ключ отправителя заменён на ключ M и подпись пересчитана M → tampered" passed after 0.027 seconds.
+✔ Test "Посторонний C без контактов → notARecipient" passed after 0.027 seconds.
+✔ Test "Без последнего символа → malformed" passed after 0.027 seconds.
+✔ Test "Описание, отладочное описание, интерполяция и dump показывают только отпечаток" passed after 0.027 seconds.
+✔ Test "Подпись M над теми же байтами при ключе отправителя A → tampered" passed after 0.027 seconds.
+✔ Test "Тексты из 1…32 байт дают одну длину, 33 байта — длиннее" passed after 0.027 seconds.
+✔ Test "Посторонний C с контактами A и B → notARecipient" passed after 0.027 seconds.
+✔ Test "Ключ отправителя с Ed25519 = 01 00…00 и подпись 01 00…00 ‖ 00…00 → malformed, не contact" passed after 0.027 seconds.
+✔ Test "Личность из X25519 от C и Ed25519 от B → notARecipient (запись ищется по ключу согласования)" passed after 0.027 seconds.
+✔ Test malformedOrMismatchedMetadataCannotBeUsedOrMigrated() passed after 0.027 seconds.
+✔ Test "Контакт с тем же именем, но другим ключом → unknown(отпечаток A)" passed after 0.027 seconds.
+✔ Test "50 символов «A» → malformed" passed after 0.027 seconds.
+✔ Test "Сообщение только себе открывается отправителем" passed after 0.027 seconds.
+✔ Test "Только префикс → malformed" passed after 0.027 seconds.
+✔ Test "Ключ отправителя совпал с контактом → contact(тот же контакт)" passed after 0.027 seconds.
+✔ Test "Запрос добавления: класс, сервис, аккаунт, группа, защита, без iCloud, 64 байта" passed after 0.027 seconds.
+✔ Test "Ни одна половина приватного ключа не видна в hex, base64 и base64url" passed after 0.027 seconds.
+✔ Test "Без контактов → unknown(отпечаток A)" passed after 0.027 seconds.
+✔ Test "Текст из пробелов и один символ шифруются и открываются" with 2 test cases passed after 0.027 seconds.
+✔ Test "Нет ckmsg<цифры>: → noMessage" passed after 0.027 seconds.
+✔ Test "Из двух сообщений подряд открывается первое" passed after 0.027 seconds.
+✔ Test metadataRequestsOnlyAttributesOfSameRecord() passed after 0.027 seconds.
+✔ Test "Эфемерный ключ — точка малого порядка, подпись пересчитана отправителем → malformed" passed after 0.027 seconds.
+✔ Test "Текст вокруг ключа → invalidKey" passed after 0.027 seconds.
+✔ Test interruptedStagingIsRemovedWithoutChangingCommittedContacts() passed after 0.027 seconds.
+✔ Test legacyMigrationTargetsOnlyTheReadRowAndUpdatesOnlyPublicMetadata() passed after 0.027 seconds.
+✔ Test "Другая версия → unsupportedVersion" passed after 0.027 seconds.
+✔ Test "Ровно 4096 байт (2048 «ж») шифруется и открывается" passed after 0.027 seconds.
+✔ Test "В байтах сообщения нет ключа получателя, его частей и отпечатка; ключ отправителя есть" passed after 0.027 seconds.
+✔ Test "Открытого текста нет ни как подстроки, ни в base64/base64url при сдвигах 0, 1, 2" passed after 0.027 seconds.
+✔ Test "Отправитель открывает своё сообщение → me при любых контактах" passed after 0.027 seconds.
+✔ Test "Строка соответствует ^ckmsg2:[A-Za-z0-9_-]+$" passed after 0.027 seconds.
+✔ Test "* вместо символа в середине → malformed" passed after 0.027 seconds.
+✔ Test "Чужой префикс → invalidKey" passed after 0.027 seconds.
+✔ Test "16 получателей + отправитель (17) → tooManyRecipients" passed after 0.027 seconds.
+✔ Test "Контроль: та же сборка с настоящей частью Ed25519 разбирается" passed after 0.027 seconds.
+✔ Test "Первая половина → malformed" passed after 0.027 seconds.
+✔ Test "Два шифрования одного текста одному получателю дают разные строки" passed after 0.027 seconds.
+✔ Test "Для B раскрываются две записи → tampered" with 2 test cases passed after 0.027 seconds.
+✔ Test "Запрос чтения: те же атрибуты записи, одна запись с данными, без kSecAttrSynchronizableAny" passed after 0.027 seconds.
+✔ Test "15 получателей + отправитель (16) шифруется" passed after 0.027 seconds.
+✔ Test "4097 байт ASCII → messageTooLong(byteCount: 4097)" passed after 0.027 seconds.
+✔ Test "Пустой текст → emptyMessage" passed after 0.027 seconds.
+✔ Test fileWriteFailureKeepsOriginalFileByteForByte() passed after 0.027 seconds.
+✔ Test "Все варианты вставки открываются в «Тест»" passed after 0.027 seconds.
+✔ Test "Пустой список получателей → noRecipients" passed after 0.027 seconds.
+✔ Test "2049 символов «ж» (4098 байт) → messageTooLong(byteCount: 4098)" passed after 0.027 seconds.
+✔ Test "Честное seal для B и C открывается у обоих одним текстом байт в байт" passed after 0.027 seconds.
+✔ Test "Общий тег Poly1305 под K1 и K2 (подбор блока «мусорной» записи) → текст получает не больше одного" passed after 0.027 seconds.
+✔ Test "Обязательство с изменённым байтом и пересчитанной подписью A → tampered у всех" with 3 test cases passed after 0.027 seconds.
+✔ Test "Записи нет — «ключа нет», ничего не создаётся" passed after 0.027 seconds.
+✔ Test recordsOnlySuccessfulAccess() passed after 0.027 seconds.
+✔ Test renameAndRemoveNeverOverwriteUnreadableFile() passed after 0.027 seconds.
+✔ Test "Часть Ed25519 — любая точка малого порядка (и со знаковым битом) → invalidKey" with 7 test cases passed after 0.027 seconds.
+✔ Test "Обязательство от другого ключа при честных записях, тексте и подписи A → tampered" passed after 0.027 seconds.
+✔ Test "Личность не Encodable" passed after 0.027 seconds.
+✔ Test "Записи B и C с разными K1 и K2, обязательство от K1, подпись A верна → у C tampered" passed after 0.027 seconds.
+✔ Test "Запись A есть — личность A" passed after 0.027 seconds.
+✔ Test "Строка сообщения ckmsg1 → invalidKey" passed after 0.027 seconds.
+✔ Test "Пробел после двоеточия не мешает" passed after 0.027 seconds.
+✔ Test "Часть Ed25519 — нейтральная точка 01 00…00 → invalidKey" passed after 0.027 seconds.
+✔ Test "Запись появилась у другого запуска (errSecDuplicateItem) — используется она, а не перезаписывается" passed after 0.027 seconds.
+✔ Test "Запись из 63 байт — «хранилище недоступно»" passed after 0.027 seconds.
+✔ Test "Перевод строки каждые 20 символов не мешает" passed after 0.027 seconds.
+✔ Test "Keychain недоступен — «хранилище недоступно», а не «ключа нет»" with 2 test cases passed after 0.027 seconds.
+✔ Test "Неразрывный пробел внутри ckpub1 не мешает" passed after 0.027 seconds.
+✔ Test "Хранилище в памяти для UI-тестов: сбой чтения один раз, затем работает; дубликат не перезаписывает" passed after 0.027 seconds.
+✔ Test "Неканонический base64: изменены только неиспользуемые биты последнего символа → invalidKey" passed after 0.027 seconds.
+✔ Test "Ошибка записи новой личности (errSecIOErr) — ошибка, а не несохранённая личность" passed after 0.027 seconds.
+✔ Test "Паддинг == на конце принимается" passed after 0.027 seconds.
+✔ Test "Фиксированный вектор: приватные байты → строка ckpub1 и отпечаток" passed after 0.027 seconds.
+✔ Test "Часть X25519 с выставленным старшим битом байта 31 → invalidKey" passed after 0.027 seconds.
+✔ Test "Часть Ed25519 с y ≥ p (вторая запись точки y = 3) → invalidKey; каноническая y = 3 разбирается" passed after 0.027 seconds.
+✔ Test failedRemovalCannotReviveEvidenceAfterRelaunch() passed after 0.027 seconds.
+✔ Test "Отпечаток — 8 групп по 4 HEX через пробел, short — первые 9 символов" passed after 0.027 seconds.
+✔ Test "Часть X25519 из 32 нулевых байт → invalidKey" passed after 0.027 seconds.
+✔ Test "Запись не той длины — ошибка, запись не меняется и новая не создаётся" with 3 test cases passed after 0.027 seconds.
+✔ Test "Строка разбирается обратно в равный ключ" passed after 0.027 seconds.
+✔ Test failedCutoffWriteStillDeletesSharedEvidence() passed after 0.027 seconds.
+✔ Test fileRoundTripAndRemoval() passed after 0.027 seconds.
+✔ Test "Строка ключа — ckpub1: и 86 символов base64url, всего 93" passed after 0.027 seconds.
+✔ Test "JSON: ключ кодируется строкой ckpub1 и декодируется обратно" passed after 0.027 seconds.
+✔ Test "Только префикс → invalidKey" passed after 0.027 seconds.
+✔ Test "privateKeyData — ровно 64 байта" passed after 0.027 seconds.
+✔ Test "Два разных пустых хранилища дают разные личности" passed after 0.027 seconds.
+✔ Test "С лишним символом → invalidKey" passed after 0.027 seconds.
+✔ Test resolvesStates() passed after 0.027 seconds.
+✔ Test "17 записей получателей в заголовке → malformed" passed after 0.027 seconds.
+✔ Test "Смена префикса между v1 и v2 даёт malformed" passed after 0.027 seconds.
+✔ Test "Повторная загрузка и перезапуск читают ту же личность, без новой записи" passed after 0.027 seconds.
+✔ Test "Приватные данные не из 64 байт → invalidKey" with 3 test cases passed after 0.027 seconds.
+✔ Test "Пустое хранилище: личность создаётся и записывается одной записью из 64 байт" passed after 0.027 seconds.
+✔ Test "Ошибка чтения Keychain — ошибка, а не новый ключ; запись A не тронута" with 5 test cases passed after 0.027 seconds.
+✔ Test "Другая версия ckpub2 → unsupportedVersion" passed after 0.027 seconds.
+✔ Test "Восстановленная личность расшифровывает сообщение для исходной и подписывает как она" passed after 0.027 seconds.
+✔ Test "Две генерации дают разные открытые ключи и отпечатки" passed after 0.027 seconds.
+✔ Test "Восстановленная личность имеет тот же открытый ключ" passed after 0.027 seconds.
+✔ Test "Часть X25519 — точка малого порядка 01 00…00 → invalidKey" passed after 0.026 seconds.
+✔ Test "Литералы ключей A и B соответствуют приватным данным" passed after 0.027 seconds.
+✔ Test "Пустая строка → invalidKey" passed after 0.026 seconds.
+✔ Test "Без последнего символа → invalidKey" passed after 0.025 seconds.
+✔ Test "B открывает вектор: тот же текст байт в байт, отправитель — контакт «A»" passed after 0.026 seconds.
+✔ Test "A открывает свой вектор: тот же текст, отправитель — me" passed after 0.025 seconds.
+✔ Test "Seal записывает целые секунды, сохраняя лимит 4096 байт текста" passed after 0.027 seconds.
+✔ Test "Часть X25519 ≥ p (неканоническая запись 0…18) → invalidKey; каноническая 9 разбирается" passed after 0.027 seconds.
+✔ Test "Вектор с одним изменённым символом в середине не открывается" passed after 0.021 seconds.
+✔ Test "Подмена байта даты ломает подпись, переподпись не восстанавливает тег" passed after 0.025 seconds.
+✔ Suite "Каркас" passed after 0.028 seconds.
+✔ Suite "Получатели: отправитель добавляется сам, повторы — один раз" passed after 0.028 seconds.
+✔ Suite "Длина текста скрыта с точностью до 32 байт" passed after 0.028 seconds.
+✔ Suite "Расшифровка байт в байт" passed after 0.028 seconds.
+✔ Suite "ContactBook" passed after 0.028 seconds.
+✔ Suite "Не получатель не читает сообщение" passed after 0.028 seconds.
+✔ Suite "Личность: приватный ключ не утекает" passed after 0.028 seconds.
+✔ Suite "Вердикт отправителя: я, контакт или неизвестный ключ" passed after 0.028 seconds.
+✔ Suite "Шифротекст находится в тексте с переносами и словами вокруг" passed after 0.028 seconds.
+✔ Suite "Шифрование: лимиты и неверный ввод" passed after 0.028 seconds.
+✔ Suite "Шифротекст: одна строка без открытого текста и без получателей" passed after 0.028 seconds.
+✔ Suite "Одно сообщение не расшифровывается в разные тексты у разных получателей" passed after 0.028 seconds.
+✔ Suite "Чтение личности для клавиатуры" passed after 0.028 seconds.
+✔ Suite SetupStateTests passed after 0.028 seconds.
+✔ Suite "Открытый ключ: строка ckpub1 и обратно" passed after 0.028 seconds.
+✔ Suite "Хранилище личности: прочитать или создать" passed after 0.028 seconds.
+✔ Suite "Отправителя нельзя подменить" passed after 0.028 seconds.
+✔ Suite "Личность: создание и восстановление" passed after 0.028 seconds.
+✔ Test "Независимый вектор v2 открывается с датой у отправителя и получателя" passed after 0.023 seconds.
+✔ Suite "Золотые векторы ckmsg1 и ckmsg2" passed after 0.028 seconds.
+✔ Suite "Запросы Keychain для записи личности" passed after 0.028 seconds.
+✔ Test "1 000 000 символов «A» → malformed быстрее 1 секунды" passed after 0.040 seconds.
+✔ Test "Верный заголовок настоящего сообщения + 1 000 000 «A» → ошибка быстрее 1 секунды" passed after 0.042 seconds.
+✔ Suite "Испорченный или чужой текст — точная ошибка без падения" passed after 0.043 seconds.
+✔ Test "200 ключей из Identity.generate() разбираются из своих строк без отказа" passed after 0.051 seconds.
+✔ Suite "Открытый ключ: неверный ввод" passed after 0.052 seconds.
+✔ Test "Каждый символ после ckmsg2:, заменённый следующим символом base64url, → ошибка" passed after 0.127 seconds.
+✔ Test "Каждый байт с инвертированным младшим битом → tampered или malformed, для B и для A" passed after 0.167 seconds.
+✔ Suite "Изменение любого байта или символа не проходит" passed after 0.168 seconds.
+✔ Test run with 142 tests in 23 suites passed after 0.168 seconds.

@@ -1,0 +1,77 @@
+{
+  "revision": "1282833911",
+  "permission_diff": "",
+  "artifacts": {
+    "CipherKeyboard": {
+      "sha256": "9065836e4a2ced6ec29efb6e40c4cfc86e3769c39e300d47856862f8b2b255e8",
+      "simulated_entitlements": {
+        "application-identifier": "FAKETEAMID.dev.cipherkeyboard.app",
+        "com.apple.security.application-groups": [
+          "group.dev.cipherkeyboard"
+        ]
+      },
+      "codesign_simulator_entitlements": {},
+      "requestsOpenAccess": null,
+      "debug_marker_hits": [],
+      "debug_symbols": [],
+      "extension_writer_symbols": null,
+      "linked_objects": [
+        "AddContactSheet.o",
+        "CipherCore.o",
+        "CipherCoreContactStore.o",
+        "CipherCoreIdentityStore.o",
+        "CipherKeyboardApp.o",
+        "ContactDetailView.o",
+        "ContactsModel.o",
+        "ContactsView.o",
+        "DecryptAppFixture.o",
+        "DecryptSeedProbe.o",
+        "DecryptView.o",
+        "EncryptSetupProbe.o",
+        "GeneratedAssetSymbols.o",
+        "KeyboardEncryptProbe.o",
+        "KeyboardIdentityMetadataProbe.o",
+        "KeyboardIsolationProbe.o",
+        "KeyboardPreviewView.o",
+        "KeyboardTyping.o",
+        "LaunchStorage.o",
+        "MyKeyModel.o",
+        "MyKeyView.o",
+        "QRCode.o",
+        "QRScannerView.o",
+        "RootView.o",
+        "SetupModel.o",
+        "SetupView.o"
+      ],
+      "security_write_symbols": [
+        "_SecItemAdd",
+        "_SecItemUpdate"
+      ]
+    },
+    "PlugIns/CipherKeyboardExtension.appex/CipherKeyboardExtension": {
+      "sha256": "f0c2bc90471af8438a40779057866068f2ccf640ca0f0cf121a9f0ce0de849a0",
+      "simulated_entitlements": {
+        "application-identifier": "FAKETEAMID.dev.cipherkeyboard.app.keyboard",
+        "com.apple.security.application-groups": [
+          "group.dev.cipherkeyboard"
+        ]
+      },
+      "codesign_simulator_entitlements": {},
+      "requestsOpenAccess": true,
+      "debug_marker_hits": [],
+      "debug_symbols": [],
+      "extension_writer_symbols": [],
+      "linked_objects": [
+        "CipherCore.o",
+        "KeyboardTyping.o",
+        "KeyboardViewController.o"
+      ],
+      "security_write_symbols": []
+    }
+  },
+  "r2_security_write_symbols": [
+    "_SecItemAdd"
+  ],
+  "r2_baseline_binary_sha256": "7af678098a1b3e2b770d96384efb9fba1ff43da7e9157cb853f7779724acad79",
+  "sec_item_add_origin": "Only read access in the R7 extension"
+}

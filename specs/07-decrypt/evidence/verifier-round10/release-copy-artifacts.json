@@ -1,0 +1,20 @@
+{
+  "source": "4f7ed8552a4c56d392c77f9d7b9abe712bd47d85",
+  "metadataHead": "4f7ed8552a4c56d392c77f9d7b9abe712bd47d85",
+  "revision": "1282833911",
+  "artifact": "/private/tmp/Cipher07R10-release.xVzfwg/CipherKeyboard.app",
+  "configuration": "Release",
+  "sha256": {
+    "Info.plist": "01ce8a4f20722935722d48df69560f416438281fca650c35c5a5040ad1f456d7",
+    "CipherKeyboard": "9065836e4a2ced6ec29efb6e40c4cfc86e3769c39e300d47856862f8b2b255e8",
+    "PlugIns/CipherKeyboardExtension.appex/Info.plist": "75a83767cbb6673fee1ae4d7711dece2deed6ede893b732fd21fb177ad42e78b",
+    "PlugIns/CipherKeyboardExtension.appex/CipherKeyboardExtension": "f0c2bc90471af8438a40779057866068f2ccf640ca0f0cf121a9f0ce0de849a0"
+  },
+  "versions": {
+    "dev.cipherkeyboard.app": "1282833911",
+    "dev.cipherkeyboard.app.keyboard": "1282833911"
+  },
+  "udid": null,
+  "reference": "/Users/segei/Documents/CipherKeyboard/.build/DecryptR10Candidate/.build/VerifierR10/release-build.json",
+  "matching": true
+}

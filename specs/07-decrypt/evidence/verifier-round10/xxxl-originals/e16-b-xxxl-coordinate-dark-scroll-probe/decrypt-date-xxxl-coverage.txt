@@ -1,0 +1,1 @@
+date height=290.5, visible relative segments=[ClosedRange(0.0...48.0), ClosedRange(0.0...100.0), ClosedRange(13.5...152.0), ClosedRange(65.5...204.0), ClosedRange(117.5...256.0), ClosedRange(169.5...290.5)]
