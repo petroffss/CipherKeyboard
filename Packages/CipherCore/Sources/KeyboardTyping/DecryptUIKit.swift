@@ -50,6 +50,7 @@
         private let errorIcon = UIImageView(image: UIImage(systemName: "exclamationmark.circle"))
         private let close = UIButton(type: .system)
         private let spinner = UIActivityIndicatorView(style: .medium)
+        private let compactLandscapeChrome: Bool
         private var identityHeight: NSLayoutConstraint!
         private var identityWidth: NSLayoutConstraint!
         private var closeHeight: NSLayoutConstraint!
@@ -57,13 +58,15 @@
         private var isBusy = false
         public var onClose: (() -> Void)?
         private var announcement = ""
-        public init(prefix: String) {
+        public init(prefix: String, compactLandscapeChrome: Bool = false) {
+            self.compactLandscapeChrome = compactLandscapeChrome
             super.init(frame: .zero)
             backgroundColor = .secondarySystemGroupedBackground
             layer.cornerRadius = 14; clipsToBounds = true
             accessibilityIdentifier = prefix + ".panel"
             title.font = .preferredFont(forTextStyle: .headline); title.numberOfLines = 0
-            title.adjustsFontForContentSizeCategory = true; title.accessibilityTraits = [.header]
+            title.adjustsFontForContentSizeCategory = !compactLandscapeChrome
+            title.accessibilityTraits = [.header]
             title.accessibilityIdentifier = prefix + ".title"
             lock.tintColor = KeyboardPanel.accent; lock.isAccessibilityElement = false
             identityContent.axis = .vertical; identityContent.spacing = 6
@@ -118,7 +121,7 @@
             ])
             close.setTitle("Закрыть", for: .normal)
             close.titleLabel?.font = .preferredFont(forTextStyle: .headline)
-            close.titleLabel?.adjustsFontForContentSizeCategory = true
+            close.titleLabel?.adjustsFontForContentSizeCategory = !compactLandscapeChrome
             close.layer.cornerRadius = 12; close.accessibilityIdentifier = prefix + ".close"
             close.addAction(UIAction { [weak self] _ in self?.onClose?() }, for: .touchUpInside)
             for item in [title, lock, body, close] {
@@ -159,6 +162,11 @@
                     line.bottomAnchor.constraint(equalTo: anchor, constant: anchor == title.bottomAnchor ? 6 : -6),
                 ])
             }
+            if compactLandscapeChrome {
+                registerForTraitChanges([UITraitPreferredContentSizeCategory.self]) {
+                    (view: PrivateDecryptPanel, _) in view.setNeedsLayout()
+                }
+            }
         }
         required init?(coder: NSCoder) { nil }
         private func install(_ content: UIView, in scroll: UIScrollView) {
@@ -187,6 +195,17 @@
                 resultRow.axis = axis
             }
             identityWidth.isActive = landscape; identityHeight.isActive = !landscape
+            if compactLandscapeChrome {
+                // Keep at least one full accessibility-sized line in the short landscape scrollports.
+                let category = traitCollection.preferredContentSizeCategory
+                let chromeTraits =
+                    landscape && category.isAccessibilityCategory
+                    ? traitCollection.modifyingTraits { $0.preferredContentSizeCategory = .extraExtraLarge }
+                    : traitCollection
+                let font = UIFont.preferredFont(forTextStyle: .headline, compatibleWith: chromeTraits)
+                if title.font != font { title.font = font }
+                if close.titleLabel?.font != font { close.titleLabel?.font = font }
+            }
             closeHeight.constant = max(48, (close.titleLabel?.font.lineHeight ?? 28) + 20)
             super.layoutSubviews()
             if !landscape && body.bounds.width > 0 {
