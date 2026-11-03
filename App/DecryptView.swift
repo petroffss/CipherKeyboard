@@ -131,7 +131,7 @@ private struct DecryptInput: UIViewRepresentable {
         editor.pasteDelegate = context.coordinator
         let config = UIPasteControl.Configuration()
         config.displayMode = .iconAndLabel
-        config.baseBackgroundColor = .clear; config.baseForegroundColor = KeyboardPanel.accent
+        config.baseBackgroundColor = .systemGroupedBackground; config.baseForegroundColor = KeyboardPanel.accent
         let paste = UIPasteControl(configuration: config)
         paste.target = editor
         paste.accessibilityIdentifier = "decrypt.paste"; paste.accessibilityLabel = "Вставить"

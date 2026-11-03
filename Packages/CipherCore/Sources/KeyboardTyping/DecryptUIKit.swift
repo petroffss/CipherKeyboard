@@ -233,7 +233,13 @@
                     CGSize(width: body.bounds.width, height: UIView.layoutFittingCompressedSize.height),
                     withHorizontalFittingPriority: .required, verticalFittingPriority: .fittingSizeLevel
                 ).height
-                let height = min(fitting, max(24, body.bounds.height * 0.5))
+                var identityLimit = body.bounds.height * 0.5
+                if !warning.isHidden && !traitCollection.preferredContentSizeCategory.isAccessibilityCategory {
+                    // Fit the complete contact warning while keeping a padded message line visible.
+                    let messageMinimum = ceil(plaintext.font.lineHeight) + 20
+                    identityLimit = body.bounds.height - resultRow.spacing - messageMinimum
+                }
+                let height = min(fitting, max(24, identityLimit))
                 if abs(identityHeight.constant - height) > 0.5 { identityHeight.constant = height }
             }
             errorIcon.isHidden = hasResult || isBusy || landscape
