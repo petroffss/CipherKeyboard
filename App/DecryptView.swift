@@ -18,7 +18,8 @@ struct DecryptView: View {
         _model = State(initialValue: DecryptLaunch.makeCoordinator())
     }
     var body: some View {
-        let pasteHeight = dynamicTypeSize.isAccessibilitySize
+        let pasteHeight =
+            dynamicTypeSize.isAccessibilitySize
             ? max(DecryptInput.minimumPasteHeight, ceil(scaledPasteHeight))
             : DecryptInput.minimumPasteHeight
         VStack(alignment: .leading, spacing: 16) {
