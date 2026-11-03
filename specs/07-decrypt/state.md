@@ -4,7 +4,7 @@ loop: running
 round: 10
 max_rounds: 11
 base_commit: "4887d8a"
-last_reviewed_commit: "dbf39fd6e38da600edf4d97efe973804eb69dfbf"
+last_reviewed_commit: "4f7ed8552a4c56d392c77f9d7b9abe712bd47d85"
 ---
 # Цикл сборки: Расшифровка полученных сообщений
 
@@ -24,8 +24,6 @@ last_reviewed_commit: "dbf39fd6e38da600edf4d97efe973804eb69dfbf"
 ## Открытые проблемы
 | ID | Источник | Класс | Где | Суть | Впервые | Подряд |
 |---|---|---|---|---|---|---|
-| R11 | verifierR4 native legacy05; E19/AC14 | не-по-требованию / layout | KeyboardPanel.swift:702, baseline 4887d8a:649 | `hasDecrypt` явно скрывает прежний `keyboard.identityStatus` и caption вне picker; actual no-FullAccess AX отсутствует старый статус при видимых новых notices. Baseline не скрывал, текущий AC14 сохраняет старые IDs/сценарии. Восстановить реальные читаемые элементы, уместив их в 420/240, не менять privacy/decrypt/picker | 4 | 1 |
-| R12 | verifierR4 B375 real XXXL landscape; E16/AC13 | не-по-требованию / layout | DecryptUIKit.swift:136–150,182–198 | Scaled title and pinned Close leave only 33.5pt for each scrollport in 667×375; actual long sender and body show only upper halves of glyphs, independently of scrolling. Preserve scaled text, pinned Close and 240pt bound; reserve at least a readable line for each scrollport. | 4 | 1 |
 
 ## Закрытые
 | ID | Класс | Как исправлено | Раунд |
@@ -41,6 +39,9 @@ last_reviewed_commit: "dbf39fd6e38da600edf4d97efe973804eb69dfbf"
 | R9 | слабый-тест | Bounded exact-state wait after one native typeText, exact check preserved. Independent fullUI CardAndRename PASS with single native `Борис` and observed Save; complete40/40 | 4 |
 | R10 | слабый-тест | DEBUG-only one-shot hold after real successful open in same coordinator; independent A402 `testActualLifecycle` exit0 covers real result and delayed busy × hide/globe/background/document, preserved metrics/PNG/AX, no stale result and exact recovery. Full E11 app lifecycle remains separate | 4 |
 | R13 | не-по-требованию / layout | Высота подсказки вычисляется по системному шрифту и ширине UITextView. Нативно B375 XXXL светлая/тёмная, портрет → альбом → портрет, 2/2; полный E16 проверяется отдельно. | 6 |
+| R11 | не-по-требованию / layout | Прежний статус доступен при выключенном полном доступе. Точный R10 повторил штатные нативные регрессии 05/06. | 10 |
+| R12 | не-по-требованию / layout | В R5 возвращена читаемая высота строк результата в альбоме при XXXL. В R10 повторно пройден полный E16, включая обе темы, все ширины и сценарий 375 pt при XXXL. | 10 |
+| E16/R9 | не-по-требованию / layout | Системная кнопка выросла вместе со шрифтом. Обе темы при XXXL доставили точный конверт одним нажатием центра. | 10 |
 
 ## Было до нас
 Этап 06 слит по решению пользователя, его E18/E20 pending остаются без изменений; цикл 06 не возобновляется.
@@ -205,3 +206,5 @@ Root подготовил `evidence/root-preparation/voiceover-tools.md`: уст
 2026-11-03: R9 dbf39fd/1617129915. Оба дефекта R8 исправлены и подтверждены в обычном размере. E15 PASS, 98/98 исходных пар PNG/AX в 6 фазах. Core 198/198, линтер, Debug/Release, подпись и независимое E20 прошли. Новый дефект E16 при B375 XXXL в обеих темах: штатная кнопка 50 pt без видимой иконки/подписи, точный тап не доставляет значение. Нативное меню вставляет тот же конверт без повторного Copy. Сохранены оригинальные кадры, независимый отчёт и неприменённый экспериментальный патч увеличения высоты. E7 остаётся pending: явная штатная вставка в приложении доставила значение при публично подтверждённом Deny. Полный UI на точном R9 и E21 не запускались после подтверждения E16. Полный R8 41/41 остаётся отдельным доказательством. В R9 4 pass / 1 fail / 15 pending. Достигнут согласованный предел 9 раундов. Симуляторы штатно выключены, слияния нет. Evidence: evidence/verifier-round9/report.md и evidence/verifier-round9/xxxl-paste-proposal/.
 
 2026-11-03: пользователь согласовал применение патча и нативную проверку XXXL. R10 открыт от ba2808c, лимит 11 по review-loop. Точный кандидат 4f7ed85, runtime 1282833911. Изменена только геометрия формы приложения. В сборке B375 XXXL обе темы подтвердили видимую нативную кнопку, доставку точного конверта после внешнего Copy одним нажатием по центру, точное расшифрование, прокрутку даты и предупреждения, сохранение результата при повороте и закреплённую кнопку закрытия. Независимые core 198/198, lint 90, Debug, Release, подпись и E20 прошли. Обычный размер, полные профили и регрессия R10 проверяются отдельно. Evidence: evidence/verifier-round10/report.md.
+
+2026-11-03: техническая приёмка точного R10 подтверждена по E1–E6, E8–E16, E18–E20. Полный штатный UI 41/41, нативные 05/06 9/9, визуальная матрица 98/98 и миграция Release прошли. Первичные прогоны смены поля и установки прежней сборки сохранены, повторы прошли. E7 остаётся pending: в расширении реальный отказ проверен, во вкладке явное касание при Deny доставило текст. Точный Release передан независимому первому пользователю в отдельном чистом симуляторе.

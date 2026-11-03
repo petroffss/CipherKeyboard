@@ -1,0 +1,8 @@
+true
+2026-11-03T22:09:29+03:00 e19-release-migration
+An error was encountered processing the command (domain=IXErrorDomain, code=2):
+Simulator device failed to install the application.
+Failed to locate promise.
+Underlying error (domain=IXErrorDomain, code=2):
+	Failed to set metadata for dev.cipherkeyboard.app
+	Failed to create promise.

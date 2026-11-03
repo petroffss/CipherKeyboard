@@ -1,0 +1,1 @@
+secondsAfterTap=6.437598943710327;state=real;event=hide

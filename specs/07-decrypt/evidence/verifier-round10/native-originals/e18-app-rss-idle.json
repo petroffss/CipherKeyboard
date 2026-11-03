@@ -1,0 +1,128 @@
+{
+  "phase": "e18-app",
+  "surface": "app",
+  "idleSamples": [
+    {
+      "cycle": -1,
+      "timestamp": 1793732575.367206,
+      "rssSampleOffsetSec": -0.2593650817871094,
+      "coordinators": 2,
+      "operations": 0,
+      "pid": 22797,
+      "rssKiB": 390944,
+      "elapsed": "00:09",
+      "command": "/Users/segei/Library/Developer/CoreSimulator/Devices/1A29E451-25ED-4EF6-A322-608AAD27032D/data/Containers/Bundle/Application/20B9BBB7-2BDD-470C-9260-FF4B4C0D3EA8/CipherKeyboard.app/CipherKeyboard"
+    },
+    {
+      "cycle": 0,
+      "timestamp": 1793732601.375197,
+      "rssSampleOffsetSec": -0.03023982048034668,
+      "coordinators": 2,
+      "operations": 0,
+      "pid": 22797,
+      "rssKiB": 421680,
+      "elapsed": "00:35",
+      "command": "/Users/segei/Library/Developer/CoreSimulator/Devices/1A29E451-25ED-4EF6-A322-608AAD27032D/data/Containers/Bundle/Application/20B9BBB7-2BDD-470C-9260-FF4B4C0D3EA8/CipherKeyboard.app/CipherKeyboard"
+    },
+    {
+      "cycle": 1,
+      "timestamp": 1793732625.9001,
+      "rssSampleOffsetSec": -0.5223209857940674,
+      "coordinators": 2,
+      "operations": 0,
+      "pid": 22797,
+      "rssKiB": 423072,
+      "elapsed": "00:59",
+      "command": "/Users/segei/Library/Developer/CoreSimulator/Devices/1A29E451-25ED-4EF6-A322-608AAD27032D/data/Containers/Bundle/Application/20B9BBB7-2BDD-470C-9260-FF4B4C0D3EA8/CipherKeyboard.app/CipherKeyboard"
+    },
+    {
+      "cycle": 2,
+      "timestamp": 1793732650.4440088,
+      "rssSampleOffsetSec": 0.11419510841369629,
+      "coordinators": 2,
+      "operations": 0,
+      "pid": 22797,
+      "rssKiB": 423392,
+      "elapsed": "01:24",
+      "command": "/Users/segei/Library/Developer/CoreSimulator/Devices/1A29E451-25ED-4EF6-A322-608AAD27032D/data/Containers/Bundle/Application/20B9BBB7-2BDD-470C-9260-FF4B4C0D3EA8/CipherKeyboard.app/CipherKeyboard"
+    },
+    {
+      "cycle": 3,
+      "timestamp": 1793732674.878234,
+      "rssSampleOffsetSec": -0.13667893409729004,
+      "coordinators": 2,
+      "operations": 0,
+      "pid": 22797,
+      "rssKiB": 418512,
+      "elapsed": "01:48",
+      "command": "/Users/segei/Library/Developer/CoreSimulator/Devices/1A29E451-25ED-4EF6-A322-608AAD27032D/data/Containers/Bundle/Application/20B9BBB7-2BDD-470C-9260-FF4B4C0D3EA8/CipherKeyboard.app/CipherKeyboard"
+    },
+    {
+      "cycle": 4,
+      "timestamp": 1793732699.281938,
+      "rssSampleOffsetSec": -0.3106679916381836,
+      "coordinators": 2,
+      "operations": 0,
+      "pid": 22797,
+      "rssKiB": 418688,
+      "elapsed": "02:12",
+      "command": "/Users/segei/Library/Developer/CoreSimulator/Devices/1A29E451-25ED-4EF6-A322-608AAD27032D/data/Containers/Bundle/Application/20B9BBB7-2BDD-470C-9260-FF4B4C0D3EA8/CipherKeyboard.app/CipherKeyboard"
+    },
+    {
+      "cycle": 5,
+      "timestamp": 1793732723.551546,
+      "rssSampleOffsetSec": -0.4676361083984375,
+      "coordinators": 2,
+      "operations": 0,
+      "pid": 22797,
+      "rssKiB": 418832,
+      "elapsed": "02:37",
+      "command": "/Users/segei/Library/Developer/CoreSimulator/Devices/1A29E451-25ED-4EF6-A322-608AAD27032D/data/Containers/Bundle/Application/20B9BBB7-2BDD-470C-9260-FF4B4C0D3EA8/CipherKeyboard.app/CipherKeyboard"
+    },
+    {
+      "cycle": 6,
+      "timestamp": 1793732747.931207,
+      "rssSampleOffsetSec": 0.3698720932006836,
+      "coordinators": 2,
+      "operations": 0,
+      "pid": 22797,
+      "rssKiB": 418832,
+      "elapsed": "03:02",
+      "command": "/Users/segei/Library/Developer/CoreSimulator/Devices/1A29E451-25ED-4EF6-A322-608AAD27032D/data/Containers/Bundle/Application/20B9BBB7-2BDD-470C-9260-FF4B4C0D3EA8/CipherKeyboard.app/CipherKeyboard"
+    },
+    {
+      "cycle": 7,
+      "timestamp": 1793732772.2639298,
+      "rssSampleOffsetSec": 0.24948406219482422,
+      "coordinators": 2,
+      "operations": 0,
+      "pid": 22797,
+      "rssKiB": 416704,
+      "elapsed": "03:26",
+      "command": "/Users/segei/Library/Developer/CoreSimulator/Devices/1A29E451-25ED-4EF6-A322-608AAD27032D/data/Containers/Bundle/Application/20B9BBB7-2BDD-470C-9260-FF4B4C0D3EA8/CipherKeyboard.app/CipherKeyboard"
+    },
+    {
+      "cycle": 8,
+      "timestamp": 1793732796.6011,
+      "rssSampleOffsetSec": 0.11136412620544434,
+      "coordinators": 2,
+      "operations": 0,
+      "pid": 22797,
+      "rssKiB": 415520,
+      "elapsed": "03:50",
+      "command": "/Users/segei/Library/Developer/CoreSimulator/Devices/1A29E451-25ED-4EF6-A322-608AAD27032D/data/Containers/Bundle/Application/20B9BBB7-2BDD-470C-9260-FF4B4C0D3EA8/CipherKeyboard.app/CipherKeyboard"
+    },
+    {
+      "cycle": 9,
+      "timestamp": 1793732820.994646,
+      "rssSampleOffsetSec": -0.11557507514953613,
+      "coordinators": 2,
+      "operations": 0,
+      "pid": 22797,
+      "rssKiB": 415296,
+      "elapsed": "04:14",
+      "command": "/Users/segei/Library/Developer/CoreSimulator/Devices/1A29E451-25ED-4EF6-A322-608AAD27032D/data/Containers/Bundle/Application/20B9BBB7-2BDD-470C-9260-FF4B4C0D3EA8/CipherKeyboard.app/CipherKeyboard"
+    }
+  ],
+  "requiresSeparateReview": "Inspect RSS trend, PID changes, actual keyboard continuity, and crash/jetsam evidence."
+}

@@ -1,0 +1,1034 @@
+[
+  {
+    "changedPixels" : 0,
+    "comparedPixels" : 964500,
+    "excludedTopPixels" : 48,
+    "key" : "app-busy-375-portrait-dark"
+  },
+  {
+    "changedPixels" : 0,
+    "comparedPixels" : 964500,
+    "excludedTopPixels" : 48,
+    "key" : "app-busy-375-portrait-light"
+  },
+  {
+    "boundingBox" : [
+      70,
+      366,
+      674,
+      537
+    ],
+    "changedPixels" : 28751,
+    "comparedPixels" : 964500,
+    "excludedTopPixels" : 48,
+    "key" : "app-changed-375-portrait-dark"
+  },
+  {
+    "boundingBox" : [
+      71,
+      366,
+      674,
+      537
+    ],
+    "changedPixels" : 26171,
+    "comparedPixels" : 964500,
+    "excludedTopPixels" : 48,
+    "key" : "app-changed-375-portrait-light"
+  },
+  {
+    "boundingBox" : [
+      69,
+      407,
+      141,
+      429
+    ],
+    "changedPixels" : 888,
+    "comparedPixels" : 964500,
+    "excludedTopPixels" : 48,
+    "key" : "app-contact-375-portrait-dark"
+  },
+  {
+    "boundingBox" : [
+      69,
+      407,
+      142,
+      429
+    ],
+    "changedPixels" : 889,
+    "comparedPixels" : 964500,
+    "excludedTopPixels" : 48,
+    "key" : "app-contact-375-portrait-light"
+  },
+  {
+    "boundingBox" : [
+      969,
+      674,
+      1086,
+      707
+    ],
+    "changedPixels" : 2436,
+    "comparedPixels" : 2930580,
+    "excludedTopPixels" : 192,
+    "key" : "app-contact-402-portrait-dark"
+  },
+  {
+    "boundingBox" : [
+      969,
+      674,
+      1084,
+      707
+    ],
+    "changedPixels" : 2268,
+    "comparedPixels" : 2930580,
+    "excludedTopPixels" : 192,
+    "key" : "app-contact-402-portrait-light"
+  },
+  {
+    "boundingBox" : [
+      969,
+      674,
+      1085,
+      707
+    ],
+    "changedPixels" : 2301,
+    "comparedPixels" : 3532320,
+    "excludedTopPixels" : 192,
+    "key" : "app-contact-440-portrait-dark"
+  },
+  {
+    "boundingBox" : [
+      969,
+      674,
+      1086,
+      707
+    ],
+    "changedPixels" : 2282,
+    "comparedPixels" : 3532320,
+    "excludedTopPixels" : 192,
+    "key" : "app-contact-440-portrait-light"
+  },
+  {
+    "boundingBox" : [
+      69,
+      407,
+      143,
+      429
+    ],
+    "changedPixels" : 983,
+    "comparedPixels" : 964500,
+    "excludedTopPixels" : 48,
+    "key" : "app-contacts-warning-375-portrait-dark"
+  },
+  {
+    "boundingBox" : [
+      69,
+      407,
+      273,
+      1236
+    ],
+    "changedPixels" : 967,
+    "comparedPixels" : 964500,
+    "excludedTopPixels" : 48,
+    "key" : "app-contacts-warning-375-portrait-light"
+  },
+  {
+    "changedPixels" : 0,
+    "comparedPixels" : 964500,
+    "excludedTopPixels" : 48,
+    "key" : "app-corrupt-375-portrait-dark"
+  },
+  {
+    "boundingBox" : [
+      242,
+      1199,
+      273,
+      1236
+    ],
+    "changedPixels" : 73,
+    "comparedPixels" : 964500,
+    "excludedTopPixels" : 48,
+    "key" : "app-corrupt-375-portrait-light"
+  },
+  {
+    "changedPixels" : 0,
+    "comparedPixels" : 964500,
+    "excludedTopPixels" : 48,
+    "key" : "app-empty-375-portrait-dark"
+  },
+  {
+    "boundingBox" : [
+      273,
+      1254,
+      319,
+      1265
+    ],
+    "changedPixels" : 144,
+    "comparedPixels" : 964500,
+    "excludedTopPixels" : 48,
+    "key" : "app-empty-375-portrait-light"
+  },
+  {
+    "boundingBox" : [
+      70,
+      366,
+      674,
+      537
+    ],
+    "changedPixels" : 28422,
+    "comparedPixels" : 964500,
+    "excludedTopPixels" : 48,
+    "key" : "app-foreign-375-portrait-dark"
+  },
+  {
+    "boundingBox" : [
+      71,
+      366,
+      674,
+      1236
+    ],
+    "changedPixels" : 27559,
+    "comparedPixels" : 964500,
+    "excludedTopPixels" : 48,
+    "key" : "app-foreign-375-portrait-light"
+  },
+  {
+    "boundingBox" : [
+      71,
+      366,
+      674,
+      537
+    ],
+    "changedPixels" : 31483,
+    "comparedPixels" : 964500,
+    "excludedTopPixels" : 48,
+    "key" : "app-generic-375-portrait-dark"
+  },
+  {
+    "boundingBox" : [
+      71,
+      366,
+      674,
+      537
+    ],
+    "changedPixels" : 29331,
+    "comparedPixels" : 964500,
+    "excludedTopPixels" : 48,
+    "key" : "app-generic-375-portrait-light"
+  },
+  {
+    "boundingBox" : [
+      70,
+      366,
+      673,
+      537
+    ],
+    "changedPixels" : 26946,
+    "comparedPixels" : 964500,
+    "excludedTopPixels" : 48,
+    "key" : "app-input-375-portrait-dark"
+  },
+  {
+    "boundingBox" : [
+      71,
+      368,
+      674,
+      1265
+    ],
+    "changedPixels" : 30236,
+    "comparedPixels" : 964500,
+    "excludedTopPixels" : 48,
+    "key" : "app-input-375-portrait-light"
+  },
+  {
+    "boundingBox" : [
+      71,
+      368,
+      674,
+      537
+    ],
+    "changedPixels" : 30564,
+    "comparedPixels" : 964500,
+    "excludedTopPixels" : 48,
+    "key" : "app-key-error-375-portrait-dark"
+  },
+  {
+    "boundingBox" : [
+      70,
+      366,
+      674,
+      537
+    ],
+    "changedPixels" : 30404,
+    "comparedPixels" : 964500,
+    "excludedTopPixels" : 48,
+    "key" : "app-key-error-375-portrait-light"
+  },
+  {
+    "boundingBox" : [
+      311,
+      313,
+      333,
+      388
+    ],
+    "changedPixels" : 1026,
+    "comparedPixels" : 1000500,
+    "excludedTopPixels" : 0,
+    "key" : "app-long-375-landscape-dark"
+  },
+  {
+    "boundingBox" : [
+      311,
+      313,
+      333,
+      388
+    ],
+    "changedPixels" : 927,
+    "comparedPixels" : 1000500,
+    "excludedTopPixels" : 0,
+    "key" : "app-long-375-landscape-light"
+  },
+  {
+    "boundingBox" : [
+      69,
+      451,
+      273,
+      1236
+    ],
+    "changedPixels" : 1012,
+    "comparedPixels" : 964500,
+    "excludedTopPixels" : 48,
+    "key" : "app-long-375-portrait-dark"
+  },
+  {
+    "boundingBox" : [
+      69,
+      451,
+      273,
+      1236
+    ],
+    "changedPixels" : 986,
+    "comparedPixels" : 964500,
+    "excludedTopPixels" : 48,
+    "key" : "app-long-375-portrait-light"
+  },
+  {
+    "boundingBox" : [
+      550,
+      537,
+      583,
+      655
+    ],
+    "changedPixels" : 2446,
+    "comparedPixels" : 3162132,
+    "excludedTopPixels" : 0,
+    "key" : "app-long-402-landscape-dark"
+  },
+  {
+    "boundingBox" : [
+      550,
+      537,
+      583,
+      653
+    ],
+    "changedPixels" : 2269,
+    "comparedPixels" : 3162132,
+    "excludedTopPixels" : 0,
+    "key" : "app-long-402-landscape-light"
+  },
+  {
+    "boundingBox" : [
+      969,
+      740,
+      1086,
+      773
+    ],
+    "changedPixels" : 2437,
+    "comparedPixels" : 2930580,
+    "excludedTopPixels" : 192,
+    "key" : "app-long-402-portrait-dark"
+  },
+  {
+    "boundingBox" : [
+      969,
+      740,
+      1084,
+      773
+    ],
+    "changedPixels" : 2252,
+    "comparedPixels" : 2930580,
+    "excludedTopPixels" : 192,
+    "key" : "app-long-402-portrait-light"
+  },
+  {
+    "boundingBox" : [
+      664,
+      537,
+      697,
+      654
+    ],
+    "changedPixels" : 2313,
+    "comparedPixels" : 3785760,
+    "excludedTopPixels" : 0,
+    "key" : "app-long-440-landscape-dark"
+  },
+  {
+    "boundingBox" : [
+      664,
+      537,
+      697,
+      656
+    ],
+    "changedPixels" : 2344,
+    "comparedPixels" : 3785760,
+    "excludedTopPixels" : 0,
+    "key" : "app-long-440-landscape-light"
+  },
+  {
+    "boundingBox" : [
+      969,
+      740,
+      1085,
+      773
+    ],
+    "changedPixels" : 2304,
+    "comparedPixels" : 3532320,
+    "excludedTopPixels" : 192,
+    "key" : "app-long-440-portrait-dark"
+  },
+  {
+    "boundingBox" : [
+      969,
+      740,
+      1086,
+      773
+    ],
+    "changedPixels" : 2282,
+    "comparedPixels" : 3532320,
+    "excludedTopPixels" : 192,
+    "key" : "app-long-440-portrait-light"
+  },
+  {
+    "changedPixels" : 0,
+    "comparedPixels" : 964500,
+    "excludedTopPixels" : 48,
+    "key" : "app-no-message-375-portrait-dark"
+  },
+  {
+    "changedPixels" : 0,
+    "comparedPixels" : 964500,
+    "excludedTopPixels" : 48,
+    "key" : "app-no-message-375-portrait-light"
+  },
+  {
+    "boundingBox" : [
+      70,
+      366,
+      673,
+      1265
+    ],
+    "changedPixels" : 30769,
+    "comparedPixels" : 964500,
+    "excludedTopPixels" : 48,
+    "key" : "app-oversize-375-portrait-dark"
+  },
+  {
+    "boundingBox" : [
+      70,
+      366,
+      674,
+      1265
+    ],
+    "changedPixels" : 26685,
+    "comparedPixels" : 964500,
+    "excludedTopPixels" : 48,
+    "key" : "app-oversize-375-portrait-light"
+  },
+  {
+    "boundingBox" : [
+      71,
+      366,
+      674,
+      537
+    ],
+    "changedPixels" : 28619,
+    "comparedPixels" : 964500,
+    "excludedTopPixels" : 48,
+    "key" : "app-paste-error-375-portrait-dark"
+  },
+  {
+    "boundingBox" : [
+      71,
+      368,
+      674,
+      537
+    ],
+    "changedPixels" : 29968,
+    "comparedPixels" : 964500,
+    "excludedTopPixels" : 48,
+    "key" : "app-paste-error-375-portrait-light"
+  },
+  {
+    "boundingBox" : [
+      69,
+      407,
+      141,
+      429
+    ],
+    "changedPixels" : 888,
+    "comparedPixels" : 964500,
+    "excludedTopPixels" : 48,
+    "key" : "app-self-375-portrait-dark"
+  },
+  {
+    "boundingBox" : [
+      69,
+      407,
+      273,
+      1236
+    ],
+    "changedPixels" : 986,
+    "comparedPixels" : 964500,
+    "excludedTopPixels" : 48,
+    "key" : "app-self-375-portrait-light"
+  },
+  {
+    "boundingBox" : [
+      69,
+      407,
+      143,
+      429
+    ],
+    "changedPixels" : 938,
+    "comparedPixels" : 964500,
+    "excludedTopPixels" : 48,
+    "key" : "app-unknown-375-portrait-dark"
+  },
+  {
+    "boundingBox" : [
+      69,
+      407,
+      143,
+      429
+    ],
+    "changedPixels" : 912,
+    "comparedPixels" : 964500,
+    "excludedTopPixels" : 48,
+    "key" : "app-unknown-375-portrait-light"
+  },
+  {
+    "changedPixels" : 0,
+    "comparedPixels" : 964500,
+    "excludedTopPixels" : 48,
+    "key" : "app-version-375-portrait-dark"
+  },
+  {
+    "boundingBox" : [
+      242,
+      1199,
+      273,
+      1236
+    ],
+    "changedPixels" : 73,
+    "comparedPixels" : 964500,
+    "excludedTopPixels" : 48,
+    "key" : "app-version-375-portrait-light"
+  },
+  {
+    "boundingBox" : [
+      355,
+      814,
+      389,
+      848
+    ],
+    "changedPixels" : 378,
+    "comparedPixels" : 964500,
+    "excludedTopPixels" : 48,
+    "key" : "keyboard-busy-375-portrait-dark"
+  },
+  {
+    "boundingBox" : [
+      3,
+      309,
+      746,
+      493
+    ],
+    "changedPixels" : 69384,
+    "comparedPixels" : 964500,
+    "excludedTopPixels" : 48,
+    "key" : "keyboard-busy-375-portrait-light"
+  },
+  {
+    "changedPixels" : 0,
+    "comparedPixels" : 964500,
+    "excludedTopPixels" : 48,
+    "key" : "keyboard-changed-375-portrait-dark"
+  },
+  {
+    "boundingBox" : [
+      3,
+      309,
+      746,
+      493
+    ],
+    "changedPixels" : 69384,
+    "comparedPixels" : 964500,
+    "excludedTopPixels" : 48,
+    "key" : "keyboard-changed-375-portrait-light"
+  },
+  {
+    "boundingBox" : [
+      618,
+      703,
+      693,
+      725
+    ],
+    "changedPixels" : 937,
+    "comparedPixels" : 964500,
+    "excludedTopPixels" : 48,
+    "key" : "keyboard-contact-375-portrait-dark"
+  },
+  {
+    "boundingBox" : [
+      3,
+      309,
+      746,
+      725
+    ],
+    "changedPixels" : 70320,
+    "comparedPixels" : 964500,
+    "excludedTopPixels" : 48,
+    "key" : "keyboard-contact-375-portrait-light"
+  },
+  {
+    "boundingBox" : [
+      927,
+      1449,
+      1044,
+      1482
+    ],
+    "changedPixels" : 2436,
+    "comparedPixels" : 2930580,
+    "excludedTopPixels" : 192,
+    "key" : "keyboard-contact-402-portrait-dark"
+  },
+  {
+    "boundingBox" : [
+      4,
+      860,
+      1202,
+      2619
+    ],
+    "changedPixels" : 167639,
+    "comparedPixels" : 2930580,
+    "excludedTopPixels" : 192,
+    "key" : "keyboard-contact-402-portrait-light"
+  },
+  {
+    "boundingBox" : [
+      927,
+      1695,
+      1045,
+      1728
+    ],
+    "changedPixels" : 2344,
+    "comparedPixels" : 3532320,
+    "excludedTopPixels" : 192,
+    "key" : "keyboard-contact-440-portrait-dark"
+  },
+  {
+    "boundingBox" : [
+      927,
+      1695,
+      1044,
+      1728
+    ],
+    "changedPixels" : 2246,
+    "comparedPixels" : 3532320,
+    "excludedTopPixels" : 192,
+    "key" : "keyboard-contact-440-portrait-light"
+  },
+  {
+    "boundingBox" : [
+      440,
+      602,
+      692,
+      725
+    ],
+    "changedPixels" : 3877,
+    "comparedPixels" : 964500,
+    "excludedTopPixels" : 48,
+    "key" : "keyboard-contacts-warning-375-portrait-dark"
+  },
+  {
+    "boundingBox" : [
+      3,
+      309,
+      746,
+      725
+    ],
+    "changedPixels" : 72925,
+    "comparedPixels" : 964500,
+    "excludedTopPixels" : 48,
+    "key" : "keyboard-contacts-warning-375-portrait-light"
+  },
+  {
+    "changedPixels" : 0,
+    "comparedPixels" : 964500,
+    "excludedTopPixels" : 48,
+    "key" : "keyboard-corrupt-375-portrait-dark"
+  },
+  {
+    "boundingBox" : [
+      3,
+      309,
+      746,
+      493
+    ],
+    "changedPixels" : 69384,
+    "comparedPixels" : 964500,
+    "excludedTopPixels" : 48,
+    "key" : "keyboard-corrupt-375-portrait-light"
+  },
+  {
+    "changedPixels" : 0,
+    "comparedPixels" : 964500,
+    "excludedTopPixels" : 48,
+    "key" : "keyboard-foreign-375-portrait-dark"
+  },
+  {
+    "boundingBox" : [
+      3,
+      309,
+      746,
+      493
+    ],
+    "changedPixels" : 69384,
+    "comparedPixels" : 964500,
+    "excludedTopPixels" : 48,
+    "key" : "keyboard-foreign-375-portrait-light"
+  },
+  {
+    "changedPixels" : 0,
+    "comparedPixels" : 964500,
+    "excludedTopPixels" : 48,
+    "key" : "keyboard-generic-375-portrait-dark"
+  },
+  {
+    "boundingBox" : [
+      3,
+      309,
+      746,
+      493
+    ],
+    "changedPixels" : 69384,
+    "comparedPixels" : 964500,
+    "excludedTopPixels" : 48,
+    "key" : "keyboard-generic-375-portrait-light"
+  },
+  {
+    "boundingBox" : [
+      400,
+      515,
+      690,
+      531
+    ],
+    "changedPixels" : 2769,
+    "comparedPixels" : 964500,
+    "excludedTopPixels" : 48,
+    "key" : "keyboard-idle-375-portrait-dark"
+  },
+  {
+    "boundingBox" : [
+      3,
+      309,
+      746,
+      531
+    ],
+    "changedPixels" : 71639,
+    "comparedPixels" : 964500,
+    "excludedTopPixels" : 48,
+    "key" : "keyboard-idle-375-portrait-light"
+  },
+  {
+    "changedPixels" : 0,
+    "comparedPixels" : 964500,
+    "excludedTopPixels" : 48,
+    "key" : "keyboard-key-error-375-portrait-dark"
+  },
+  {
+    "boundingBox" : [
+      3,
+      309,
+      746,
+      493
+    ],
+    "changedPixels" : 69384,
+    "comparedPixels" : 964500,
+    "excludedTopPixels" : 48,
+    "key" : "keyboard-key-error-375-portrait-light"
+  },
+  {
+    "changedPixels" : 0,
+    "comparedPixels" : 1000500,
+    "excludedTopPixels" : 0,
+    "key" : "keyboard-long-375-landscape-dark"
+  },
+  {
+    "changedPixels" : 0,
+    "comparedPixels" : 1000500,
+    "excludedTopPixels" : 0,
+    "key" : "keyboard-long-375-landscape-light"
+  },
+  {
+    "boundingBox" : [
+      618,
+      747,
+      692,
+      769
+    ],
+    "changedPixels" : 908,
+    "comparedPixels" : 964500,
+    "excludedTopPixels" : 48,
+    "key" : "keyboard-long-375-portrait-dark"
+  },
+  {
+    "boundingBox" : [
+      3,
+      309,
+      746,
+      769
+    ],
+    "changedPixels" : 70320,
+    "comparedPixels" : 964500,
+    "excludedTopPixels" : 48,
+    "key" : "keyboard-long-375-portrait-light"
+  },
+  {
+    "changedPixels" : 0,
+    "comparedPixels" : 3162132,
+    "excludedTopPixels" : 0,
+    "key" : "keyboard-long-402-landscape-dark"
+  },
+  {
+    "changedPixels" : 0,
+    "comparedPixels" : 3162132,
+    "excludedTopPixels" : 0,
+    "key" : "keyboard-long-402-landscape-light"
+  },
+  {
+    "boundingBox" : [
+      927,
+      1515,
+      1044,
+      1548
+    ],
+    "changedPixels" : 2436,
+    "comparedPixels" : 2930580,
+    "excludedTopPixels" : 192,
+    "key" : "keyboard-long-402-portrait-dark"
+  },
+  {
+    "boundingBox" : [
+      4,
+      860,
+      1202,
+      2619
+    ],
+    "changedPixels" : 167480,
+    "comparedPixels" : 2930580,
+    "excludedTopPixels" : 192,
+    "key" : "keyboard-long-402-portrait-light"
+  },
+  {
+    "changedPixels" : 0,
+    "comparedPixels" : 3785760,
+    "excludedTopPixels" : 0,
+    "key" : "keyboard-long-440-landscape-dark"
+  },
+  {
+    "changedPixels" : 0,
+    "comparedPixels" : 3785760,
+    "excludedTopPixels" : 0,
+    "key" : "keyboard-long-440-landscape-light"
+  },
+  {
+    "boundingBox" : [
+      927,
+      1695,
+      1045,
+      1728
+    ],
+    "changedPixels" : 2344,
+    "comparedPixels" : 3532320,
+    "excludedTopPixels" : 192,
+    "key" : "keyboard-long-440-portrait-dark"
+  },
+  {
+    "boundingBox" : [
+      927,
+      1695,
+      1044,
+      1728
+    ],
+    "changedPixels" : 2282,
+    "comparedPixels" : 3532320,
+    "excludedTopPixels" : 192,
+    "key" : "keyboard-long-440-portrait-light"
+  },
+  {
+    "changedPixels" : 0,
+    "comparedPixels" : 964500,
+    "excludedTopPixels" : 48,
+    "key" : "keyboard-no-access-375-portrait-dark"
+  },
+  {
+    "boundingBox" : [
+      3,
+      309,
+      746,
+      493
+    ],
+    "changedPixels" : 69384,
+    "comparedPixels" : 964500,
+    "excludedTopPixels" : 48,
+    "key" : "keyboard-no-access-375-portrait-light"
+  },
+  {
+    "changedPixels" : 0,
+    "comparedPixels" : 964500,
+    "excludedTopPixels" : 48,
+    "key" : "keyboard-no-key-375-portrait-dark"
+  },
+  {
+    "boundingBox" : [
+      3,
+      309,
+      746,
+      493
+    ],
+    "changedPixels" : 69384,
+    "comparedPixels" : 964500,
+    "excludedTopPixels" : 48,
+    "key" : "keyboard-no-key-375-portrait-light"
+  },
+  {
+    "changedPixels" : 0,
+    "comparedPixels" : 964500,
+    "excludedTopPixels" : 48,
+    "key" : "keyboard-no-message-375-portrait-dark"
+  },
+  {
+    "boundingBox" : [
+      3,
+      309,
+      746,
+      493
+    ],
+    "changedPixels" : 69384,
+    "comparedPixels" : 964500,
+    "excludedTopPixels" : 48,
+    "key" : "keyboard-no-message-375-portrait-light"
+  },
+  {
+    "changedPixels" : 0,
+    "comparedPixels" : 964500,
+    "excludedTopPixels" : 48,
+    "key" : "keyboard-oversize-375-portrait-dark"
+  },
+  {
+    "boundingBox" : [
+      3,
+      309,
+      746,
+      493
+    ],
+    "changedPixels" : 69384,
+    "comparedPixels" : 964500,
+    "excludedTopPixels" : 48,
+    "key" : "keyboard-oversize-375-portrait-light"
+  },
+  {
+    "changedPixels" : 0,
+    "comparedPixels" : 964500,
+    "excludedTopPixels" : 48,
+    "key" : "keyboard-paste-error-375-portrait-dark"
+  },
+  {
+    "boundingBox" : [
+      3,
+      309,
+      746,
+      493
+    ],
+    "changedPixels" : 69384,
+    "comparedPixels" : 964500,
+    "excludedTopPixels" : 48,
+    "key" : "keyboard-paste-error-375-portrait-light"
+  },
+  {
+    "boundingBox" : [
+      618,
+      703,
+      693,
+      725
+    ],
+    "changedPixels" : 937,
+    "comparedPixels" : 964500,
+    "excludedTopPixels" : 48,
+    "key" : "keyboard-self-375-portrait-dark"
+  },
+  {
+    "boundingBox" : [
+      3,
+      309,
+      746,
+      725
+    ],
+    "changedPixels" : 70288,
+    "comparedPixels" : 964500,
+    "excludedTopPixels" : 48,
+    "key" : "keyboard-self-375-portrait-light"
+  },
+  {
+    "boundingBox" : [
+      440,
+      602,
+      692,
+      725
+    ],
+    "changedPixels" : 3227,
+    "comparedPixels" : 964500,
+    "excludedTopPixels" : 48,
+    "key" : "keyboard-unknown-375-portrait-dark"
+  },
+  {
+    "boundingBox" : [
+      3,
+      309,
+      746,
+      725
+    ],
+    "changedPixels" : 73046,
+    "comparedPixels" : 964500,
+    "excludedTopPixels" : 48,
+    "key" : "keyboard-unknown-375-portrait-light"
+  },
+  {
+    "changedPixels" : 0,
+    "comparedPixels" : 964500,
+    "excludedTopPixels" : 48,
+    "key" : "keyboard-version-375-portrait-dark"
+  },
+  {
+    "boundingBox" : [
+      3,
+      309,
+      746,
+      493
+    ],
+    "changedPixels" : 69384,
+    "comparedPixels" : 964500,
+    "excludedTopPixels" : 48,
+    "key" : "keyboard-version-375-portrait-light"
+  }
+]

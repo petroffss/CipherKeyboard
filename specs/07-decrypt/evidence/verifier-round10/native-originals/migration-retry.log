@@ -1,0 +1,10 @@
+dev.cipherkeyboard.app: 28738
+Detected file type from extension: PNG
+Note: No display specified. Defaulting to display: E13BA776-024B-483B-A3B8-059848C56096 (screenID: 1, name: LCD)
+Wrote screenshot to: /Users/segei/Documents/CipherKeyboard/.build/DecryptR10Candidate/.build/VerifierR10/migration-legacy.png
+dev.cipherkeyboard.app: 28855
+Detected file type from extension: PNG
+Note: No display specified. Defaulting to display: E13BA776-024B-483B-A3B8-059848C56096 (screenID: 1, name: LCD)
+Wrote screenshot to: /Users/segei/Documents/CipherKeyboard/.build/DecryptR10Candidate/.build/VerifierR10/migration-migrated.png
+Same identity row and new public metadata index
+Public QR payloads match byte for byte

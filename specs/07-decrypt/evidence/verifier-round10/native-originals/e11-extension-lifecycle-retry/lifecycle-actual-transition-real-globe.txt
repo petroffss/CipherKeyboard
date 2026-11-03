@@ -1,0 +1,1 @@
+secondsAfterTap=6.899165034294128;state=real;event=globe

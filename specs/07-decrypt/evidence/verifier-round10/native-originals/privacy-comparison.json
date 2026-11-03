@@ -1,0 +1,65 @@
+{
+  "clipboardBytes": 575,
+  "clipboardSHA256": "862167897644916db355a789b7f5e5aad3bf700cf3fef0ddfa2e9f2926b8a2cb",
+  "keychainMetadataRows": 1,
+  "logBytes": 47997641,
+  "nonXCTestLogRows": 6650,
+  "canaryRowsInInjectedXCTestAXDiagnosticsOnly": 184,
+  "logSHA256": "b05a97fa3d86c0318eb6183b0da46ac57c90cf64a1526aba113d2f7eeb72dd21",
+  "auditedSources": {
+    "app": {
+      "readable": true,
+      "files": 16
+    },
+    "group": {
+      "readable": true,
+      "files": 3
+    },
+    "extension": {
+      "readable": true,
+      "files": 2
+    },
+    "host": {
+      "readable": true,
+      "files": 10
+    }
+  },
+  "snapshotPathsForVisualReview": [
+    "/Users/segei/Library/Developer/CoreSimulator/Devices/1A29E451-25ED-4EF6-A322-608AAD27032D/data/Containers/Data/Application/4B885B9C-CB04-4E18-95B4-58D4D1785E94/Library/SplashBoard/Snapshots/dev.cipherkeyboard.app - {DEFAULT GROUP}/2F2E2D23-A0A7-4CA0-A231-C7517C21F8C4@3x.ktx",
+    "/Users/segei/Library/Developer/CoreSimulator/Devices/1A29E451-25ED-4EF6-A322-608AAD27032D/data/Containers/Data/Application/4B885B9C-CB04-4E18-95B4-58D4D1785E94/Library/SplashBoard/Snapshots/dev.cipherkeyboard.app - {DEFAULT GROUP}/C34C4998-F317-4737-A7C1-C3F985ACD39D@3x.ktx",
+    "/Users/segei/Library/Developer/CoreSimulator/Devices/1A29E451-25ED-4EF6-A322-608AAD27032D/data/Containers/Data/Application/4B885B9C-CB04-4E18-95B4-58D4D1785E94/Library/SplashBoard/Snapshots/dev.cipherkeyboard.app - {DEFAULT GROUP}/EC7A30D2-FF2D-4AC1-BD38-EFA555AF2A97@3x.ktx",
+    "/Users/segei/Library/Developer/CoreSimulator/Devices/1A29E451-25ED-4EF6-A322-608AAD27032D/data/Containers/Data/Application/4B885B9C-CB04-4E18-95B4-58D4D1785E94/Library/SplashBoard/Snapshots/dev.cipherkeyboard.app - {DEFAULT GROUP}/FB6E3FA7-7547-43FE-BEBC-E643A2EA2546@3x.ktx",
+    "/Users/segei/Library/Developer/CoreSimulator/Devices/1A29E451-25ED-4EF6-A322-608AAD27032D/data/Containers/Data/Application/4B885B9C-CB04-4E18-95B4-58D4D1785E94/Library/SplashBoard/Snapshots/sceneID:dev.cipherkeyboard.app-7A5CE9E6-CE1C-4A62-9197-795838506A69/197F10D0-35D6-47BC-8BD5-34274DF2748B@3x.ktx",
+    "/Users/segei/Library/Developer/CoreSimulator/Devices/1A29E451-25ED-4EF6-A322-608AAD27032D/data/Containers/Data/Application/4B885B9C-CB04-4E18-95B4-58D4D1785E94/Library/SplashBoard/Snapshots/sceneID:dev.cipherkeyboard.app-7A5CE9E6-CE1C-4A62-9197-795838506A69/DF2D795C-F1C2-436F-A6F4-7154477B8490@3x.ktx",
+    "/Users/segei/Library/Developer/CoreSimulator/Devices/1A29E451-25ED-4EF6-A322-608AAD27032D/data/Containers/Data/Application/CE8854CD-49EA-4DD6-9E14-15FC904915E4/Library/SplashBoard/Snapshots/dev.cipherkeyboard.typinghost - {DEFAULT GROUP}/13CD491A-A9BB-4A1E-9D6C-4A7DD9AA8097@3x.ktx",
+    "/Users/segei/Library/Developer/CoreSimulator/Devices/1A29E451-25ED-4EF6-A322-608AAD27032D/data/Containers/Data/Application/CE8854CD-49EA-4DD6-9E14-15FC904915E4/Library/SplashBoard/Snapshots/dev.cipherkeyboard.typinghost - {DEFAULT GROUP}/59AD6FB8-8C45-48BB-82A8-0D54DD3BB6B5@3x.ktx",
+    "/Users/segei/Library/Developer/CoreSimulator/Devices/1A29E451-25ED-4EF6-A322-608AAD27032D/data/Containers/Data/Application/CE8854CD-49EA-4DD6-9E14-15FC904915E4/Library/SplashBoard/Snapshots/dev.cipherkeyboard.typinghost - {DEFAULT GROUP}/633B45BD-9207-49E0-8A7C-96E3E6F43B6D@3x.ktx",
+    "/Users/segei/Library/Developer/CoreSimulator/Devices/1A29E451-25ED-4EF6-A322-608AAD27032D/data/Containers/Data/Application/CE8854CD-49EA-4DD6-9E14-15FC904915E4/Library/SplashBoard/Snapshots/dev.cipherkeyboard.typinghost - {DEFAULT GROUP}/AC336F44-D631-4F49-B795-713087C807CD@3x.ktx",
+    "/Users/segei/Library/Developer/CoreSimulator/Devices/1A29E451-25ED-4EF6-A322-608AAD27032D/data/Containers/Data/Application/CE8854CD-49EA-4DD6-9E14-15FC904915E4/Library/SplashBoard/Snapshots/sceneID:dev.cipherkeyboard.typinghost-default/19867DBE-155C-48BD-AE96-86DDE72396F6@3x.ktx",
+    "/Users/segei/Library/Developer/CoreSimulator/Devices/1A29E451-25ED-4EF6-A322-608AAD27032D/data/Containers/Data/Application/CE8854CD-49EA-4DD6-9E14-15FC904915E4/Library/SplashBoard/Snapshots/sceneID:dev.cipherkeyboard.typinghost-default/35B2D083-4F9A-4659-A47E-2155ECA92E9A@3x.ktx",
+    "/Users/segei/Library/Developer/CoreSimulator/Devices/1A29E451-25ED-4EF6-A322-608AAD27032D/data/Containers/Data/Application/CE8854CD-49EA-4DD6-9E14-15FC904915E4/Library/SplashBoard/Snapshots/sceneID:dev.cipherkeyboard.typinghost-default/B3A96EDC-1FF2-40D6-87AC-D4DD87552F74@3x.ktx",
+    "/Users/segei/Library/Developer/CoreSimulator/Devices/1A29E451-25ED-4EF6-A322-608AAD27032D/data/Containers/Data/Application/CE8854CD-49EA-4DD6-9E14-15FC904915E4/Library/SplashBoard/Snapshots/sceneID:dev.cipherkeyboard.typinghost-default/F429C02F-C911-4971-B6F8-FDC9C02ED6D5@3x.ktx"
+  ],
+  "changedStoragePaths": [
+    "app/Library/Saved Application State/dev.cipherkeyboard.app.savedState/7A5CE9E6-CE1C-4A62-9197-795838506A69/data.data",
+    "app/Library/Saved Application State/dev.cipherkeyboard.app.savedState/7A5CE9E6-CE1C-4A62-9197-795838506A69/userInfo.data",
+    "app/Library/SplashBoard/Snapshots/dev.cipherkeyboard.app - {DEFAULT GROUP}/0DD0FE9C-4DED-44C3-B1F2-A67D30A11FD4@3x.ktx",
+    "app/Library/SplashBoard/Snapshots/dev.cipherkeyboard.app - {DEFAULT GROUP}/2F2E2D23-A0A7-4CA0-A231-C7517C21F8C4@3x.ktx",
+    "app/Library/SplashBoard/Snapshots/dev.cipherkeyboard.app - {DEFAULT GROUP}/49A96747-E0C8-4D90-8F55-037C2B145F6C@3x.ktx",
+    "app/Library/SplashBoard/Snapshots/dev.cipherkeyboard.app - {DEFAULT GROUP}/64BE94EE-3A19-4E3D-909E-FAEB6FB74CFA@3x.ktx",
+    "app/Library/SplashBoard/Snapshots/dev.cipherkeyboard.app - {DEFAULT GROUP}/9593D87F-A924-4A55-819E-2477DB3629E2@3x.ktx",
+    "app/Library/SplashBoard/Snapshots/dev.cipherkeyboard.app - {DEFAULT GROUP}/C34C4998-F317-4737-A7C1-C3F985ACD39D@3x.ktx",
+    "app/Library/SplashBoard/Snapshots/dev.cipherkeyboard.app - {DEFAULT GROUP}/EC7A30D2-FF2D-4AC1-BD38-EFA555AF2A97@3x.ktx",
+    "app/Library/SplashBoard/Snapshots/dev.cipherkeyboard.app - {DEFAULT GROUP}/FB6E3FA7-7547-43FE-BEBC-E643A2EA2546@3x.ktx",
+    "app/Library/SplashBoard/Snapshots/sceneID:dev.cipherkeyboard.app-7A5CE9E6-CE1C-4A62-9197-795838506A69/197F10D0-35D6-47BC-8BD5-34274DF2748B@3x.ktx",
+    "app/Library/SplashBoard/Snapshots/sceneID:dev.cipherkeyboard.app-7A5CE9E6-CE1C-4A62-9197-795838506A69/5932556A-3C84-4C05-B824-4094301FA88D@3x.ktx",
+    "app/Library/SplashBoard/Snapshots/sceneID:dev.cipherkeyboard.app-7A5CE9E6-CE1C-4A62-9197-795838506A69/5AA9E633-3174-437E-8E52-352B1B18EF11@3x.ktx",
+    "app/Library/SplashBoard/Snapshots/sceneID:dev.cipherkeyboard.app-7A5CE9E6-CE1C-4A62-9197-795838506A69/DF2D795C-F1C2-436F-A6F4-7154477B8490@3x.ktx",
+    "group/keyboard-access.v1.json",
+    "host/Library/SplashBoard/Snapshots/sceneID:dev.cipherkeyboard.typinghost-default/09135DF6-5179-4ED9-BBA5-AA3EFD0B16EC@3x.ktx",
+    "host/Library/SplashBoard/Snapshots/sceneID:dev.cipherkeyboard.typinghost-default/35B2D083-4F9A-4659-A47E-2155ECA92E9A@3x.ktx",
+    "host/Library/SplashBoard/Snapshots/sceneID:dev.cipherkeyboard.typinghost-default/5A25889A-9327-4947-8EE3-0C4A33ADD31F@3x.ktx",
+    "host/Library/SplashBoard/Snapshots/sceneID:dev.cipherkeyboard.typinghost-default/F429C02F-C911-4971-B6F8-FDC9C02ED6D5@3x.ktx"
+  ],
+  "scope": "Audited synthetic bytes and metadata. Actual App Switcher screenshot and visual snapshot review required separately."
+}

@@ -1,0 +1,88 @@
+Attributes: Application, 0x113046bc0, pid: 19759, label: 'CipherKeyboard'
+Element subtree:
+ →Application, 0x113046bc0, pid: 19759, label: 'CipherKeyboard'
+    Window (Main), 0x113046d00, {{0.0, 0.0}, {402.0, 874.0}}
+      Other, 0x113046e40, {{0.0, 0.0}, {402.0, 874.0}}
+      Other, 0x113046f80, {{0.0, 0.0}, {402.0, 874.0}}
+        Other, 0x1130470c0, {{0.0, 0.0}, {402.0, 874.0}}
+          Other, 0x113047200, {{0.0, 0.0}, {402.0, 874.0}}
+            Other, 0x113047340, {{0.0, 0.0}, {402.0, 874.0}}
+              Other, 0x113047480, {{0.0, 0.0}, {402.0, 874.0}}
+                Other, 0x1130475c0, {{0.0, 0.0}, {402.0, 874.0}}
+                  Other, 0x113047700, {{0.0, 0.0}, {402.0, 874.0}}
+                    Other, 0x113047840, {{0.0, 0.0}, {402.0, 874.0}}
+                      Other, 0x113047980, {{0.0, 0.0}, {402.0, 874.0}}
+                        Other, 0x113047ac0, {{0.0, 0.0}, {402.0, 874.0}}
+                          StaticText, 0x113047c00, {{381.0, 61.8}, {1.0, 1.3}}, identifier: 'decrypt.debugLifetime', label: 'coordinators=2;operations=0'
+                          StaticText, 0x113047d40, {{20.0, 70.0}, {250.0, 40.7}}, label: 'Расшифровать'
+                          ScrollView, 0x113047e80, {{20.0, 126.7}, {362.0, 747.3}}
+                            Other, 0x10abd8000, {{20.0, 126.7}, {362.0, 361.7}}
+                              StaticText, 0x10abd8140, {{20.0, 126.7}, {269.7, 18.0}}, label: 'Вставьте зашифрованное сообщение'
+                              Other, 0x10abd8280, {{20.0, 160.7}, {362.0, 212.0}}
+                                TextView, 0x10abd83c0, {{20.0, 160.7}, {362.0, 150.0}}, identifier: 'decrypt.input', label: 'ckmsg2:…', value: ckmsg2:AgIAYIRi-z8...
+                                  Other, 0x10abd8500, {{20.0, -287.0}, {0.0, 0.0}}, identifier: '_UITextSelectionRangeAdjustmentContainerView'
+                                    Other, 0x10abd8640, {{20.0, -287.0}, {0.0, 0.0}}, identifier: 'com.apple.text.grabber.leading'
+                                      Other, 0x10abd8780, {{12.8, -300.5}, {16.5, 16.5}}
+                                      Other, 0x10abd88c0, {{20.0, -287.0}, {2.0, 0.0}}
+                                    Other, 0x10abd8a00, {{20.0, -287.0}, {0.0, 0.0}}, identifier: 'com.apple.text.grabber.leading'
+                                      Other, 0x10abd8b40, {{12.8, -300.5}, {16.5, 16.5}}
+                                      Other, 0x10abd8c80, {{20.0, -287.0}, {2.0, 0.0}}
+                                  Other, 0x10abd8dc0, {{349.0, 160.7}, {30.0, 150.0}}, label: 'Вертикальная полоса прокрутки, 5 страниц', value: 98 %
+                                    Other, 0x10abd8f00, {{376.0, 269.0}, {3.0, 36.0}}
+                                  Other, 0x10abd9040, {{20.0, 277.7}, {362.0, 30.0}}, label: 'Горизонтальная полоса прокрутки, 1 страница', value: 0 %
+                                    Other, 0x10abd9180, {{23.0, 304.7}, {353.0, 3.0}}
+                                Button, 0x10abd92c0, {{20.0, 322.7}, {362.0, 50.0}}, identifier: 'decrypt.paste', label: 'Вставить'
+                              Button, 0x10abd9400, {{20.0, 388.7}, {362.0, 50.0}}, identifier: 'decrypt.submit', label: 'Расшифровать'
+                              StaticText, 0x10abd9540, {{20.0, 454.7}, {228.0, 33.7}}, label: 'Текст показывается только здесь.
+При уходе с вкладки всё стирается.'
+                            Other, 0x10abd9680, {{20.0, 126.7}, {362.0, 747.3}}
+                              Other, 0x10abd97c0, {{20.0, 741.0}, {362.0, 133.0}}
+                            Other, 0x10abd9900, {{20.0, 126.7}, {362.0, 747.3}}
+                            Other, 0x10abd9a40, {{349.0, 126.7}, {30.0, 664.3}}, label: 'Вертикальная полоса прокрутки, 1 страница', value: 0 %
+                              Other, 0x10abd9b80, {{376.0, 432.3}, {3.0, 355.7}}
+                            Other, 0x10abd9cc0, {{349.0, 126.7}, {30.0, 664.3}}, label: 'Вертикальная полоса прокрутки, 1 страница', value: 0 %
+                              Other, 0x10abd9e00, {{376.0, 432.3}, {3.0, 355.7}}
+                Other, 0x10abd9f40, {{0.0, 0.0}, {402.0, 874.0}}
+                  Other, 0x10abda080, {{0.0, 791.0}, {402.0, 83.0}}
+                    Other, 0x10abda1c0, {{0.0, 0.0}, {402.0, 874.0}}
+                      TabBar, 0x10abda300, {{0.0, 791.0}, {402.0, 83.0}}, label: 'Панель вкладок'
+                        Other, 0x10abda440, {{21.0, 791.0}, {360.0, 62.0}}
+                          Other, 0x10abda580, {{21.0, 791.0}, {125.0, 54.0}}
+                          Other, 0x10abda6c0, {{21.0, 791.0}, {360.0, 62.0}}
+                            Button, 0x10abda800, {{25.0, 795.0}, {94.5, 54.0}}, identifier: 'tab.myKey', label: 'Мой ключ'
+                              Image, 0x10abda940, {{62.0, 798.7}, {20.7, 32.3}}, identifier: 'key.fill', label: 'пароли'
+                            Button, 0x10abdaa80, {{99.5, 795.0}, {92.5, 54.0}}, identifier: 'tab.contacts', label: 'Контакты'
+                              Image, 0x10abdabc0, {{127.1, 802.7}, {37.0, 26.0}}, identifier: 'person.2.fill', label: 'Два человека, с заливкой'
+                            Button, 0x10abdad00, {{172.0, 795.0}, {125.0, 54.0}}, identifier: 'tab.decrypt', label: 'Расшифровать', Selected
+                              Image, 0x10abdae40, {{219.6, 801.3}, {29.7, 26.7}}, identifier: 'lock.open.fill', label: 'разблокировать'
+                            Button, 0x10abdaf80, {{277.0, 795.0}, {100.0, 54.0}}, identifier: 'tab.setup', label: 'Настройка'
+                              Image, 0x10abdb0c0, {{313.0, 801.0}, {28.0, 28.0}}, identifier: 'gearshape.fill', label: 'Форма шестеренки, с заливкой'
+                          Other, 0x10abdb200, {{21.0, 791.0}, {360.0, 62.0}}
+                          Other, 0x10abdb340, {{172.0, 795.0}, {125.0, 54.0}}
+                            Other, 0x10abdb480, {{172.0, 795.0}, {124.7, 54.0}}
+                              Other, 0x10abdb5c0, {{172.0, 795.0}, {124.7, 54.0}}
+                              Other, 0x10abdb700, {{172.0, 795.0}, {124.7, 54.0}}
+                                Other, 0x10abdb840, {{172.0, 795.0}, {124.7, 54.0}}
+                                  Other, 0x10abdb980, {{172.0, 795.0}, {124.7, 54.0}}
+                                    Other, 0x10abdbac0, {{172.0, 795.0}, {124.7, 54.0}}
+                                  Other, 0x10abdbc00, {{172.0, 795.0}, {124.7, 54.0}}
+                                Other, 0x10abdbd40, {{172.0, 795.0}, {124.7, 54.0}}
+                    Other, 0x10abdbe80, {{0.0, 791.0}, {402.0, 83.0}}
+                      Other, 0x11311c000, {{0.0, 791.0}, {402.0, 83.0}}
+                        Other, 0x11311c140, {{0.0, 791.0}, {402.0, 83.0}}
+                          Other, 0x11311c280, {{0.0, 791.0}, {402.0, 83.0}}
+                            Other, 0x11311c3c0, {{0.0, 791.0}, {402.0, 83.0}}
+                              Other, 0x11311c500, {{0.0, 791.0}, {402.0, 83.0}}
+                          Other, 0x11311c640, {{0.0, 791.0}, {402.0, 83.0}}
+                            Other, 0x11311c780, {{0.0, 791.0}, {402.0, 83.0}}
+              Other, 0x11311c8c0, {{0.0, 62.0}, {402.0, 778.0}}
+    Window, 0x11311ca00, {{0.0, 0.0}, {402.0, 874.0}}
+      Other, 0x11311cb40, {{0.0, 0.0}, {402.0, 874.0}}
+        Other, 0x11311cc80, {{0.0, 0.0}, {402.0, 874.0}}
+Path to element:
+ →Application, 0x113046bc0, pid: 19759, label: 'CipherKeyboard'
+Query chain:
+ →Find: Target Application 'dev.cipherkeyboard.app'
+  Output: {
+    Application, 0x11311cdc0, pid: 19759, label: 'CipherKeyboard'
+  }

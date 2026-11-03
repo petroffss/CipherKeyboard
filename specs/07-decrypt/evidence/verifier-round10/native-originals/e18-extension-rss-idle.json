@@ -1,0 +1,128 @@
+{
+  "phase": "e18-extension",
+  "surface": "extension",
+  "idleSamples": [
+    {
+      "cycle": -1,
+      "timestamp": 1793732478.180183,
+      "rssSampleOffsetSec": -0.10911989212036133,
+      "coordinators": 3,
+      "operations": 0,
+      "pid": 20949,
+      "rssKiB": 338384,
+      "elapsed": "00:35",
+      "command": "/Users/segei/Library/Developer/CoreSimulator/Devices/1A29E451-25ED-4EF6-A322-608AAD27032D/data/Containers/Bundle/Application/75D8CDC8-CFA4-4852-9616-CE14E3E72B21/CipherKeyboard.app/PlugIns/CipherKeyboardExtension.appex/CipherKeyboardExtension"
+    },
+    {
+      "cycle": 0,
+      "timestamp": 1793732486.218761,
+      "rssSampleOffsetSec": 0.24455499649047852,
+      "coordinators": 3,
+      "operations": 0,
+      "pid": 20949,
+      "rssKiB": 353504,
+      "elapsed": "00:43",
+      "command": "/Users/segei/Library/Developer/CoreSimulator/Devices/1A29E451-25ED-4EF6-A322-608AAD27032D/data/Containers/Bundle/Application/75D8CDC8-CFA4-4852-9616-CE14E3E72B21/CipherKeyboard.app/PlugIns/CipherKeyboardExtension.appex/CipherKeyboardExtension"
+    },
+    {
+      "cycle": 1,
+      "timestamp": 1793732494.501392,
+      "rssSampleOffsetSec": 0.39356112480163574,
+      "coordinators": 3,
+      "operations": 0,
+      "pid": 20949,
+      "rssKiB": 345120,
+      "elapsed": "00:51",
+      "command": "/Users/segei/Library/Developer/CoreSimulator/Devices/1A29E451-25ED-4EF6-A322-608AAD27032D/data/Containers/Bundle/Application/75D8CDC8-CFA4-4852-9616-CE14E3E72B21/CipherKeyboard.app/PlugIns/CipherKeyboardExtension.appex/CipherKeyboardExtension"
+    },
+    {
+      "cycle": 2,
+      "timestamp": 1793732502.768547,
+      "rssSampleOffsetSec": 0.4546089172363281,
+      "coordinators": 3,
+      "operations": 0,
+      "pid": 20949,
+      "rssKiB": 345088,
+      "elapsed": "01:00",
+      "command": "/Users/segei/Library/Developer/CoreSimulator/Devices/1A29E451-25ED-4EF6-A322-608AAD27032D/data/Containers/Bundle/Application/75D8CDC8-CFA4-4852-9616-CE14E3E72B21/CipherKeyboard.app/PlugIns/CipherKeyboardExtension.appex/CipherKeyboardExtension"
+    },
+    {
+      "cycle": 3,
+      "timestamp": 1793732511.000204,
+      "rssSampleOffsetSec": -0.3858301639556885,
+      "coordinators": 3,
+      "operations": 0,
+      "pid": 20949,
+      "rssKiB": 344608,
+      "elapsed": "01:07",
+      "command": "/Users/segei/Library/Developer/CoreSimulator/Devices/1A29E451-25ED-4EF6-A322-608AAD27032D/data/Containers/Bundle/Application/75D8CDC8-CFA4-4852-9616-CE14E3E72B21/CipherKeyboard.app/PlugIns/CipherKeyboardExtension.appex/CipherKeyboardExtension"
+    },
+    {
+      "cycle": 4,
+      "timestamp": 1793732519.339799,
+      "rssSampleOffsetSec": -0.3171670436859131,
+      "coordinators": 3,
+      "operations": 0,
+      "pid": 20949,
+      "rssKiB": 344736,
+      "elapsed": "01:16",
+      "command": "/Users/segei/Library/Developer/CoreSimulator/Devices/1A29E451-25ED-4EF6-A322-608AAD27032D/data/Containers/Bundle/Application/75D8CDC8-CFA4-4852-9616-CE14E3E72B21/CipherKeyboard.app/PlugIns/CipherKeyboardExtension.appex/CipherKeyboardExtension"
+    },
+    {
+      "cycle": 5,
+      "timestamp": 1793732527.664305,
+      "rssSampleOffsetSec": -0.24368786811828613,
+      "coordinators": 3,
+      "operations": 0,
+      "pid": 20949,
+      "rssKiB": 340080,
+      "elapsed": "01:24",
+      "command": "/Users/segei/Library/Developer/CoreSimulator/Devices/1A29E451-25ED-4EF6-A322-608AAD27032D/data/Containers/Bundle/Application/75D8CDC8-CFA4-4852-9616-CE14E3E72B21/CipherKeyboard.app/PlugIns/CipherKeyboardExtension.appex/CipherKeyboardExtension"
+    },
+    {
+      "cycle": 6,
+      "timestamp": 1793732535.923588,
+      "rssSampleOffsetSec": -0.09982800483703613,
+      "coordinators": 3,
+      "operations": 0,
+      "pid": 20949,
+      "rssKiB": 338688,
+      "elapsed": "01:32",
+      "command": "/Users/segei/Library/Developer/CoreSimulator/Devices/1A29E451-25ED-4EF6-A322-608AAD27032D/data/Containers/Bundle/Application/75D8CDC8-CFA4-4852-9616-CE14E3E72B21/CipherKeyboard.app/PlugIns/CipherKeyboardExtension.appex/CipherKeyboardExtension"
+    },
+    {
+      "cycle": 7,
+      "timestamp": 1793732544.197785,
+      "rssSampleOffsetSec": 0.04557013511657715,
+      "coordinators": 3,
+      "operations": 0,
+      "pid": 20949,
+      "rssKiB": 337680,
+      "elapsed": "01:41",
+      "command": "/Users/segei/Library/Developer/CoreSimulator/Devices/1A29E451-25ED-4EF6-A322-608AAD27032D/data/Containers/Bundle/Application/75D8CDC8-CFA4-4852-9616-CE14E3E72B21/CipherKeyboard.app/PlugIns/CipherKeyboardExtension.appex/CipherKeyboardExtension"
+    },
+    {
+      "cycle": 8,
+      "timestamp": 1793732552.471817,
+      "rssSampleOffsetSec": 0.13465499877929688,
+      "coordinators": 3,
+      "operations": 0,
+      "pid": 20949,
+      "rssKiB": 329648,
+      "elapsed": "01:49",
+      "command": "/Users/segei/Library/Developer/CoreSimulator/Devices/1A29E451-25ED-4EF6-A322-608AAD27032D/data/Containers/Bundle/Application/75D8CDC8-CFA4-4852-9616-CE14E3E72B21/CipherKeyboard.app/PlugIns/CipherKeyboardExtension.appex/CipherKeyboardExtension"
+    },
+    {
+      "cycle": 9,
+      "timestamp": 1793732560.746494,
+      "rssSampleOffsetSec": 0.28974199295043945,
+      "coordinators": 3,
+      "operations": 0,
+      "pid": 20949,
+      "rssKiB": 329680,
+      "elapsed": "01:58",
+      "command": "/Users/segei/Library/Developer/CoreSimulator/Devices/1A29E451-25ED-4EF6-A322-608AAD27032D/data/Containers/Bundle/Application/75D8CDC8-CFA4-4852-9616-CE14E3E72B21/CipherKeyboard.app/PlugIns/CipherKeyboardExtension.appex/CipherKeyboardExtension"
+    }
+  ],
+  "requiresSeparateReview": "Inspect RSS trend, PID changes, actual keyboard continuity, and crash/jetsam evidence."
+}

@@ -1,0 +1,1 @@
+secondsAfterTap=2.682808041572571;state=busy;event=background
