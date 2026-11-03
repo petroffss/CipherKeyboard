@@ -220,7 +220,7 @@
         public private(set) var decryption: DecryptCoordinator?
         private let decryptButton = UIButton(type: .system)
         private let decryptNotice = UILabel()
-        private let decryptPanel = PrivateDecryptPanel(prefix: "keyboard.decrypt", compactLandscapeChrome: true)
+        private let decryptPanel = PrivateDecryptPanel(prefix: "keyboard.decrypt")
         public func enableDecryption(_ model: DecryptCoordinator) {
             decryption?.deactivate()
             decryption = model
