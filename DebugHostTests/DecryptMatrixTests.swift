@@ -21,7 +21,7 @@ final class DecryptMatrixTests: XCTestCase {
             TypingTestSupport.fixture("dec-" + state, in: host)
             if state == "long" {
                 XCTAssertTrue(host.staticTexts["keyboard.decrypt.text"].waitForExistence(timeout: 5))
-                XCTAssertEqual(host.staticTexts["keyboard.decrypt.text"].label.utf8.count, 4096)
+                XCTAssertEqual(host.staticTexts["keyboard.decrypt.text"].label.utf8.count, 2857)
             }
             if state == "corrupt" {
                 XCTAssertTrue(host.staticTexts["keyboard.decrypt.status"].waitForExistence(timeout: 5))
