@@ -1,7 +1,7 @@
 ---
 feature: 07-decrypt
-loop: stopped
-round: 5
+loop: running
+round: 6
 max_rounds: 7
 base_commit: "4887d8a"
 last_reviewed_commit: "728eb8fa8df27d9804d96aa9ecffe1ef98047072"
@@ -15,7 +15,8 @@ last_reviewed_commit: "728eb8fa8df27d9804d96aa9ecffe1ef98047072"
 | 2 | 2/21 (2 fail, 17 pending) | 1 | 3fc537e | Независимо подтверждён explicit provider error; fullUI35/40, пять несовпадений точек нажатия |
 | 3 | 11/20 (1 fail, 8 pending) | 0 | 47fa9a2 | Exact E2 and native refusal passed; fullUI39/40 R9; delayed busy fixture invalid R10; partial app switcher |
 | 4 | 13/20 (2 fail, 5 pending) | 0 | 4664388 | FullUI40/40, exact E2 and real lifecycle passed; native E19/R11 and B375 landscape XXXL E16/R12 failed; no FTUE |
-| 5 | Независимый прогон | 0 | 728eb8f | R11/R12 integrated; exact risk high/E20 reviewer PASS, 20 active gates retest |
+| 5 | 6/20 (1 fail, 13 pending) | 0 | 728eb8f | Остановлен перед отдельным аудитом; R13 подтверждён. |
+| 6 | В работе | — | — | Отдельный кандидат: аудит и исправление R13; все 20 проверок заново. |
 
 ## Открытые проблемы
 | ID | Источник | Класс | Где | Суть | Впервые | Подряд |
