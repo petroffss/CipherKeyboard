@@ -615,28 +615,22 @@ final class ContactsUITests: XCTestCase {
     private func savePoint(_ identifier: String, in app: XCUIApplication) -> XCUICoordinate {
         let save = app.buttons[identifier]
         let keyboard = app.keyboards.firstMatch
-        var previous: [CGRect] = []
-        var stableSince = Date()
-        let settled = XCTNSPredicateExpectation(
+        var offset = CGVector.zero
+        let ready = XCTNSPredicateExpectation(
             predicate: NSPredicate { _, _ in
                 let window = app.frame
                 let button = save.frame
                 let keys = keyboard.exists ? keyboard.frame : .null
-                let geometry = [window, button, keys]
-                let ready =
-                    save.exists && save.isEnabled && save.isHittable
-                    && !button.isEmpty && window.contains(button) && !button.intersects(keys)
-                if !ready || geometry != previous { stableSince = Date(); previous = geometry }
-                return ready && Date().timeIntervalSince(stableSince) >= 0.4
+                guard save.exists && save.isEnabled && save.isHittable,
+                    !button.isEmpty && window.contains(button) && !button.intersects(keys)
+                else { return false }
+
+                offset = CGVector(dx: button.midX - window.minX, dy: button.midY - window.minY)
+                return true
             }, object: nil)
-        XCTAssertEqual(XCTWaiter.wait(for: [settled], timeout: 5), .completed, app.debugDescription)
-        // Resolve the action in window coordinates. XCTest's element hit point can still be
-        // from the layout before the keyboard appeared.
-        let window = app.frame
-        let button = save.frame
-        XCTAssertEqual([window, button, keyboard.exists ? keyboard.frame : .null], previous)
-        return app.coordinate(withNormalizedOffset: .zero)
-            .withOffset(CGVector(dx: button.midX - window.minX, dy: button.midY - window.minY))
+        XCTAssertEqual(XCTWaiter.wait(for: [ready], timeout: 5), .completed, app.debugDescription)
+        // Use the center from the qualified sample. Another AX read can lose the keyboard layout.
+        return app.coordinate(withNormalizedOffset: .zero).withOffset(offset)
     }
 
     @MainActor
