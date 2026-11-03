@@ -164,6 +164,12 @@
         private func install(_ content: UIView, in scroll: UIScrollView) {
             scroll.contentInsetAdjustmentBehavior = .never; scroll.alwaysBounceHorizontal = false
             scroll.showsHorizontalScrollIndicator = false
+            // These private scrollports already have explicit panel boundaries. System edge
+            // decoration must not cover the first sender line or verified message characters.
+            if #available(iOS 26.0, *) {
+                scroll.topEdgeEffect.isHidden = true; scroll.bottomEdgeEffect.isHidden = true
+                scroll.leftEdgeEffect.isHidden = true; scroll.rightEdgeEffect.isHidden = true
+            }
             scroll.addSubview(content); content.translatesAutoresizingMaskIntoConstraints = false
             NSLayoutConstraint.activate([
                 content.leadingAnchor.constraint(equalTo: scroll.contentLayoutGuide.leadingAnchor),

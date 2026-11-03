@@ -42,7 +42,7 @@ struct MainTabs: View {
             ContactsView(model: contacts)
                 .tabItem { tabLabel("Контакты", systemImage: "person.2", id: "tab.contacts") }
                 .tag(AppTab.contacts)
-            DecryptView()
+            DecryptView(selected: selection == .decrypt)
                 .tabItem { tabLabel("Расшифровать", systemImage: "lock.open", id: "tab.decrypt") }
                 .tag(AppTab.decrypt)
             NavigationStack { SetupView(model: setup) }

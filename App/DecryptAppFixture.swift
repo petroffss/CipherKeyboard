@@ -42,6 +42,7 @@
                     plain, from: name == "self" ? identity : sender,
                     to: [name == "foreign" ? foreign.publicKey : identity.publicKey])
             else { return model }
+            model.activate()
             if name != "empty" {
                 model.setInput(
                     name == "no-message"

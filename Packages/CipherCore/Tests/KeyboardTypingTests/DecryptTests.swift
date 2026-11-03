@@ -244,6 +244,43 @@ private actor DecryptOpenGate {
             if event == 1 { #expect(s.model.error == DecryptCoordinator.changedMessage) }
         }
     }
+    @Test func identityFailureAfterSuccessClearsBothSurfaces() async throws {
+        for surface in [DecryptCoordinator.Surface.keyboard, .app] {
+            for failure in [
+                IdentityReadResult.missing, .unavailable(.corruptedRecord(byteCount: 3)),
+                .unavailable(.unavailable(status: -25308)),
+            ] {
+                let r = DecryptRig(surface: surface); try r.ready("IdentityRefreshCanary07")
+                let envelope = try CipherMessage.seal("IdentityRefreshCanary07", from: r.a, to: [r.b.publicKey])
+                if surface == .app { #expect(r.model.setInput(envelope)) }
+                r.model.start(); await r.settle(); #expect(r.model.result?.text == "IdentityRefreshCanary07")
+                let reads = r.clipboard.contentReads
+                r.own = failure; r.model.refresh()
+                #expect(r.model.result == nil); #expect(r.model.error != nil)
+                #expect(!r.model.identityAvailable); #expect(!r.model.busy)
+                #expect(r.clipboard.contentReads == reads)
+                if surface == .app { #expect(r.model.input == envelope) }
+                r.own = .identity(r.b); r.model.refresh()
+                #expect(r.model.result == nil); #expect(r.clipboard.contentReads == reads)
+                r.model.start(); await r.settle(); #expect(r.model.result?.text == "IdentityRefreshCanary07")
+                // A failed read must not erase the previous full identity baseline.
+                r.own = failure; r.model.refresh(); r.own = .identity(r.c); r.model.refresh()
+                #expect(r.model.result == nil); #expect(r.model.error == DecryptCoordinator.changedMessage)
+                r.own = .identity(r.b); r.model.refresh(); r.model.start(); await r.settle()
+                #expect(r.model.result?.text == "IdentityRefreshCanary07")
+            }
+        }
+    }
+    @Test func inactiveNativeInputCannotRepopulateModel() throws {
+        let r = DecryptRig(surface: .app)
+        #expect(!r.model.setInput("late")); r.model.pasteFailed()
+        #expect(r.model.input.isEmpty); #expect(r.model.error == nil)
+        try r.ready(); #expect(r.model.setInput("ordinary"))
+        let generation = r.model.inputGeneration
+        r.model.close(); #expect(r.model.inputGeneration != generation)
+        r.model.deactivate(); #expect(!r.model.setInput("late")); r.model.pasteFailed()
+        #expect(r.model.input.isEmpty); #expect(r.model.error == nil)
+    }
     @Test func identityChangesFenceErrorPublication() async throws {
         let reader = DecryptRig(); try reader.ready()
         reader.clipboard.value = .denied; reader.clipboard.suspended = true; reader.model.start()

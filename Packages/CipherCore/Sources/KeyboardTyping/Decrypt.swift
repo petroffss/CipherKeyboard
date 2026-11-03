@@ -43,6 +43,8 @@ public struct DecryptResult: Equatable, Sendable {
     public private(set) var result: DecryptResult?
     public private(set) var active = false
     public private(set) var identityAvailable = false
+    /// Invalidates native input deliveries across edits, operations and visible sessions.
+    public private(set) var inputGeneration = UUID()
     public var onChange: (() -> Void)?
     @ObservationIgnored private let surface: Surface
     @ObservationIgnored private let access: () -> Bool
@@ -97,19 +99,23 @@ public struct DecryptResult: Equatable, Sendable {
         if let shownDocument, shownDocument != document() { deactivate(); return }
         guard !busy else { return }
         let previous = baseline
-        if let value = readIdentity(), let previous, previous != value.publicKey {
+        guard let value = readIdentity() else { result = nil; changed(); return }
+        if let previous, previous != value.publicKey {
             result = nil; presenting = surface == .keyboard && presenting; error = Self.changedMessage
         }
         changed()
     }
     @discardableResult public func setInput(_ value: String) -> Bool {
-        guard !busy, result == nil else { return false }
+        guard active, !busy, result == nil else { return false }
         guard value.utf8.count <= Self.limit else { error = Self.oversize; changed(); return false }
-        input = value; error = nil; changed(); return true
+        input = value; inputGeneration = UUID(); error = nil; changed(); return true
     }
-    public func pasteFailed() { guard !busy else { return }; error = Self.clipboardMessage; changed() }
+    public func pasteFailed() {
+        guard active, !busy, result == nil else { return }; error = Self.clipboardMessage; changed()
+    }
     public func start() {
         guard active, !busy, !blocked(), access() else { return }
+        inputGeneration = UUID()
         result = nil; error = nil
         let previousIdentity = baseline
         guard let own = readIdentity() else { presenting = surface == .keyboard; changed(); return }
@@ -185,6 +191,7 @@ public struct DecryptResult: Equatable, Sendable {
         }
     }
     public func close() {
+        inputGeneration = UUID()
         cancel(); result = nil; input = ""; error = nil; presenting = false; shownDocument = nil; changed()
     }
     public func deactivate() {
@@ -206,14 +213,16 @@ public struct DecryptResult: Equatable, Sendable {
         return true
     }
     private func readIdentity() -> Identity? {
-        guard access() else { identityAvailable = false; return nil }
+        guard access() else { identityAvailable = false; result = nil; return nil }
         switch identity() {
         case .identity(let own): identityAvailable = true; baseline = own.publicKey; return own
         case .missing:
+            result = nil
             identityAvailable = false
             error =
                 surface == .keyboard ? EncryptInsertCoordinator.missingMessage : "Ключ недоступен — повторите попытку"
         case .unavailable:
+            result = nil
             identityAvailable = false
             error =
                 surface == .keyboard ? EncryptInsertCoordinator.keyErrorMessage : "Ключ недоступен — повторите попытку"

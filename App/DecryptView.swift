@@ -4,13 +4,17 @@ import SwiftUI
 import UIKit
 
 struct DecryptView: View {
+    let selected: Bool
     @State private var model: DecryptCoordinator
     @Environment(\.scenePhase) private var phase
     @Environment(\.verticalSizeClass) private var verticalSizeClass
     @AccessibilityFocusState private var focusSubmit: Bool
     @AccessibilityFocusState private var focusError: Bool
 
-    init() { _model = State(initialValue: DecryptLaunch.makeCoordinator()) }
+    init(selected: Bool = true) {
+        self.selected = selected
+        _model = State(initialValue: DecryptLaunch.makeCoordinator())
+    }
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             Text("Расшифровать")
@@ -63,10 +67,13 @@ struct DecryptView: View {
         .padding(.horizontal, 20)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .background(Color(uiColor: .systemGroupedBackground))
-        .onAppear { model.activate() }
+        .onAppear { if selected && phase == .active { model.activate() } }
         .onDisappear { model.deactivate() }
         .onChange(of: phase) { _, phase in
-            if phase == .active { model.activate() } else { model.deactivate() }
+            if phase == .active && selected { model.activate() } else { model.deactivate() }
+        }
+        .onChange(of: selected) { _, selected in
+            if selected && phase == .active { model.activate() } else { model.deactivate() }
         }
         .onChange(of: model.presenting) { _, presenting in
             if presenting {
@@ -120,6 +127,7 @@ private struct DecryptInput: UIViewRepresentable {
         if #available(iOS 18.0, *) { editor.writingToolsBehavior = .none }
         if #available(iOS 17.0, *) { editor.inlinePredictionType = .no }
         editor.delegate = context.coordinator
+        editor.pasteDelegate = context.coordinator
         let config = UIPasteControl.Configuration()
         config.displayMode = .iconAndLabel
         config.baseBackgroundColor = .clear; config.baseForegroundColor = KeyboardPanel.accent
@@ -137,21 +145,84 @@ private struct DecryptInput: UIViewRepresentable {
         editor.layer.borderColor = UIColor.separator.resolvedColor(with: stack.traitCollection).cgColor
         stack.arrangedSubviews.last?.layer.borderColor =
             KeyboardPanel.accent.resolvedColor(with: stack.traitCollection).cgColor
-        editor.isEditable = !model.busy
-        stack.arrangedSubviews.last?.isUserInteractionEnabled = !model.busy
-        if model.busy { editor.resignFirstResponder() }
+        editor.isEditable = model.active && !model.busy && model.result == nil
+        stack.arrangedSubviews.last?.isUserInteractionEnabled = editor.isEditable
+        if !editor.isEditable { editor.resignFirstResponder() }
     }
     static func dismantleUIView(_ stack: UIStackView, coordinator: Delegate) {
-        if let editor = stack.arrangedSubviews.first as? UITextView { editor.text = ""; editor.delegate = nil }
+        coordinator.attached = false
+        if let editor = stack.arrangedSubviews.first as? UITextView {
+            editor.isEditable = false; editor.text = ""; editor.delegate = nil
+            // Keep the rejecting paste delegate for already retained native deliveries.
+            editor.pasteDelegate = coordinator
+        }
     }
-    final class Delegate: NSObject, UITextViewDelegate {
+    final class Delegate: NSObject, UITextViewDelegate, UITextPasteDelegate {
         let model: DecryptCoordinator
+        var attached = true
+        private static let stampKey = NSAttributedString.Key("CipherKeyboardPasteGeneration")
+        private final class PasteStamp: NSObject, @unchecked Sendable {
+            let generation: UUID
+            let selection: NSRange
+            init(_ generation: UUID, _ selection: NSRange) {
+                self.generation = generation; self.selection = selection
+            }
+        }
+        // UIKit explicitly permits UITextPasteItem result methods from any thread.
+        private struct PasteItem: @unchecked Sendable { let item: any UITextPasteItem }
         init(model: DecryptCoordinator) { self.model = model }
+        private var acceptsInput: Bool { attached && model.active && !model.busy && model.result == nil }
+        func textPasteConfigurationSupporting(
+            _ supporting: any UITextPasteConfigurationSupporting, transform item: any UITextPasteItem
+        ) {
+            guard acceptsInput, let view = supporting as? UITextView else { item.setNoResult(); return }
+            let stamp = PasteStamp(model.inputGeneration, view.selectedRange)
+            let output = PasteItem(item: item), key = Self.stampKey
+            item.itemProvider.loadObject(ofClass: NSString.self) { [weak self, weak view] value, _ in
+                let text = value as? String
+                Task { @MainActor in
+                    guard let self, let view, self.acceptsInput,
+                        stamp.generation == self.model.inputGeneration,
+                        stamp.selection == view.selectedRange, let text
+                    else { output.item.setNoResult(); return }
+                    output.item.setResult(attributedString: NSAttributedString(string: text, attributes: [key: stamp]))
+                }
+            }
+        }
+        func textPasteConfigurationSupporting(
+            _ supporting: any UITextPasteConfigurationSupporting,
+            performPasteOf attributedString: NSAttributedString, to range: UITextRange
+        ) -> UITextRange {
+            guard acceptsInput, let view = supporting as? UITextView,
+                view.text == model.input, attributedString.length > 0
+            else { return range }
+            var valid = true
+            attributedString.enumerateAttribute(
+                Self.stampKey, in: NSRange(location: 0, length: attributedString.length)
+            ) { value, _, _ in
+                guard let stamp = value as? PasteStamp,
+                    stamp.generation == model.inputGeneration, stamp.selection == view.selectedRange
+                else { valid = false; return }
+            }
+            guard valid else { return range }
+            let replacement = NSRange(
+                location: view.offset(from: view.beginningOfDocument, to: range.start),
+                length: view.offset(from: range.start, to: range.end))
+            guard let swiftRange = Range(replacement, in: view.text),
+                model.setInput(view.text.replacingCharacters(in: swiftRange, with: attributedString.string))
+            else { return range }
+            // Only mutate UIKit after the complete replacement passes the UTF-8 bound and stamp.
+            view.text = model.input
+            view.selectedRange = NSRange(location: replacement.location + attributedString.length, length: 0)
+            view.setNeedsLayout()
+            return view.selectedTextRange ?? range
+        }
         func textView(_ view: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-            guard let range = Range(range, in: view.text) else { return false }
+            guard acceptsInput, let range = Range(range, in: view.text) else { return false }
             return model.setInput(view.text.replacingCharacters(in: range, with: text))
         }
         func textViewDidChange(_ view: UITextView) {
+            guard acceptsInput else { view.text = ""; view.setNeedsLayout(); return }
             if !model.setInput(view.text) { view.text = model.input }
             view.setNeedsLayout()
         }

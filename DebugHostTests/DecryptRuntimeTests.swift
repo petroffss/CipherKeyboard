@@ -4,6 +4,23 @@ import Foundation
 /// Installed production extension and independent UIKit host. Fixtures are used only for explicit fault/design states.
 final class DecryptRuntimeTests: XCTestCase {
     override func setUp() { continueAfterFailure = false }
+    @MainActor func testResultSenderReadability() throws {
+        let ciphertext = try prepare(); let host = host(ciphertext)
+        host.buttons["keyboard.decrypt"].tap()
+        let sender = host.staticTexts["keyboard.decrypt.sender"]
+        XCTAssertTrue(sender.waitForExistence(timeout: 5), host.debugDescription)
+        XCTAssertEqual(sender.label, "От: Анна07")
+        XCTAssertEqual(host.staticTexts["keyboard.decrypt.signature"].label, "✓ Подпись верна")
+        let panel = host.otherElements["keyboard.decrypt.panel"]
+        XCTAssertTrue(panel.frame.contains(sender.frame), host.debugDescription)
+        XCTAssertGreaterThanOrEqual(host.buttons["keyboard.decrypt.close"].frame.height, 44)
+        let screenshot = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
+        screenshot.name = "native402-sender-after"; screenshot.lifetime = .keepAlways; add(screenshot)
+        let geometry = XCTAttachment(string: host.debugDescription)
+        geometry.name = "native402-sender-after-geometry"; geometry.lifetime = .keepAlways; add(geometry)
+        host.buttons["keyboard.decrypt.close"].tap()
+        XCTAssertTrue(host.buttons["keyboard.key.q"].waitForExistence(timeout: 5))
+    }
     @MainActor private func prepare(_ mode: String = "contact") throws -> String {
         let app = XCUIApplication(bundleIdentifier: "dev.cipherkeyboard.app")
         app.launchArguments = []; app.launch()

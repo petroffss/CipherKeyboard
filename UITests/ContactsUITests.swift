@@ -651,7 +651,7 @@ final class ContactsUITests: XCTestCase {
         replaceText(in: field, with: text, app: app)
     }
 
-    /// Стирает текст через системное выделение целиком, затем вводит новый.
+    /// Стирает через настоящее выделение/удаление, включая меню подсказок для одного слова.
     @MainActor
     private func replaceText(in field: XCUIElement, with text: String, app: XCUIApplication) {
         func currentText() -> String {
@@ -659,22 +659,25 @@ final class ContactsUITests: XCTestCase {
             return value == (field.placeholderValue ?? "") ? "" : value
         }
         field.tap()
-        if !currentText().isEmpty {
-            // Tapping blank space in a multi-line field can open iOS AutoFill instead of moving the caret.
-            // Select All is independent of wrapping and also proves the actual native editing action.
-            field.press(forDuration: 1.1)
+        let maximumAttempts = currentText().utf16.count + 1
+        for _ in 0..<maximumAttempts where !currentText().isEmpty {
+            let before = currentText()
+            field.doubleTap()
             let selectAll = app.descendants(matching: .any).matching(
                 NSPredicate(
                     format: "label IN %@", ["Select All", "Выбрать всё", "Выделить всё", "Выбрать все", "Выделить все"]
                 )
             ).firstMatch
-            if !selectAll.waitForExistence(timeout: 2) { field.doubleTap() }
-            XCTAssertTrue(selectAll.waitForExistence(timeout: 3), app.debugDescription)
-            selectAll.tap()
+            // A one-word value is already selected by double tap. iOS may offer only spelling
+            // suggestions in that case; Select All is optional, but real empty/exact checks aren't.
+            if selectAll.waitForExistence(timeout: 1) { selectAll.tap() }
             field.typeText(XCUIKeyboardKey.delete.rawValue)
+            XCTAssertNotEqual(currentText(), before, "удаление не изменило поле: \(app.debugDescription)")
+            if currentText() == before { break }
         }
         XCTAssertEqual(currentText(), "", "поле не очистилось")
         if !text.isEmpty { field.typeText(text) }
+        XCTAssertEqual(currentText(), text, "поле не содержит точную замену")
     }
 
     @MainActor
