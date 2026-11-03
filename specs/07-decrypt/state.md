@@ -1,10 +1,10 @@
 ---
 feature: 07-decrypt
-loop: running
+loop: stopped
 round: 5
-max_rounds: 5
+max_rounds: 7
 base_commit: "4887d8a"
-last_reviewed_commit: "4664388cbb49f62db5885737fae12eea38e091a5"
+last_reviewed_commit: "728eb8fa8df27d9804d96aa9ecffe1ef98047072"
 ---
 # Цикл сборки: Расшифровка полученных сообщений
 
@@ -15,13 +15,14 @@ last_reviewed_commit: "4664388cbb49f62db5885737fae12eea38e091a5"
 | 2 | 2/21 (2 fail, 17 pending) | 1 | 3fc537e | Независимо подтверждён explicit provider error; fullUI35/40, пять несовпадений точек нажатия |
 | 3 | 11/20 (1 fail, 8 pending) | 0 | 47fa9a2 | Exact E2 and native refusal passed; fullUI39/40 R9; delayed busy fixture invalid R10; partial app switcher |
 | 4 | 13/20 (2 fail, 5 pending) | 0 | 4664388 | FullUI40/40, exact E2 and real lifecycle passed; native E19/R11 and B375 landscape XXXL E16/R12 failed; no FTUE |
-| 5 | В работе | — | — | Изолированная правка R11 и R12; независимая приёмка всех 20 на новой ревизии |
+| 5 | Независимый прогон | 0 | 728eb8f | R11/R12 integrated; exact risk high/E20 reviewer PASS, 20 active gates retest |
 
 ## Открытые проблемы
 | ID | Источник | Класс | Где | Суть | Впервые | Подряд |
 |---|---|---|---|---|---|---|
 | R11 | verifierR4 native legacy05; E19/AC14 | не-по-требованию / layout | KeyboardPanel.swift:702, baseline 4887d8a:649 | `hasDecrypt` явно скрывает прежний `keyboard.identityStatus` и caption вне picker; actual no-FullAccess AX отсутствует старый статус при видимых новых notices. Baseline не скрывал, текущий AC14 сохраняет старые IDs/сценарии. Восстановить реальные читаемые элементы, уместив их в 420/240, не менять privacy/decrypt/picker | 4 | 1 |
 | R12 | verifierR4 B375 real XXXL landscape; E16/AC13 | не-по-требованию / layout | DecryptUIKit.swift:136–150,182–198 | Scaled title and pinned Close leave only 33.5pt for each scrollport in 667×375; actual long sender and body show only upper halves of glyphs, independently of scrolling. Preserve scaled text, pinned Close and 240pt bound; reserve at least a readable line for each scrollport. | 4 | 1 |
+| R13 | verifierR5 B375 native XXXL empty app input; E16/AC13 | не-по-требованию / layout | App/DecryptView.swift:243,250–253 | Реальный пустой UITextView без фокуса: нижние части глифов подсказки ckmsg1:… обрезаны; UIFont body 53pt/line63.248pt, фиксированная высота UILabel 28pt. Измерять placeholder по фактическому шрифту/ширине и insets, сохранить штатный ввод/прокрутку/вкладки. | 5 | 1 |
 
 ## Закрытые
 | ID | Класс | Как исправлено | Раунд |
@@ -144,3 +145,23 @@ Root подготовил `evidence/root-preparation/voiceover-tools.md`: уст
 2026-11-03: R5 до заморозки: R11 на промежуточном `63ab7a0d`/874216212 прошёл оригинальные native A402 no-access edit (оба состояния поля) и Full Access ON preflight с сохранёнными хешами. Кандидат `9bfbcc1b`/122787810 собрал Debug/Release, core187/29. B375 оригинальный preflight на .27 не прошёл; после чтения исходных кадров видно, что программная панель исчезла после меню глобуса, поэтому подтверждение статуса на 375 ждёт живой панели. Отдельный настоящий app XXXL landscape на `9bfbcc1b` выявил тот же класс R12: 30.5pt для plaintext при требуемой полной строке около 64pt с отступами. Исходный `.build/DecryptBuilderR5Worktree/.build/r5-checks/native-20261103-132406/landscape-app.xcresult` сохранён. До заморозки builder распространит ограничение высоты только закреплённого chrome на обе поверхности, сохраняя полный Dynamic Type текста/отправителя и прежний портрет.
 
 2026-11-03: R5 product candidate builder `2368213`/1067576790. R11 native B375 real Full Access title and 4096-byte draft/counter/Retry passed earlier same compose code; four portrait states passed and rendered 667×375 recovery captured despite AX wait timeout. R12 is shared keyboard/app and budgets full lines in tight XXXL portrait and landscape. Exact builder app native XXXL probe PASS (B375 landscape scrollports 103.5 pt, portrait sender 138.5/text 126 pt, pinned Close and app tabs). Exact keyboard real 4096-byte probe confirmed full-size readable lines, 106.5pt landscape ports, pinned Close and visible «встречи!» at native 100% scroll. Its exit failed at OCR crop, which read the host toolbar instead of the result; original PNG/AX preserved under `.build/DecryptBuilderR5Worktree/.build/r5-checks/native-20261103-133350/`. Native signature scroll/error and all 20 active evals independently retest on integrated candidate. Builder core187/29, lint89, Debug/Release and clean exact strict signed Release copy passed.
+
+2026-11-03: Frozen R5 integrated `728eb8fa8df27d9804d96aa9ecffe1ef98047072`, runtime 1067576790. Product byte diff to builder `2368213` empty across App/Keyboard/Packages/UITests/DebugHost/DebugHostTests/project/scripts; commit `b966f08` archived R4 and reconciled reference. Native Debug/Release artifacts and executable manifests: `.build/DecryptBuilderR5Worktree/.build/r5-checks/handoff-artifacts.json`. UI queue explicitly handed to independent R5 verifier. Exact reviewer high/0 Important and E20 PASS, `evidence/reviewer-round5/report.md`: independently matched installed bytes, strict deep codesign on byte-identical copy free of FinderInfo, no new rights/Debug markers/writer modules. Technical R5 verification and Release first-user remain separate.
+
+2026-11-03: Frozen R5 ordinary unfiltered `scripts/test.sh ui` PASS 40/40, fail0/skip0, `.build/TestResults/ui-20261103-134430.xcresult` (29m46s test time), fresh stock 402 `2AA020C8-EE40-40C9-8A44-D8664F0C999E`. Matching installed-before/during 1067576790 and exact artifact fingerprints. Component E19 only: original native 05/06 and final audit still required. E5/E14/E20 independent PASS; remaining R5 native evaluations continue.
+
+2026-11-03: Independent final R5 A402 preflight1/1 and unchanged native legacy05 4/4, fail0/skip0; original editing tests with Full Access ON/OFF passed, live app/extension fingerprints match 1067576790. Original OFF PNG shows complete `Общие данные недоступны`, caption, separate decrypt/encrypt notices and mixed draft with host selection. `evidence/verifier-round5/E19-legacy05-native.xcresult`. R11 exact runtime failure reproduced in R4 now clears original assertion and entire scenario; E19 awaits old 06 group.
+
+2026-11-03: Independent exact R5 legacy06 preflight1/1 and native3/3 pass, with full ordinary40/40, legacy05 4/4, restored Full Access preflight1/1, core187/29, lint and audited Debug/Release. Native selected tests verified double activation/cancel, literal/Unicode sender, separate host fields and late completion protection. Artifacts `evidence/verifier-round5/E19-legacy06-native.xcresult` and provenance; all pinned 1067576790. Supplemental R11 compose geometry and R12 XXXL/other active gates remain.
+
+2026-11-03: Independent R5 E1 PASS. A402 native read/key/readability3/3: 74 before-tap diagnostics 0 metadata/0 content (including layout/rotations), four 1/1 after one tap and two 1/1 after Close. Exact B375 original `evidence/verifier-round5/E1-B375-visible-unselected-draft.png` with installed/live hashes shows enabled real decrypt with empty draft and no recipient. B diagnostic preflight temporarily timed out after Settings, actual Device Hub panel then visible without public toggle. B375 E16 actual tamper XXXL portrait→landscape→portrait1/1, exact one read and no plaintext, full guidance legible and pinned Close; original `evidence/verifier-round5/E16-B375-XXXL-error-attachments/F240312D-F2BB-499E-847D-7DE18CCFBAF6.png`. E16 full positive transitions/matrix pending. A→B E2 fresh insertion started after confirmed public key import; old C not reused.
+
+2026-11-03: R5 E2 PASS: real insertion from A generated fresh C 565 bytes SHA `c12e75cd78294780928c935013d38588bc248fe040c83278ee9cdc23f4d74f07`, actual self opens keyboard+app and B warm exact native opens keyboard+app. Inserted and consumed files byte-equal; `evidence/verifier-round5/E2-exact-C-hashes.txt`. B375 XXXL dark extension real 4096, 667×240 panel, 106.5pt ports, pinned Close, last full word and visible signature captured. Light prior :495 sampled 420pt at t50.05 during crossfade; native video t50.2733 shows settled landscape, separate bounded stability diagnostic retains cap. Dark actual app test stopped at stock keyboard readiness; independently captured app placeholder shows lower halves of glyphs clipped at XXXL, likely fixed 28pt constraint in `App/DecryptView.swift:243,250–253`. Native confirmation and narrowed repair recommendation requested; exact source unchanged.
+
+2026-11-03: R13 независимо воспроизведён на exact 728eb8fa/1067576790 без фокуса и любой клавиатуры. UIFont body 53pt/line63.248pt vs 28pt fixed, оригинал `evidence/verifier-round5/E16-B375-XXXL-placeholder-attachments/FB4FBB37-ECD0-4436-B8E5-7CF33D020DF5.png`, исходный отчёт `evidence/verifier-round5/E16-R13-placeholder-XXXL.md`, scoped remedy `evidence/reviewer-round5/r13-approach.md`. E16 FAIL; 5 PASS / 1 FAIL / 14 pending на момент подтверждения. Пятый раунд — действующий лимит; запрошено явное разрешение увеличить до 7 по review-loop SKILL.md, без начала зависимых исходных правок до ответа. Текущие независимые проверки продолжаются; FTUE на known-red не запускался.
+
+2026-11-03: Пользователь явно разрешил увеличение лимита: «Да, разрешаю до 7 раундов». Активный контракт не изменён (20), E17 исключён по прежнему указанию. R5 независимые проверки на `728eb8fa` продолжаются. R6 точечная подготовка R13 только в отдельном worktree; заморозка следующего раунда после передачи проверяющим подтверждённых находок.
+
+2026-11-03: Independent R5 E12 PASS exact 728eb8fa/1067576790. Both real positive canary surfaces, no share/copy/selection action or host field mutation, native clipboard before/after 522 bytes same SHA, centered whole CipherKeyboard and TypingHost cards personally inspected clean (shield and cleared extension), readable app/group/extension/host files and unchanged identity metadata row, 6584 non-XCTest log rows no canary. 184 appearances attributed only to XCTest automation diagnostic process; raw audit retained. Owned original TypingHost restored byte-for-byte. R5 now 6 PASS/1 FAIL/13 pending. Fresh E8 own access-group empty before/after no app process; original Settings Full Access switch remained OFF after tap, stopped before real panel, still pending. Native stress E18 underway.
+
+2026-11-03: По прямой команде пользователя «Останови все и внеси эти правки» остановлены R5 verifier и R6 builder. Незавершённый E18 app stress прерван, нет нового вердикта. Frozen продукт 728eb8fa, R6 cc639e4f в отдельном worktree сохранён без интеграции. Начата отдельная ветка fix/security-audit от frozen R5; она не сливается автоматически ни в main, ни в этап 07.
