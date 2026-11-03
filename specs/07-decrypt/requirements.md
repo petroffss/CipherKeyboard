@@ -1,7 +1,7 @@
 ---
 feature: 07-decrypt
 title: Расшифровка полученных сообщений
-status: building
+status: verified
 risk: high
 risk_reason: "если сломается — подделка покажется подлинной, отправитель определится неверно или открытый текст утечёт из панели"
 ui: yes
