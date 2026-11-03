@@ -8,6 +8,8 @@ struct DecryptView: View {
     @State private var model: DecryptCoordinator
     @Environment(\.scenePhase) private var phase
     @Environment(\.verticalSizeClass) private var verticalSizeClass
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @ScaledMetric(relativeTo: .body) private var scaledPasteHeight = DecryptInput.minimumPasteHeight
     @AccessibilityFocusState private var focusSubmit: Bool
     @AccessibilityFocusState private var focusError: Bool
 
@@ -16,6 +18,9 @@ struct DecryptView: View {
         _model = State(initialValue: DecryptLaunch.makeCoordinator())
     }
     var body: some View {
+        let pasteHeight = dynamicTypeSize.isAccessibilitySize
+            ? max(DecryptInput.minimumPasteHeight, ceil(scaledPasteHeight))
+            : DecryptInput.minimumPasteHeight
         VStack(alignment: .leading, spacing: 16) {
             Text("Расшифровать")
                 .font(verticalSizeClass == .compact ? .title2.bold() : .largeTitle.bold())
@@ -26,7 +31,8 @@ struct DecryptView: View {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 16) {
                         Text("Вставьте зашифрованное сообщение").font(.subheadline)
-                        DecryptInput(model: model).frame(height: 212)
+                        DecryptInput(model: model)
+                            .frame(height: DecryptInput.editorHeight + DecryptInput.spacing + pasteHeight)
                         if model.busy {
                             ProgressView("Расшифровываем…")
                                 .accessibilityIdentifier("decrypt.status")
@@ -107,6 +113,10 @@ private struct DecryptResultView: UIViewRepresentable {
 
 /// System paste delivers text to the same delegate as typing; an oversized replacement is rejected atomically.
 private struct DecryptInput: UIViewRepresentable {
+    static let editorHeight: CGFloat = 150
+    static let spacing: CGFloat = 12
+    static let minimumPasteHeight: CGFloat = 50
+
     let model: DecryptCoordinator
     func makeCoordinator() -> Delegate { Delegate(model: model) }
     func makeUIView(context: Context) -> UIStackView {
@@ -136,8 +146,11 @@ private struct DecryptInput: UIViewRepresentable {
         paste.target = editor
         paste.accessibilityIdentifier = "decrypt.paste"; paste.accessibilityLabel = "Вставить"
         paste.layer.cornerRadius = 14; paste.layer.borderWidth = 1.5
-        paste.heightAnchor.constraint(equalToConstant: 50).isActive = true
-        let stack = UIStackView(arrangedSubviews: [editor, paste]); stack.axis = .vertical; stack.spacing = 12
+        // Keep the editor at its original height and give the remaining space to the native control.
+        editor.heightAnchor.constraint(equalToConstant: Self.editorHeight).isActive = true
+        let stack = UIStackView(arrangedSubviews: [editor, paste])
+        stack.axis = .vertical
+        stack.spacing = Self.spacing
         return stack
     }
     func updateUIView(_ stack: UIStackView, context: Context) {
