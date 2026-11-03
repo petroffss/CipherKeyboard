@@ -68,6 +68,12 @@
                 blocked: { [weak self] in self?.coordinator?.busy == true },
                 document: { [weak self] in self?.documentIdentifier ?? UUID() })
             panel.enableDecryption(decrypt)
+            #if DEBUG
+                panel.debugArmDecryptOpen = { [weak self] in
+                    guard let self, self.panel.decryption === self.decrypt else { return false }
+                    return self.decrypt.debugArmOpenDelay()
+                }
+            #endif
             privacyShield.backgroundColor = .systemGroupedBackground
             privacyShield.isUserInteractionEnabled = false; privacyShield.isHidden = true
             view.addSubview(privacyShield)

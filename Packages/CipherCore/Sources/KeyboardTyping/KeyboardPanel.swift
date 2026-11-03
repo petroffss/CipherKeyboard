@@ -262,6 +262,7 @@
             let debugFaults = KeyboardEncryptFaults()
             weak var debugHost: (any CiphertextHost)?
             var debugAccess: (() -> Bool)?
+            var debugArmDecryptOpen: (() -> Bool)?
             var debugEncryptionContext: KeyboardEncryptFixture.Context?
             public var debugFixture = "" { didSet { updateDebugMetadata() } }
             public var debugBuild = "unversioned" { didSet { updateDebugMetadata() } }
@@ -288,6 +289,7 @@
                     "enc-success", "enc-limit", "enc-no-key", "enc-key-error", "enc-contacts-error", "enc-no-access",
                     "enc-changed", "enc-selection", "enc-failure", "enc-document-changed", "enc-long-name",
                     "enc-proof-decrypt",
+                    "hold-live-decrypt",
                 ]
                 debugChoices = names.map { name in
                     let button = UIButton(type: .system)
@@ -349,6 +351,7 @@
                 values["decryptLiveCoordinators"] = DecryptDebugLifetime.liveCoordinators
                 values["decryptLiveOperations"] = DecryptDebugLifetime.liveOperations
                 values["decryptBusy"] = decryption?.busy ?? false
+                values["decryptHeldOpenCount"] = decryption?.debugHeldOpenCount ?? 0
                 values["decryptPresenting"] = decryption?.presenting ?? false
                 values["counterMaxY"] = meter.frame.maxY
                 values["editorViewportWidth"] = editor.bounds.width

@@ -681,6 +681,13 @@ final class ContactsUITests: XCTestCase {
             let value = (field.value as? String) ?? ""
             return value == (field.placeholderValue ?? "") ? "" : value
         }
+        func waitForText(_ expected: String) {
+            let arrived = XCTNSPredicateExpectation(
+                predicate: NSPredicate { _, _ in currentText() == expected }, object: nil)
+            XCTAssertEqual(
+                XCTWaiter.wait(for: [arrived], timeout: 5), .completed,
+                "ожидали точный текст «\(expected)», получили «\(currentText())»")
+        }
         field.tap()
         let selectAll = app.descendants(matching: .any).matching(
             NSPredicate(
@@ -692,7 +699,7 @@ final class ContactsUITests: XCTestCase {
             if selectAll.waitForExistence(timeout: 1) {
                 selectAll.tap()
                 field.typeText(XCUIKeyboardKey.delete.rawValue)
-                XCTAssertEqual(currentText(), "", "выделение всего текста не очистило поле")
+                waitForText("")
             }
         }
         let maximumAttempts = currentText().utf16.count + 1
@@ -703,12 +710,15 @@ final class ContactsUITests: XCTestCase {
             // suggestions in that case; Select All is optional, but real empty/exact checks aren't.
             if selectAll.waitForExistence(timeout: 1) { selectAll.tap() }
             field.typeText(XCUIKeyboardKey.delete.rawValue)
-            XCTAssertNotEqual(currentText(), before, "удаление не изменило поле: \(app.debugDescription)")
-            if currentText() == before { break }
+            let removed = XCTNSPredicateExpectation(
+                predicate: NSPredicate { _, _ in currentText() != before }, object: nil)
+            XCTAssertEqual(
+                XCTWaiter.wait(for: [removed], timeout: 5), .completed,
+                "удаление не изменило поле: \(app.debugDescription)")
         }
         XCTAssertEqual(currentText(), "", "поле не очистилось")
         if !text.isEmpty { field.typeText(text) }
-        XCTAssertEqual(currentText(), text, "поле не содержит точную замену")
+        waitForText(text)
     }
 
     @MainActor

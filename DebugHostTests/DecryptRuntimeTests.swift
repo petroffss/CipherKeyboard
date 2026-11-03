@@ -367,6 +367,140 @@ final class DecryptRuntimeTests: XCTestCase {
             frame.lifetime = .keepAlways; add(frame)
         }
     }
+    @MainActor func testHeldLiveOpenDoesNotCrossSessionBoundaries() throws {
+        XCUIDevice.shared.orientation = .portrait
+        let ciphertext = try prepare()
+        try TypingTestSupport.configureKeyboard(fullAccess: true)
+        for event in ["document", "hide", "background", "globe"] {
+            let host = host(ciphertext)
+            let first = host.textViews["host.editor"]
+            let second = host.textViews["host.editor2"]
+            let outerPanel = host.otherElements["keyboard.panel"]
+            let start = host.buttons["keyboard.decrypt"]
+            let status = host.staticTexts["keyboard.decrypt.status"]
+            let text = host.staticTexts["keyboard.decrypt.text"]
+            let sender = host.staticTexts["keyboard.decrypt.sender"]
+            let signature = host.staticTexts["keyboard.decrypt.signature"]
+            let close = host.buttons["keyboard.decrypt.close"]
+            let fixture = host.buttons["keyboard.debugFixtures"]
+
+            func observed(_ condition: @escaping () -> Bool) {
+                let ready = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in condition() }, object: nil)
+                XCTAssertEqual(
+                    XCTWaiter.wait(for: [ready], timeout: 5), .completed, "\(event): \(host.debugDescription)")
+            }
+            func capture(_ stage: String) {
+                let frame = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
+                frame.name = "\(event)-\(stage)"; frame.lifetime = .keepAlways; add(frame)
+                let hierarchy = XCTAttachment(string: host.debugDescription)
+                hierarchy.name = "\(event)-\(stage)-ax"; hierarchy.lifetime = .keepAlways; add(hierarchy)
+            }
+            func hasNoResult() -> Bool {
+                !status.exists && !text.exists && !sender.exists && !signature.exists && !close.exists
+            }
+            func liveMetrics() -> [String: Any]? {
+                guard let raw = fixture.value as? String else { return nil }
+                return (try? JSONSerialization.jsonObject(with: Data(raw.utf8))) as? [String: Any]
+            }
+
+            observed { first.exists && first.debugDescription.contains("Keyboard Focused") }
+            XCTAssertEqual(first.value as? String, "До встречи!")
+            let before = try metrics(host)
+            let reads = try XCTUnwrap(before["decryptClipboardContentReads"] as? Int)
+            let metadata = try XCTUnwrap(before["decryptClipboardMetadataReads"] as? Int)
+            let held = try XCTUnwrap(before["decryptHeldOpenCount"] as? Int)
+            TypingTestSupport.fixture("hold-live-decrypt", in: host)
+            XCTAssertTrue(start.isEnabled)
+            XCTAssertTrue(hasNoResult())
+            let armed = try metrics(host)
+            XCTAssertEqual(armed["decryptClipboardContentReads"] as? Int, reads)
+            XCTAssertEqual(armed["decryptClipboardMetadataReads"] as? Int, metadata)
+            XCTAssertEqual(armed["decryptLiveOperations"] as? Int, 0)
+            start.tap()
+            observed {
+                let values = liveMetrics()
+                return status.exists && status.label == "Расшифровываем…"
+                    && values?["decryptHeldOpenCount"] as? Int == held + 1
+                    && values?["decryptLiveOperations"] as? Int == 1
+            }
+            let busy = try metrics(host)
+            XCTAssertEqual(busy["decryptClipboardContentReads"] as? Int, reads + 1)
+            XCTAssertEqual(busy["decryptClipboardMetadataReads"] as? Int, metadata + 1)
+            XCTAssertEqual(busy["decryptBusy"] as? Bool, true)
+            XCTAssertFalse(text.exists); XCTAssertFalse(sender.exists); XCTAssertFalse(signature.exists)
+            XCTAssertTrue(close.isHittable)
+            capture("held-open")
+
+            switch event {
+            case "document":
+                try TypingTestSupport.tapHostControl("Поле2", in: host)
+                observed { !first.exists && second.exists && second.debugDescription.contains("Keyboard Focused") }
+                XCTAssertEqual(second.value as? String, "Второе поле")
+            case "hide":
+                try TypingTestSupport.tapHostControl("Скрыть", in: host)
+                observed {
+                    host.staticTexts["host.focus"].label == "hide=true; focused=false"
+                        && !outerPanel.exists && hasNoResult()
+                }
+                capture("keyboard-hidden")
+                try TypingTestSupport.tapHostControl("Открыть", in: host)
+            case "background":
+                XCUIDevice.shared.press(.home)
+                observed { host.state == .runningBackground || host.state == .runningBackgroundSuspended }
+                capture("host-background")
+                host.activate()
+                if !outerPanel.waitForExistence(timeout: 3) {
+                    try TypingTestSupport.tapHostControl("Открыть", in: host)
+                }
+            default:
+                let ownGlobe = host.buttons["keyboard.next"]
+                let systemGlobe = host.buttons.matching(
+                    NSPredicate(format: "label IN %@", ["Next keyboard", "Следующая клавиатура"])
+                ).firstMatch
+                let globe = ownGlobe.isHittable ? ownGlobe : systemGlobe
+                XCTAssertTrue(globe.isHittable)
+                globe.press(forDuration: 0.8)
+                let russian = host.staticTexts.matching(
+                    NSPredicate(format: "label IN %@", ["Русская", "Russian"])
+                ).firstMatch
+                XCTAssertTrue(russian.waitForExistence(timeout: 5)); russian.tap()
+                observed { !outerPanel.exists && host.keyboards.firstMatch.keys.firstMatch.exists }
+                capture("stock-keyboard")
+                TypingTestSupport.openCipher(in: host)
+            }
+
+            observed {
+                let values = liveMetrics()
+                return start.isHittable && start.isEnabled && hasNoResult()
+                    && values?["decryptLiveOperations"] as? Int == 0
+                    && values?["decryptBusy"] as? Bool == false
+            }
+            TypingTestSupport.verifyBuild(in: host)
+            capture("cleared-after-late-open")
+            XCTAssertTrue(hasNoResult())
+            let cleared = try metrics(host)
+            if event == "document" {
+                XCTAssertEqual(cleared["decryptHeldOpenCount"] as? Int, held + 1)
+                XCTAssertEqual(cleared["decryptClipboardContentReads"] as? Int, reads + 1)
+                XCTAssertEqual(cleared["decryptClipboardMetadataReads"] as? Int, metadata + 1)
+            }
+
+            start.tap()
+            XCTAssertTrue(text.waitForExistence(timeout: 5), host.debugDescription)
+            XCTAssertEqual(text.label, "  Привет, Анна!\nЗавтра в 19:30 👨‍👩‍👧‍👦  ")
+            XCTAssertEqual(sender.label, "От: Анна07")
+            XCTAssertEqual(signature.label, "✓ Подпись верна")
+            let recovered = try metrics(host)
+            XCTAssertEqual(
+                recovered["decryptClipboardContentReads"] as? Int,
+                try XCTUnwrap(cleared["decryptClipboardContentReads"] as? Int) + 1)
+            XCTAssertEqual(recovered["decryptHeldOpenCount"] as? Int, cleared["decryptHeldOpenCount"] as? Int)
+            capture("new-explicit-result")
+            close.tap()
+            XCTAssertTrue(text.waitForNonExistence(timeout: 5))
+            host.terminate()
+        }
+    }
     @MainActor func testTenCyclesAndLifecycle() throws {
         let ciphertext = try prepare("long"); try TypingTestSupport.configureKeyboard(fullAccess: true)
         let host = host(ciphertext)

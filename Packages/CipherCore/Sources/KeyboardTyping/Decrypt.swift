@@ -60,6 +60,16 @@ public struct DecryptResult: Equatable, Sendable {
     @ObservationIgnored private var task: Task<Void, Never>?
     @ObservationIgnored private var baseline: PublicKey?
     @ObservationIgnored private var shownDocument: UUID?
+    #if DEBUG
+        @ObservationIgnored private var delayNextOpen = false
+        @ObservationIgnored private(set) var debugHeldOpenCount = 0
+
+        func debugArmOpenDelay() -> Bool {
+            guard surface == .keyboard, canStart, !presenting else { return false }
+            delayNextOpen = true
+            return true
+        }
+    #endif
 
     public init(
         surface: Surface, access: @escaping () -> Bool = { true },
@@ -137,11 +147,17 @@ public struct DecryptResult: Equatable, Sendable {
             snapshot = nil
         }
         #if DEBUG
-            let lifetime = DecryptDebugLifetime.beginOperation()
+            let delayOpen = delayNextOpen
+            delayNextOpen = false
+            var lifetime: DecryptDebugLifetime.Operation? = DecryptDebugLifetime.beginOperation()
         #endif
         task = Task { [weak self] in
             #if DEBUG
-                defer { withExtendedLifetime(lifetime) {} }
+                defer {
+                    withExtendedLifetime(lifetime) {}
+                    lifetime = nil
+                    if delayOpen { self?.changed() }
+                }
             #endif
             let value: ClipboardText
             if let field {
@@ -162,6 +178,15 @@ public struct DecryptResult: Equatable, Sendable {
                         self?.finish(error: Self.oversize, token: token); return
                     }
                     let opened = try await open(text, own, initialContacts)
+                    #if DEBUG
+                        if delayOpen, self?.valid(token, generation, currentDocument) == true {
+                            self?.debugHeldOpenCount += 1
+                            self?.changed()
+                            // Cancellation resumes this hold immediately. Deliver the already opened
+                            // value to the normal fence so the test exercises a late successful open.
+                            try? await Task.sleep(for: .seconds(15))
+                        }
+                    #endif
                     guard let self, self.valid(token, generation, currentDocument) else { return }
                     guard let current = self.readIdentity() else {
                         self.finish(error: self.error, token: token); return
@@ -197,7 +222,12 @@ public struct DecryptResult: Equatable, Sendable {
     public func deactivate() {
         active = false; session = UUID(); close(); baseline = nil; identityAvailable = false
     }
-    private func cancel() { operation = nil; task?.cancel(); task = nil; busy = false }
+    private func cancel() {
+        operation = nil; task?.cancel(); task = nil; busy = false
+        #if DEBUG
+            delayNextOpen = false
+        #endif
+    }
     private func valid(_ token: UUID, _ generation: UUID, _ currentDocument: UUID) -> Bool {
         guard active, session == generation, operation == token else { return false }
         guard access(), document() == currentDocument else { deactivate(); return false }

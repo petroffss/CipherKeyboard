@@ -14,6 +14,10 @@
         private static let referenceExcerpt =
             "Привет, Анна!\nВстречаемся завтра.\nЯ буду у входа.\nНапиши, когда придёшь.\nДо встречи!"
         public static func apply(to panel: KeyboardPanel, name: String) {
+            if name == "hold-live-decrypt" {
+                if panel.debugArmDecryptOpen?() == true { panel.debugFixture = "fixture=\(name);" }
+                return
+            }
             if name.hasPrefix("dec-") {
                 KeyboardDecryptFixture.apply(to: panel, state: String(name.dropFirst(4))); return
             }
