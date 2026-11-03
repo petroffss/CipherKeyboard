@@ -63,7 +63,7 @@
             layer.cornerRadius = 14; clipsToBounds = true
             accessibilityIdentifier = prefix + ".panel"
             title.font = .preferredFont(forTextStyle: .headline); title.numberOfLines = 0
-            title.adjustsFontForContentSizeCategory = true; title.accessibilityTraits = [.header]
+            title.accessibilityTraits = [.header]
             title.accessibilityIdentifier = prefix + ".title"
             lock.tintColor = KeyboardPanel.accent; lock.isAccessibilityElement = false
             identityContent.axis = .vertical; identityContent.spacing = 6
@@ -118,7 +118,6 @@
             ])
             close.setTitle("Закрыть", for: .normal)
             close.titleLabel?.font = .preferredFont(forTextStyle: .headline)
-            close.titleLabel?.adjustsFontForContentSizeCategory = true
             close.layer.cornerRadius = 12; close.accessibilityIdentifier = prefix + ".close"
             close.addAction(UIAction { [weak self] _ in self?.onClose?() }, for: .touchUpInside)
             for item in [title, lock, body, close] {
@@ -159,6 +158,9 @@
                     line.bottomAnchor.constraint(equalTo: anchor, constant: anchor == title.bottomAnchor ? 6 : -6),
                 ])
             }
+            registerForTraitChanges([UITraitPreferredContentSizeCategory.self, UITraitLegibilityWeight.self]) {
+                (view: PrivateDecryptPanel, _) in view.setNeedsLayout()
+            }
         }
         required init?(coder: NSCoder) { nil }
         private func install(_ content: UIView, in scroll: UIScrollView) {
@@ -179,6 +181,34 @@
                 content.widthAnchor.constraint(equalTo: scroll.frameLayoutGuide.widthAnchor),
             ])
         }
+        private func chromeFont(landscape: Bool) -> UIFont {
+            let inherited = UIFont.preferredFont(forTextStyle: .headline, compatibleWith: traitCollection)
+            guard traitCollection.preferredContentSizeCategory.isAccessibilityCategory else { return inherited }
+            if !landscape {
+                let titleHeight = ceil(
+                    ((title.text ?? "") as NSString).boundingRect(
+                        with: CGSize(width: max(1, bounds.width - 14 - 45), height: .greatestFiniteMagnitude),
+                        options: [.usesLineFragmentOrigin, .usesFontLeading], attributes: [.font: inherited],
+                        context: nil
+                    ).height)
+                let closeHeight = max(48, inherited.lineHeight + 20)
+                let bodyHeight = bounds.height - titleHeight - closeHeight - 4 * 12
+                let minimumBodyHeight: CGFloat
+                if hasResult {
+                    let senderLine = ceil(sender.font.lineHeight)
+                    let messageLine = ceil(plaintext.font.lineHeight) + 20
+                    // Portrait gives the identity at most half, then places a gap before the message.
+                    minimumBodyHeight = 2 * max(senderLine, messageLine + resultRow.spacing)
+                } else {
+                    minimumBodyHeight = ceil(status.font.lineHeight) + 16
+                }
+                if bodyHeight >= minimumBodyHeight { return inherited }
+            }
+
+            // Compact only the pinned controls when full-size lines need more room to scroll.
+            let compact = traitCollection.modifyingTraits { $0.preferredContentSizeCategory = .extraExtraLarge }
+            return UIFont.preferredFont(forTextStyle: .headline, compatibleWith: compact)
+        }
         public override func layoutSubviews() {
             let landscape = bounds.width > 500 && bounds.width > bounds.height
             let axis: NSLayoutConstraint.Axis = landscape ? .horizontal : .vertical
@@ -187,6 +217,9 @@
                 resultRow.axis = axis
             }
             identityWidth.isActive = landscape; identityHeight.isActive = !landscape
+            let pinnedFont = chromeFont(landscape: landscape)
+            if title.font != pinnedFont { title.font = pinnedFont }
+            if close.titleLabel?.font != pinnedFont { close.titleLabel?.font = pinnedFont }
             closeHeight.constant = max(48, (close.titleLabel?.font.lineHeight ?? 28) + 20)
             super.layoutSubviews()
             if !landscape && body.bounds.width > 0 {

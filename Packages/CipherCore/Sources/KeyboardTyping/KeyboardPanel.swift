@@ -625,6 +625,39 @@
             bringSubviewToFront(popup)
             setNeedsLayout()
         }
+        private func layoutDecryptCompose(
+            _ decrypt: DecryptCoordinator, x: CGFloat, width: CGFloat, keyX: CGFloat, keyWidth: CGFloat
+        ) -> CGFloat {
+            let buttonHeight: CGFloat = 44
+            let titleWidth =
+                decryptButton.titleLabel?.intrinsicContentSize.width ?? decryptButton.intrinsicContentSize.width
+            let buttonWidth = max(44, ceil(titleWidth) + 14)
+            decryptButton.frame = CGRect(x: x, y: 0, width: min(buttonWidth, width), height: buttonHeight)
+            decryptNotice.text = decrypt.permitted ? "Только по нажатию" : DecryptCoordinator.accessMessage
+            if !decrypt.identityAvailable && decrypt.permitted { decryptNotice.text = decrypt.error }
+
+            let metadataX = landscape ? x + 4 : decryptButton.frame.maxX + 8
+            let metadataWidth = landscape ? width - 8 : x + width - metadataX - 4
+            let statusHeight = ceil(
+                status.sizeThatFits(CGSize(width: metadataWidth, height: .greatestFiniteMagnitude)).height)
+            if landscape {
+                let metadataY = buttonHeight + 6
+                status.frame = CGRect(x: metadataX, y: metadataY, width: metadataWidth, height: statusHeight)
+                caption.frame = CGRect(x: metadataX, y: status.frame.maxY + 1, width: metadataWidth, height: 13)
+                decryptNotice.frame = CGRect(x: keyX, y: 0, width: keyWidth, height: 28)
+                return caption.frame.maxY + 2
+            }
+
+            let hintHeight = ceil(
+                decryptNotice.sizeThatFits(CGSize(width: metadataWidth, height: .greatestFiniteMagnitude)).height)
+            let textHeight = statusHeight + 1 + hintHeight
+            let headerHeight = max(buttonHeight, textHeight)
+            status.frame = CGRect(
+                x: metadataX, y: (headerHeight - textHeight) / 2, width: metadataWidth, height: statusHeight)
+            decryptNotice.frame = CGRect(
+                x: metadataX, y: status.frame.maxY + 1, width: metadataWidth, height: hintHeight)
+            return headerHeight
+        }
         private func layoutEncryption(_ model: EncryptInsertCoordinator, controls: EncryptionControls) {
             backgroundColor = .systemGroupedBackground
             // Internal CSS padding; the system already frames this panel in the native input surface.
@@ -635,20 +668,26 @@
             let composeWidth = landscape ? available - keyWidth - 12 : available
             let hasDecrypt = decryption != nil
             let height: CGFloat = landscape ? (hasDecrypt ? 240 : 198) : 420
-            let metadataY: CGFloat = (landscape ? 12 : 6) + (hasDecrypt ? 38 : 0)
+            let keyX = landscape ? side + composeWidth + 12 : side
             status.font = .systemFont(ofSize: landscape ? 10 : 11)
             status.textColor = Self.encryptionSecondary
-            status.numberOfLines = 1
-            status.frame = CGRect(x: side + 4, y: metadataY, width: composeWidth - 8, height: 13)
-            caption.frame = CGRect(x: side + 4, y: metadataY + 13, width: composeWidth - 8, height: 13)
-            let rowY: CGFloat = hasDecrypt ? 44 : metadataY + 28
+            status.numberOfLines = hasDecrypt ? 0 : 1
+            let rowY: CGFloat
+            if let decrypt = decryption {
+                rowY = layoutDecryptCompose(decrypt, x: side, width: composeWidth, keyX: keyX, keyWidth: keyWidth)
+            } else {
+                let metadataY: CGFloat = landscape ? 12 : 6
+                status.frame = CGRect(x: side + 4, y: metadataY, width: composeWidth - 8, height: 13)
+                caption.frame = CGRect(x: side + 4, y: metadataY + 13, width: composeWidth - 8, height: 13)
+                rowY = metadataY + 28
+            }
             controls.frame = bounds
             controls.layoutToolbar(x: side, y: rowY, width: composeWidth, landscape: landscape)
             let previousViewport = editor.bounds.size
             let initialHeight = previousViewport.height > 0 ? previousViewport.height : (landscape ? 38 : 48)
             editor.frame = CGRect(x: side, y: rowY + 46, width: composeWidth, height: initialHeight)
             let draftHeight: CGFloat
-            if controls.showsRetry {
+            if controls.showsRetry && (!hasDecrypt || landscape) {
                 draftHeight = 40
             } else if landscape {
                 draftHeight = 38
@@ -665,15 +704,25 @@
                 editor.setNeedsLayout()
                 editor.layoutIfNeeded()
             }
-            let noticeY = rowY + (hasDecrypt ? 46 : 48) + draftHeight
-            controls.layoutNotice(
-                x: side, y: noticeY, width: composeWidth, height: landscape ? 52 : (hasDecrypt ? 38 : 44))
-            // Counter has a permanent slot in the notice, regardless of byte count.
+            let noticeY = editor.frame.maxY + (hasDecrypt ? 0 : 2)
+            let noticeHeight: CGFloat = landscape ? 52 : 44
+            let sharesCaption = hasDecrypt && !landscape
+            let serviceWidth = controls.layoutNotice(
+                x: side, y: noticeY, width: composeWidth, height: noticeHeight, sharesCaption: sharesCaption)
             meter.frame = CGRect(x: side + 4, y: noticeY, width: composeWidth - 8, height: 12)
+            if sharesCaption {
+                let counterWidth = max(0, ceil(meter.intrinsicContentSize.width))
+                // The right edge belongs to Retry when present. Reserve the byte counter beside the caption.
+                meter.frame.origin.x += serviceWidth - counterWidth
+                meter.frame.size.width = counterWidth
+                caption.frame = CGRect(
+                    x: side + 4, y: noticeY, width: serviceWidth - counterWidth - 4, height: 12)
+            }
             error.isHidden = true
             let keyHeight: CGFloat = landscape ? 32 : 44
-            let keyX = landscape ? side + composeWidth + 12 : side
             var y: CGFloat = landscape ? 30 : height - 6 - 185
+            if sharesCaption { y = max(y, noticeY + noticeHeight) }
+            let rowGap: CGFloat = landscape ? 3 : min(3, max(0, floor((height - y - 4 * keyHeight) / 3)))
             for (index, row) in rows.enumerated() {
                 let bottom = index == 3
                 let hasGlobe = bottom && showsNextKeyboard
@@ -695,11 +744,11 @@
                     key.isHidden = model.pickerOpen
                     x = key.frame.maxX + 3
                 }
-                y += keyHeight + 3
+                y += keyHeight + rowGap
             }
             nextKeyboardButton.isHidden = !showsNextKeyboard || model.pickerOpen
             for view in [status, caption, editor, meter] {
-                view.isHidden = model.pickerOpen || (hasDecrypt && (view === status || view === caption))
+                view.isHidden = model.pickerOpen
             }
             controls.layoutPicker(
                 in: CGRect(x: side, y: 6, width: available, height: height - 12), landscape: landscape)
@@ -715,27 +764,15 @@
             bringSubviewToFront(popup)
             #if DEBUG
                 debugFixtureButton.frame =
-                    hasDecrypt
-                    ? CGRect(x: side + min(160, composeWidth), y: 0, width: max(0, composeWidth - 160), height: 44)
-                    : status.frame
-                if hasDecrypt && landscape {
-                    debugFixtureButton.frame = CGRect(x: bounds.width - 44, y: 0, width: 44, height: 28)
-                }
+                    hasDecrypt ? CGRect(x: bounds.width - side - 44, y: 0, width: 44, height: 28) : status.frame
                 bringSubviewToFront(debugFixtureButton)
                 layoutDebugPicker()
                 updateCaptureMetadata(lineHeight: status.font.lineHeight)
             #endif
             if let decrypt = decryption {
-                decryptButton.frame = CGRect(x: side, y: 0, width: min(155, composeWidth), height: 44)
                 decryptButton.isEnabled = decrypt.canStart && !model.pickerOpen
                 decryptButton.tintColor = Self.accent
                 decryptButton.layer.borderColor = Self.accent.cgColor
-                decryptNotice.text = decrypt.permitted ? "Только по нажатию" : DecryptCoordinator.accessMessage
-                if !decrypt.identityAvailable && decrypt.permitted { decryptNotice.text = decrypt.error }
-                decryptNotice.frame =
-                    landscape
-                    ? CGRect(x: side + composeWidth + 12, y: 0, width: keyWidth, height: 28)
-                    : CGRect(x: side + min(160, composeWidth), y: 0, width: max(0, composeWidth - 160), height: 44)
                 decryptButton.isHidden = decrypt.presenting || model.pickerOpen
                 decryptNotice.isHidden = decrypt.presenting || model.pickerOpen
                 decryptPanel.isHidden = !decrypt.presenting
