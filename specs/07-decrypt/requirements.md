@@ -1,12 +1,13 @@
 ---
 feature: 07-decrypt
 title: Расшифровка полученных сообщений
-status: verified
+status: done
 risk: high
 risk_reason: "если сломается — подделка покажется подлинной, отправитель определится неверно или открытый текст утечёт из панели"
 ui: yes
 depends_on: [01-crypto-core, 02-my-key, 03-contacts, 04-keyboard-setup, 05-keyboard-typing, 06-encrypt-insert]
 approved_at: 2026-11-02
+done_at: 2026-11-03
 ---
 
 # Расшифровка полученных сообщений
