@@ -8,7 +8,9 @@ struct CipherKeyboardApp: App {
     var body: some Scene {
         WindowGroup {
             #if DEBUG
-                if ProcessInfo.processInfo.arguments.contains("-encrypt-self-open") {
+                if ProcessInfo.processInfo.arguments.contains("-decrypt-seed") {
+                    Text(DecryptSeedProbe.run()).accessibilityIdentifier("decrypt.seedResult")
+                } else if ProcessInfo.processInfo.arguments.contains("-encrypt-self-open") {
                     Text(
                         KeyboardEncryptProbe.openInserted(
                             ProcessInfo.processInfo.environment["CIPHER_INSERTED_SYNTHETIC_CIPHERTEXT"] ?? "")

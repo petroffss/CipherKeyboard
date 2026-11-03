@@ -42,13 +42,14 @@ struct MainTabs: View {
             ContactsView(model: contacts)
                 .tabItem { tabLabel("Контакты", systemImage: "person.2", id: "tab.contacts") }
                 .tag(AppTab.contacts)
-            PlaceholderTabView(title: "Расшифровать")
+            DecryptView()
                 .tabItem { tabLabel("Расшифровать", systemImage: "lock.open", id: "tab.decrypt") }
                 .tag(AppTab.decrypt)
             NavigationStack { SetupView(model: setup) }
                 .tabItem { tabLabel("Настройка", systemImage: "gearshape", id: "tab.setup") }
                 .tag(AppTab.setup)
         }
+        .background(AppPrivacyShield().allowsHitTesting(false))
         .onChange(of: scenePhase, initial: true) { _, phase in
             if phase == .active { setup.refresh() }
         }

@@ -8,6 +8,9 @@
         private static let referenceExcerpt =
             "Привет, Анна!\nВстречаемся завтра.\nЯ буду у входа.\nНапиши, когда придёшь.\nДо встречи!"
         public static func apply(to panel: KeyboardPanel, name: String) {
+            if name.hasPrefix("dec-") {
+                KeyboardDecryptFixture.apply(to: panel, state: String(name.dropFirst(4))); return
+            }
             if ["enc-delay", "enc-fault", "enc-normal", "enc-canary"].contains(name) {
                 panel.debugFaults.delay = name == "enc-delay" ? 2 : 0
                 panel.debugFaults.fails = name == "enc-fault"

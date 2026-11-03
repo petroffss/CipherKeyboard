@@ -65,6 +65,7 @@ import Foundation
         }
     }
     public var onChange: (() -> Void)?
+    public var externallyBlocked: () -> Bool = { false }
     private let access: () -> Bool
     private let identityReader: () -> IdentityReadResult
     private let contactsReader: () -> ContactsReadResult
@@ -81,9 +82,10 @@ import Foundation
     private var successTimer: UUID?
     public var sessionActive: Bool { active }
     public var permitted: Bool { access() }
-    public var canSelect: Bool { active && access() && !busy }
+    public var canSelect: Bool { active && access() && !busy && !externallyBlocked() }
     public var canEncrypt: Bool {
-        active && access() && !busy && identityKey != nil && selected != nil && !contactsUnreadable
+        active && access() && !busy && !externallyBlocked() && identityKey != nil && selected != nil
+            && !contactsUnreadable
             && !adapter.input.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
             && adapter.input.byteCount <= CipherMessage.maxPlaintextBytes
     }
@@ -156,7 +158,7 @@ import Foundation
         begin(text: adapter.input.text)
     }
     private func begin(text: String) {
-        guard active, !busy, gate(), let host else { return }
+        guard active, !busy, !externallyBlocked(), gate(), let host else { return }
         error = nil; success = nil
         guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { onChange?(); return }
         guard text.utf8.count <= CipherMessage.maxPlaintextBytes else {
