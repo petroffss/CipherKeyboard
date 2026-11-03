@@ -35,12 +35,8 @@
                     if name == "changed" { await MainActor.run { context.changed = true } }
                     return opened
                 })
-            let marker = "Последняя строка"
-            let paragraph = String(repeating: "Текст 👋\n", count: 250)
-            let longText =
-                paragraph + String(repeating: "a", count: max(0, 4096 - paragraph.utf8.count - marker.utf8.count))
-                + marker
-            let plain = name == "long" ? longText : "  Привет, Анна!\nЗавтра в 19:30 👨‍👩‍👧‍👦  "
+            let plain =
+                name == "long" ? KeyboardDebugFixture.decryptionDesignLongText : "  Привет, Анна!\nЗавтра в 19:30 👨‍👩‍👧‍👦  "
             guard
                 let ciphertext = try? CipherMessage.seal(
                     plain, from: name == "self" ? identity : sender,

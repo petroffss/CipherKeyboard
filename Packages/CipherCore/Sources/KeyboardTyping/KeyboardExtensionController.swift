@@ -112,6 +112,7 @@
             if panel.decryption !== decrypt { panel.enableDecryption(decrypt) }
             coordinator.open()
             activeDocument = document; decrypt.activate(); privacyShield.isHidden = true
+            panel.isUserInteractionEnabled = true
         }
         public override func viewWillDisappear(_ animated: Bool) {
             super.viewWillDisappear(animated)
@@ -131,9 +132,9 @@
         }
         public override func textDidChange(_ textInput: (any UITextInput)?) {
             super.textDidChange(textInput)
-            guard isViewLoaded, hostSessionActive, view.window != nil, activeDocument != nil else { return }
-            guard let document = connectedDocumentIdentifier() else { clearSession(); return }
-            if let activeDocument, activeDocument != document {
+            guard isViewLoaded, hostSessionActive, view.window != nil else { return }
+            guard let document = connectedDocumentIdentifier() else { suspendDocument(); return }
+            if activeDocument != document {
                 moveToDocument(document)
             } else if decrypt?.active == true {
                 decrypt.refresh()
@@ -144,9 +145,9 @@
             privacyShield.frame = view.bounds
             if hostSessionActive {
                 if let document = connectedDocumentIdentifier() {
-                    if let activeDocument, activeDocument != document { moveToDocument(document) }
+                    if activeDocument != document { moveToDocument(document) }
                 } else {
-                    clearSession()
+                    suspendDocument()
                 }
             }
             if decrypt?.active == true, !hasFullAccess { decrypt.refresh() }
@@ -168,10 +169,19 @@
             // Changing an active field invalidates private viewing. The existing 06 compose session
             // retains its draft and lets the in-flight encryption's document fence reject a late insertion.
             activeDocument = document
-            decrypt.deactivate(); coordinator.refresh(); decrypt.activate()
+            decrypt.deactivate(); decrypt.activate()
+            privacyShield.isHidden = true; panel.isUserInteractionEnabled = true
+        }
+        private func suspendDocument() {
+            guard activeDocument != nil || decrypt?.active == true else { return }
+            activeDocument = nil
+            privacyShield.isHidden = false; view.bringSubviewToFront(privacyShield)
+            panel.isUserInteractionEnabled = false
+            decrypt?.deactivate(); panel.adapter.cancelGesture()
         }
         @objc private func clearSession() {
             hostSessionActive = false; activeDocument = nil
+            panel.isUserInteractionEnabled = false
             privacyShield.isHidden = false; view.bringSubviewToFront(privacyShield)
             panel.clearSession()
             #if DEBUG

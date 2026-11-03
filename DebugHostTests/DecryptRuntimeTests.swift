@@ -26,7 +26,7 @@ final class DecryptRuntimeTests: XCTestCase {
         let raw = try XCTUnwrap(host.buttons["keyboard.debugFixtures"].value as? String)
         return try XCTUnwrap(JSONSerialization.jsonObject(with: Data(raw.utf8)) as? [String: Any])
     }
-    @MainActor func testSystemPastePermissionAllow() throws {
+    @MainActor private static func configurePastePermission(allow: Bool) throws {
         let app = XCUIApplication(bundleIdentifier: "dev.cipherkeyboard.app")
         app.launchArguments = []; app.launch()
         XCTAssertTrue(app.staticTexts["mykey.fingerprint"].waitForExistence(timeout: 15))
@@ -52,7 +52,8 @@ final class DecryptRuntimeTests: XCTestCase {
         for _ in 0..<6 { if cipher.exists && cipher.isHittable { break }; settings.swipeUp() }
         XCTAssertTrue(cipher.exists && cipher.isHittable, settings.debugDescription); cipher.tap()
         let hierarchy = XCTAttachment(string: settings.debugDescription)
-        hierarchy.name = "system-paste-settings-before"; hierarchy.lifetime = .keepAlways; add(hierarchy)
+        hierarchy.name = "system-paste-settings-before"; hierarchy.lifetime = .keepAlways
+        XCTContext.runActivity(named: "Public app paste permission page") { $0.add(hierarchy) }
         let row = settings.descendants(matching: .any).matching(
             NSPredicate(
                 format: "label CONTAINS[c] %@ OR (label BEGINSWITH %@ AND label CONTAINS[c] %@)",
@@ -60,19 +61,52 @@ final class DecryptRuntimeTests: XCTestCase {
             )
         ).firstMatch
         XCTAssertTrue(row.waitForExistence(timeout: 5), settings.debugDescription); row.tap()
-        let allow = settings.cells.matching(
+        let choice = settings.cells.matching(
             NSPredicate(
-                format: "label IN %@", ["Allow", "Разрешить", "Разрешать"]
+                format: "label IN %@",
+                allow
+                    ? ["Allow", "Разрешить", "Разрешать"]
+                    : ["Deny", "Don't Allow", "Отказать", "Запретить", "Не разрешать"]
             )
         ).firstMatch
-        XCTAssertTrue(allow.waitForExistence(timeout: 5), settings.debugDescription); allow.tap()
-        let proof = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
-        proof.name = "system-paste-settings-allow"; proof.lifetime = .keepAlways; add(proof)
+        XCTAssertTrue(choice.waitForExistence(timeout: 5), settings.debugDescription); choice.tap()
+        let selected = XCTNSPredicateExpectation(
+            predicate: NSPredicate { _, _ in choice.exists && choice.isSelected }, object: nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [selected], timeout: 3), .completed)
+        XCTContext.runActivity(named: "Actual system paste permission: \(allow ? "Allow" : "Deny")") { activity in
+            let proof = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
+            proof.name = "system-paste-settings-\(allow ? "allow" : "deny")"; proof.lifetime = .keepAlways;
+            activity.add(proof)
+            let tree = XCTAttachment(string: settings.debugDescription); tree.lifetime = .keepAlways; activity.add(tree)
+        }
+    }
+    @MainActor func testSystemPastePermissionAllow() throws {
+        try Self.configurePastePermission(allow: true)
         let ciphertext = try prepare()
         let host = self.host(ciphertext)
         host.buttons["keyboard.decrypt"].tap()
         XCTAssertTrue(host.staticTexts["keyboard.decrypt.text"].waitForExistence(timeout: 5), host.debugDescription)
         XCTAssertEqual(host.staticTexts["keyboard.decrypt.sender"].label, "От: Анна07")
+    }
+    @MainActor func testSystemPastePermissionDeny() throws {
+        addTeardownBlock { try await MainActor.run { try DecryptRuntimeTests.configurePastePermission(allow: true) } }
+        try Self.configurePastePermission(allow: false)
+        let ciphertext = try prepare()
+        let host = self.host(ciphertext)
+        let initial = try XCTUnwrap(try metrics(host)["decryptClipboardContentReads"] as? Int)
+        host.buttons["keyboard.decrypt"].tap()
+        let status = host.staticTexts["keyboard.decrypt.status"]
+        XCTAssertTrue(status.waitForExistence(timeout: 5)); XCTAssertEqual(status.label, "Нет доступа к буферу обмена")
+        XCTAssertFalse(host.staticTexts["keyboard.decrypt.text"].exists)
+        XCTAssertFalse(host.staticTexts["keyboard.decrypt.signature"].exists)
+        let deadline = Date().addingTimeInterval(3)
+        while Date() < deadline {
+            XCTAssertEqual(try metrics(host)["decryptClipboardContentReads"] as? Int, initial + 1)
+            RunLoop.current.run(until: Date().addingTimeInterval(0.2))
+        }
+        let proof = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
+        proof.name = "real-user-denied-clipboard-no-retry"; proof.lifetime = .keepAlways; add(proof)
+        host.buttons["keyboard.decrypt.close"].tap()
     }
     /// One retained ciphertext crosses actual 06 insertion, explicit host copying and both shipping 07 surfaces.
     @MainActor func testActualInsertedCiphertextSelfRoundTrip() throws {

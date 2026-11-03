@@ -23,11 +23,9 @@
             let key = state == "self" ? context.own : context.sender
             let name = state == "long" ? "Александра Константинопольская — работа" : "Анна"
             let contact = Contact(name: name, publicKey: context.sender.publicKey)
-            let marker = "Последняя строка"
-            let paragraph = String(repeating: "Текст 👋\n", count: 250)
             let plain =
                 state == "long"
-                ? paragraph + String(repeating: "a", count: 4096 - paragraph.utf8.count - marker.utf8.count) + marker
+                ? KeyboardDebugFixture.decryptionDesignLongText
                 : "  Привет, Анна!\nЗавтра в 19:30 👨‍👩‍👧‍👦  "
             guard
                 let ciphertext = try? CipherMessage.seal(

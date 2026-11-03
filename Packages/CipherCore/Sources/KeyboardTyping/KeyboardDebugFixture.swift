@@ -5,6 +5,20 @@
     /// Synthetic, process-local design fixtures. No defaults/container/clipboard transport.
     /// Select fixed states with the Debug status-strip grid. Absent in Release.
     @MainActor public enum KeyboardDebugFixture {
+        /// Same numbered prose and final marker as the approved long anchor, extended to the runtime limit.
+        public static var decryptionDesignLongText: String {
+            let prose = "Встречаемся завтра у метро. Возьми документы, обсудим детали на месте."
+            let marker = "Последняя строка: до встречи!"
+            var text = ""
+            for index in 1...40 {
+                let paragraph = "\(index). \(prose)\n\n"
+                if (text + paragraph + marker).utf8.count > CipherMessage.maxPlaintextBytes { break }
+                text += paragraph
+            }
+            return text
+                + String(repeating: " ", count: CipherMessage.maxPlaintextBytes - text.utf8.count - marker.utf8.count)
+                + marker
+        }
         private static let referenceExcerpt =
             "Привет, Анна!\nВстречаемся завтра.\nЯ буду у входа.\nНапиши, когда придёшь.\nДо встречи!"
         public static func apply(to panel: KeyboardPanel, name: String) {
