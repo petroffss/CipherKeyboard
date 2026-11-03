@@ -2,7 +2,7 @@
 feature: 07-decrypt
 loop: running
 round: 5
-max_rounds: 5
+max_rounds: 7
 base_commit: "4887d8a"
 last_reviewed_commit: "728eb8fa8df27d9804d96aa9ecffe1ef98047072"
 ---
@@ -22,6 +22,7 @@ last_reviewed_commit: "728eb8fa8df27d9804d96aa9ecffe1ef98047072"
 |---|---|---|---|---|---|---|
 | R11 | verifierR4 native legacy05; E19/AC14 | не-по-требованию / layout | KeyboardPanel.swift:702, baseline 4887d8a:649 | `hasDecrypt` явно скрывает прежний `keyboard.identityStatus` и caption вне picker; actual no-FullAccess AX отсутствует старый статус при видимых новых notices. Baseline не скрывал, текущий AC14 сохраняет старые IDs/сценарии. Восстановить реальные читаемые элементы, уместив их в 420/240, не менять privacy/decrypt/picker | 4 | 1 |
 | R12 | verifierR4 B375 real XXXL landscape; E16/AC13 | не-по-требованию / layout | DecryptUIKit.swift:136–150,182–198 | Scaled title and pinned Close leave only 33.5pt for each scrollport in 667×375; actual long sender and body show only upper halves of glyphs, independently of scrolling. Preserve scaled text, pinned Close and 240pt bound; reserve at least a readable line for each scrollport. | 4 | 1 |
+| R13 | verifierR5 B375 native XXXL empty app input; E16/AC13 | не-по-требованию / layout | App/DecryptView.swift:243,250–253 | Реальный пустой UITextView без фокуса: нижние части глифов подсказки ckmsg1:… обрезаны; UIFont body 53pt/line63.248pt, фиксированная высота UILabel 28pt. Измерять placeholder по фактическому шрифту/ширине и insets, сохранить штатный ввод/прокрутку/вкладки. | 5 | 1 |
 
 ## Закрытые
 | ID | Класс | Как исправлено | Раунд |
@@ -156,3 +157,7 @@ Root подготовил `evidence/root-preparation/voiceover-tools.md`: уст
 2026-11-03: Independent R5 E1 PASS. A402 native read/key/readability3/3: 74 before-tap diagnostics 0 metadata/0 content (including layout/rotations), four 1/1 after one tap and two 1/1 after Close. Exact B375 original `evidence/verifier-round5/E1-B375-visible-unselected-draft.png` with installed/live hashes shows enabled real decrypt with empty draft and no recipient. B diagnostic preflight temporarily timed out after Settings, actual Device Hub panel then visible without public toggle. B375 E16 actual tamper XXXL portrait→landscape→portrait1/1, exact one read and no plaintext, full guidance legible and pinned Close; original `evidence/verifier-round5/E16-B375-XXXL-error-attachments/F240312D-F2BB-499E-847D-7DE18CCFBAF6.png`. E16 full positive transitions/matrix pending. A→B E2 fresh insertion started after confirmed public key import; old C not reused.
 
 2026-11-03: R5 E2 PASS: real insertion from A generated fresh C 565 bytes SHA `c12e75cd78294780928c935013d38588bc248fe040c83278ee9cdc23f4d74f07`, actual self opens keyboard+app and B warm exact native opens keyboard+app. Inserted and consumed files byte-equal; `evidence/verifier-round5/E2-exact-C-hashes.txt`. B375 XXXL dark extension real 4096, 667×240 panel, 106.5pt ports, pinned Close, last full word and visible signature captured. Light prior :495 sampled 420pt at t50.05 during crossfade; native video t50.2733 shows settled landscape, separate bounded stability diagnostic retains cap. Dark actual app test stopped at stock keyboard readiness; independently captured app placeholder shows lower halves of glyphs clipped at XXXL, likely fixed 28pt constraint in `App/DecryptView.swift:243,250–253`. Native confirmation and narrowed repair recommendation requested; exact source unchanged.
+
+2026-11-03: R13 независимо воспроизведён на exact 728eb8fa/1067576790 без фокуса и любой клавиатуры. UIFont body 53pt/line63.248pt vs 28pt fixed, оригинал `evidence/verifier-round5/E16-B375-XXXL-placeholder-attachments/FB4FBB37-ECD0-4436-B8E5-7CF33D020DF5.png`, исходный отчёт `evidence/verifier-round5/E16-R13-placeholder-XXXL.md`, scoped remedy `evidence/reviewer-round5/r13-approach.md`. E16 FAIL; 5 PASS / 1 FAIL / 14 pending на момент подтверждения. Пятый раунд — действующий лимит; запрошено явное разрешение увеличить до 7 по review-loop SKILL.md, без начала зависимых исходных правок до ответа. Текущие независимые проверки продолжаются; FTUE на known-red не запускался.
+
+2026-11-03: Пользователь явно разрешил увеличение лимита: «Да, разрешаю до 7 раундов». Активный контракт не изменён (20), E17 исключён по прежнему указанию. R5 независимые проверки на `728eb8fa` продолжаются. R6 точечная подготовка R13 только в отдельном worktree; заморозка следующего раунда после передачи проверяющим подтверждённых находок.
