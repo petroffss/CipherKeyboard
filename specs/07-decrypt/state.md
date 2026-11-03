@@ -1,10 +1,10 @@
 ---
 feature: 07-decrypt
 loop: running
-round: 2
+round: 3
 max_rounds: 5
 base_commit: "4887d8a"
-last_reviewed_commit: "cf2686c31bc130623b6be7bdffa077dab1671b42"
+last_reviewed_commit: "3fc537e0cf3d8403e1d476d5f061ce7f30bfe43e"
 ---
 # Цикл сборки: Расшифровка полученных сообщений
 
@@ -12,25 +12,32 @@ last_reviewed_commit: "cf2686c31bc130623b6be7bdffa077dab1671b42"
 | Раунд | Evals pass | Новые «Важно» | Коммит | Итог |
 |---|---|---|---|---|
 | 1 | 4/21 (6 fail, 11 pending) | 2 | b362d27 | Независимая проверка выявила обязательные исправления; матрица/VO/privacy/stress перенесены на исправленный source |
-| 2 | ожидается полный повтор | — | — | Исправление четырёх открытых классов, контракт не сокращён |
+| 2 | 2/21 (2 fail, 17 pending) | 1 | 3fc537e | Независимо подтверждён explicit provider error; fullUI35/40, пять несовпадений точек нажатия |
+| 3 | предстоит полный повтор | — | — | Узкие исправления R5–R8; весь контракт и лимит сохранены |
 
 ## Открытые проблемы
 | ID | Источник | Класс | Где | Суть | Впервые | Подряд |
 |---|---|---|---|---|---|---|
-| R1 | reviewer finding1; E8/E20 | необработанная-ошибка | Decrypt.swift:100; renderer success branch | refresh после success с missing/unavailable identity сохраняет plaintext/signature и скрывает ошибку; 4 независимых контрпримера | 1 | 1 |
-| R2 | reviewer finding2; E11/E13/E20 | гонка | App/DecryptView.swift:123–155; Decrypt.swift:105 | Late native paste доставляет старый provider после deactivate/reactivate и меняет новый ввод; native boundary probe подтвердил | 1 | 1 |
-| R3 | verifier E15 | расходится-с-макетом | DecryptUIKit.swift:176; identityScroll | На реальном402 верх sender размывается/перекрывается серой полосой; причина требует подтверждения, reference требует полное читаемое имя | 1 | 1 |
-| R4 | verifier E19 | слабый-тест | UITests/ContactsUITests.swift:672 | Изменённый replaceText требует SelectAll, которого нет в меню suggestions при замене имён; fullUI38/40, callers151/201 | 1 | 1 |
+| R5 | reviewerR2 finding1; E7/E13/E20 | необработанная-ошибка | App/DecryptView.swift:181–187 | Новый native provider completion игнорирует explicit NSError; актуальная вставка молча сохраняет ввод без обязательного clipboardMessage. Stale/nil-nil/cancel должны оставаться отдельными случаями | 2 | 1 |
+| R6 | builderR2 fullUI; E19 | слабый-тест | UITests/ContactsUITests.swift:613–615 | Четыре события Save фактически `(201,807)` внутри клавиатуры y590…816, видимая кнопка x20 y488 w362 h50. Прежний текст/валидный ключ сохранены, вызов сохранения не доказан | 2 | 1 |
+| R7 | builderR2 fullUI; E1/E19 | слабый-тест | UITests/DecryptUITests.swift:92–99 | При landscape→portrait synthetic tap `(69.67,234.55)` во время перехода попал в поле вместо кнопки в portrait y388.7; input intact, operations0. Нужна проверенная стабилизация и точное действие, без потери сценария поворота | 2 | 1 |
+| R8 | builderR2 targeted actual402; E10/E15/E19 | слабый-тест | DebugHostTests/DecryptRuntimeTests.swift:22 | После Close реальные compose, курсор/выделение и русская «й» вернулись; тест ошибочно ожидал фиксированную английскую `keyboard.key.q`. Проверять ту же реальную раскладку до/после | 2 | 1 |
 
 ## Закрытые
 | ID | Класс | Как исправлено | Раунд |
 |---|---|---|---|
+| R1 | необработанная-ошибка | Снимается результат при неуспешной identity/access проверке; independent core проверил обе поверхности, восстановление и смену. E8 runtime contract остаётся отдельно | 2 |
+| R2 | гонка | Native provider stamp отклоняет stale callbacks до UI/model mutation. Independent real component подтвердил stale error/value и current success; shipping E11/E13 не зачтены по component probe | 2 |
+| R3 | расходится-с-макетом | Public scroll-edge effects скрыты в private scrollports; на same-state actual402 оригинал показывает чёткое «От: Анна07», лично просмотрено verifier. Причина эффекта отдельно не доказана, полная E15 матрица обязательна | 2 |
+| R4 | слабый-тест | SelectAll стал необязательным при реальном пословном выделении, проверяются progress/empty/exact. Оба исходных callers и длинный ключ PASS в unfiltered35/40, новые несовпадения tap coordinates учтены отдельно | 2 |
 
 ## Было до нас
 Этап 06 слит по решению пользователя, его E18/E20 pending остаются без изменений; цикл 06 не возобновляется.
 
 ## Кандидаты в выученные правила
-Нет.
+Повтор класса необработанная-ошибка в identity refresh и native item-provider: кандидат — «Проверяй каждый реально сообщённый сбой внешнего адаптера после успешного состояния; ошибка снимает несовместимый результат и имеет явную обратную связь, а устаревшие callbacks не меняют новую сессию». Это предложение, REVIEW.md не изменялся.
+
+Повтор класса слабый-тест в кнопке формы контакта и действии после поворота: кандидат — «После смены раскладки, клавиатуры или ориентации сверяй фактический hit point с видимой целью и состояние после одного действия». REVIEW.md не изменялся.
 
 ## Журнал
 2026-11-02: пользователь выполнил `/approve 07-decrypt`. Контракт проверен (21 eval), одобрение сохранено в 4887d8a. Ветка feature/07-decrypt; начало раунда 1. Независимые роли builder → verifier → reviewer. Контракт, все 21 eval и 94 рамки сохраняются без ослабления. Браузерный просмотр HTML в предыдущем ходе был недоступен; нативная проверка продукта предстоит.
@@ -69,5 +76,13 @@ Actual06→07 two-identity chain доказана verifier: публичные k
 
 UI/clipboard queue R1 освобождена, source/контракт не изменены verifier/reviewer. Начат раунд2: builder исправляет R1–R4 во всём изменении и пишет регрессии. Все21eval будут проверены заново после нового frozen source; first-userRelease остаётся отдельным заключительным шагом. Предварительное согласие пользователя на разумные решения и успешное итоговое принятие продолжает действовать.
 
+2026-11-03 R2 checkpoint: builder сохранил candidate source `3fc537e` [wip], core187/29 PASS и component native-provider probe10/10 PASS (actual UITextView.text и model.input; это не утверждение shipping lifecycle). Первый R2 fullUI `.build/TestResults/ui-20261103-083210.xcresult` не завершён: initial contacts.empty assertion до изменённого helper на загрязнённом старыми синтетическими06контактами UI-only устройстве; builder затем сам послал SIGINT ради дополнительного callback guard. Не объявляется runner crash или новая product regression. Старые данные сохранены; для нового полного запуска создаётся ещё один явно собственный чистый UI-only402. Root разрешил эту обратимую подготовку в рамках уже одобренного этапа. Fresh reviewerR2 выполняет только статическое deep security review `cf2686c..3fc537e` параллельно builder final checks; UI/clipboard очередь эксклюзивно builder. Все независимые21 eval и94frames ещё предстоят на окончательно frozen R2.
+
+Root подготовил `evidence/root-preparation/voiceover-tools.md`: установленный public Xcode27 `XCUIVoiceOverService` даёт реальные enable/currentSpeech().utterance/navigation/disable+readback. Это подготовка инструмента для E17, не доказательство выполнения E17; AX tree или синтезированная речь не заменяют actual VoiceOver. Отдельный brief для fresh verifier сохраняет полный contract и уроки runtime/permission/provenance.
+
+2026-11-03: fresh reviewerR2 завершил static deep review frozen `3fc537e`:1 новый Важно R5,0 Мелочь/БылоДоНас; `evidence/reviewer-round2/report.md`. Прежние identity/stale-provider source paths выглядят исправленными, но independent runtime acceptance пока не присвоена. Builder завершает текущий fullUI и targeted native proof; fresh verifierR2 read-only готовит bounded explicit NSError reproduction. Дорогая94/VO/privacy/stress при known Important не запускается, обязательный полный повтор всех21 переносится на fixedR3. Новый чистый UI-only07: `078EF3AF-D34A-4FDE-AE62-DB6B8BC909FF`, имя CipherKeyboard-UI-DecryptBuilderR2-402, штатная firstbootmigration завершена и minimization0 прочитана builder. Merge не выполнялся.
+
+2026-11-03: независимый verifier R2 завершил штатный core187/29 и lint89 exit0. Два ранних restricted core runs воспроизводили только прежний backup exclusion assertion; same-volume Foundation control readback false в sandbox и true с scoped разрешением, затем неизменённый полный core PASS. Оба отрицательных лога и контроль сохранены. Это объясняет различие окружения, не изменение контактов. Его signed native NSError probe подготовлен и ждёт UI очереди. Builder fullUI `ui-20261103-083749.xcresult` ещё идёт: прежние оба R4 callers и long wrapped key passed; четыре других `ContactsUITests.swift:615` Save→sheet timeout после enabled tap зафиксированы отдельно, причина не установлена; не считать этот промежуточный результат полным. App tests AccessAndKeyErrors, AppPasteEditClose, BusyAndCancel уже прошли по staged stdout. Source revision32011531 и установленные stub+dylib app/extension совпали с manifest builder.
+
 ## Отчёт для человека
-Раунд1 не принят:4/21pass,6fail,11pending; четыре открытых класса исправляются в раунде2. Полный обязательный контракт сохраняется; merge не выполнялся.
+Раунд2 не принят: 2 PASS (E5/E14), 2 FAIL (E7/E20), 17 PENDING на R2, оставшийся объём не сокращён. Независимый native probe воспроизвёл R5: фактический NSItemProviderErrorDomain/-1000, load1/open0, прежний editor/model, error=nil. Stale error, stale value, current success 3/3 PASS. `evidence/verifier-round2/native-paste-results.json`, provenance и отчёт. Builder exact frozen3fc537e/runtime32011531: core187/29, lint89, Debug/Release/build-for-testing PASS; fullUI35/5/0 exit65 `.build/TestResults/ui-20261103-083749.xcresult`. Все пять raw event/AX/video сравнений в `.build/DecryptBuilderR2/evidence/ui-five-failure-geometry.json`; handoff там же. Actual402 before/after sender чёткий, close restored RU и selection; targeted test exit65 из-за wrong q assertion. Не считать это полным design/runtime PASS. UI очередь R2 освобождена. Начат R3 для R5–R8, после frozen source обязателен полный независимый повтор 21/94, новое security review и отдельный Release first-user. Merge не выполнялся.
