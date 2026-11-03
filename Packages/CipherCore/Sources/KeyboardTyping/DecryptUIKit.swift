@@ -207,7 +207,8 @@
             status.text = model.status
             status.textColor = model.busy ? .secondaryLabel : KeyboardPanel.danger
             statusHint.text =
-                model.busy ? "Сообщение ещё не показано"
+                model.busy
+                ? "Сообщение ещё не показано"
                 : model.error == DecryptCoordinator.clipboardMessage
                     ? DecryptCoordinator.clipboardRecovery : "Закройте панель и повторите попытку."
             spinner.isHidden = !model.busy

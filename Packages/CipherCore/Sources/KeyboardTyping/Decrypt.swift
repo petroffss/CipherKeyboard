@@ -146,6 +146,7 @@ public struct DecryptResult: Equatable, Sendable {
                 value = await reader?.readText() ?? .empty
             }
             guard self?.valid(token, generation, currentDocument) == true else { return }
+            guard self?.identityStillMatches(own.publicKey, token: token) == true else { return }
             do {
                 switch value {
                 case .empty: throw CipherError.noMessage
@@ -178,6 +179,7 @@ public struct DecryptResult: Equatable, Sendable {
                 }
             } catch {
                 guard let self, self.valid(token, generation, currentDocument) else { return }
+                guard self.identityStillMatches(own.publicKey, token: token) else { return }
                 self.finish(error: self.message(error), token: token)
             }
         }
@@ -197,6 +199,11 @@ public struct DecryptResult: Equatable, Sendable {
     private func finish(error: String?, token: UUID) {
         guard operation == token else { return }
         self.error = error; operation = nil; task = nil; busy = false; changed()
+    }
+    private func identityStillMatches(_ key: PublicKey, token: UUID) -> Bool {
+        guard let current = readIdentity() else { finish(error: error, token: token); return false }
+        guard current.publicKey == key else { finish(error: Self.changedMessage, token: token); return false }
+        return true
     }
     private func readIdentity() -> Identity? {
         guard access() else { identityAvailable = false; return nil }

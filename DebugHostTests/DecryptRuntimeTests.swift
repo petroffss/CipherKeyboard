@@ -178,7 +178,7 @@ final class DecryptRuntimeTests: XCTestCase {
         XCTAssertEqual(host.textViews["host.editor"].value as? String, field)
         XCTAssertEqual(host.staticTexts["host.diagnostics"].label, diagnostics)
         host.buttons["keyboard.decrypt.close"].tap()
-        XCTAssertTrue(host.buttons["keyboard.key.й"].exists)
+        XCTAssertTrue(host.buttons["keyboard.key.q"].exists)
         XCTAssertEqual(try metrics(host)["decryptClipboardContentReads"] as? Int, initial + 1)
     }
     @MainActor func testAppSystemPasteAndTenCycles() throws {

@@ -244,6 +244,23 @@ private actor DecryptOpenGate {
             if event == 1 { #expect(s.model.error == DecryptCoordinator.changedMessage) }
         }
     }
+    @Test func identityChangesFenceErrorPublication() async throws {
+        let reader = DecryptRig(); try reader.ready()
+        reader.clipboard.value = .denied; reader.clipboard.suspended = true; reader.model.start()
+        while reader.clipboard.contentReads == 0 { await Task.yield() }
+        reader.own = .identity(reader.c); reader.clipboard.release(); await reader.settle()
+        #expect(reader.model.error == DecryptCoordinator.changedMessage)
+        #expect(reader.model.result == nil)
+
+        let gate = DecryptOpenGate(), opening = DecryptRig(opener: { try await gate.run($0, $1, $2) })
+        try opening.ready()
+        opening.clipboard.value = .text(
+            try CipherMessage.seal("Для новой личности", from: opening.a, to: [opening.c.publicKey]))
+        opening.model.start(); while await gate.calls == 0 { await Task.yield() }
+        opening.own = .identity(opening.c); await gate.release(); await opening.settle()
+        #expect(opening.model.error == DecryptCoordinator.changedMessage)
+        #expect(opening.model.result == nil)
+    }
     @Test func singleFlightAndCancel() async throws {
         let gate = DecryptOpenGate(), r = DecryptRig(opener: { try await gate.run($0, $1, $2) })
         try r.ready("old"); r.clipboard.suspended = true
