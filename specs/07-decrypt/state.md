@@ -50,5 +50,11 @@ last_reviewed_commit: "4887d8a"
 
 2026-11-03: по предварительному разрешению пользователя root дополнил AC7 и две keyboard-paste-error reference рамки точной инструкцией штатного разрешения. Generic «закройте и повторите» не решает наблюдаемый на целевой ОС Ask без prompt; новый hint ведёт в Settings и обещает чтение только по нажатию. Точная ошибка, отказ без текста, zero pre-action reads, single attempt и E7 expectations не ослаблены, состояние/размеры и число рамок не меняются. Независимый verifier проверит и отказ, и Allow; fresh Release first-user не получает скрытого pregrant этого нового разрешения.
 
+2026-11-03: root исправил ещё одну явную ошибку reference, не поведение приложения: в `keyboard-no-access/no-key/key-error` обеих тем кнопка «Зашифровать» теперь disabled. Она ошибочно рисовалась активной в общем HTML compose template, вопреки неизменяемому условию06 AC3 и07 AC14 о сохранении сценариев. Число рамок94/состояний33 и evals21 не менялись; право шифровать при недоступном ключе/доступе не добавлялось.
+
+2026-11-03: builder передал frozen source `b362d27f8bf46fd72f59a0c8766a033736e6ffd1` [wip], runtime/source revision1603781559, worktree clean на handoff. Core50/6+135/23=185 PASS, lint89/Debug build-for-testing/Release exit0, Release debug marker audit0 hits. Index с hashes/сводками/инструкциями E2: `.build/DecryptBuilderR1/evidence/index.json`. После публичного Allow actual06 insertion→keyboard self→app self впервые дошёл до правильного текста, но исходный case был красным из-за crash late disconnected proxy. Public nullable documentIdentifier adapter устранил nil→UUID bridge crash; native5:4PASS/1FAIL, затем оставшийся TwoHostDocuments исправлен с сохранением compose при transient nil и focused1/1PASS. Явный UI Deny1/1PASS, с выбранным «Отказать», без текста/подписи/автоповтора и с последующим штатным восстановлением Allow. Никакой partial/focused результат не заменяет новый unfiltered suite.
+
+Далее независимый verifier на frozen Swift source: весь контракт, новый fullUI, настоящий receiverB того же insertedC,94frames, privacy/lifecycle/VoiceOver/stress. E20 и E21 завершаются отдельными свежими reviewer/first-user ролями; текущие статусы evals пока все pending. Функциональные требования не сокращены.
+
 ## Отчёт для человека
 Цикл выполняется; продукт ещё не проверен.
