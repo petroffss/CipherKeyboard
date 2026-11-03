@@ -1,21 +1,26 @@
 ---
 feature: 07-decrypt
 loop: running
-round: 1
+round: 2
 max_rounds: 5
 base_commit: "4887d8a"
-last_reviewed_commit: "4887d8a"
+last_reviewed_commit: "cf2686c31bc130623b6be7bdffa077dab1671b42"
 ---
 # Цикл сборки: Расшифровка полученных сообщений
 
 ## Сводка
 | Раунд | Evals pass | Новые «Важно» | Коммит | Итог |
 |---|---|---|---|---|
-| 1 | pending | — | — | Реализация |
+| 1 | 4/21 (6 fail, 11 pending) | 2 | b362d27 | Независимая проверка выявила обязательные исправления; матрица/VO/privacy/stress перенесены на исправленный source |
+| 2 | ожидается полный повтор | — | — | Исправление четырёх открытых классов, контракт не сокращён |
 
 ## Открытые проблемы
 | ID | Источник | Класс | Где | Суть | Впервые | Подряд |
 |---|---|---|---|---|---|---|
+| R1 | reviewer finding1; E8/E20 | необработанная-ошибка | Decrypt.swift:100; renderer success branch | refresh после success с missing/unavailable identity сохраняет plaintext/signature и скрывает ошибку; 4 независимых контрпримера | 1 | 1 |
+| R2 | reviewer finding2; E11/E13/E20 | гонка | App/DecryptView.swift:123–155; Decrypt.swift:105 | Late native paste доставляет старый provider после deactivate/reactivate и меняет новый ввод; native boundary probe подтвердил | 1 | 1 |
+| R3 | verifier E15 | расходится-с-макетом | DecryptUIKit.swift:176; identityScroll | На реальном402 верх sender размывается/перекрывается серой полосой; причина требует подтверждения, reference требует полное читаемое имя | 1 | 1 |
+| R4 | verifier E19 | слабый-тест | UITests/ContactsUITests.swift:672 | Изменённый replaceText требует SelectAll, которого нет в меню suggestions при замене имён; fullUI38/40, callers151/201 | 1 | 1 |
 
 ## Закрытые
 | ID | Класс | Как исправлено | Раунд |
@@ -56,5 +61,13 @@ last_reviewed_commit: "4887d8a"
 
 Далее независимый verifier на frozen Swift source: весь контракт, новый fullUI, настоящий receiverB того же insertedC,94frames, privacy/lifecycle/VoiceOver/stress. E20 и E21 завершаются отдельными свежими reviewer/first-user ролями; текущие статусы evals пока все pending. Функциональные требования не сокращены.
 
+2026-11-03: independent verifierR1 закончил early failed-round handoff: 4 PASS (E2/E5/E9/E14),6 FAIL (E8/E11/E13/E15/E19/E20),11 PENDING. Отчёт `evidence/verifier-round1/report.md`, verdicts `eval-results.json`; eval steps normalizedSHAe2539c98f172491ed73fb113418cda909d5c4c6459f914a81b3881dcfcb76a49 неизменён. Полный UI38/40 exit65 — два разных Contacts name callers того же изменённого helper. Independently core185/29, lint89, Debug/Release exit0; installed executable/debug.dylib/version проверены в фазах. Reviewer `evidence/reviewer-round1/report.md`:2 Важно/0 Мелочь/0 БылоДонас, независимо подтверждены bounded model и UIKit provider probes. R1 expensive94/VO/privacy/stress сознательно не запускались на заведомо дефектном source; они остаются обязательными в R2, непроверенное не pass.
+
+Actual06→07 two-identity chain доказана verifier: публичные keys actualA402/B375 обменены через ContactStore, actual06 вставил C наA, sender-self прочитал его в keyboard/app; B прочитал ТОТЖЕ C в обоих интерфейсах. SHA256C=f129d9c468bdfa3b4b7776dfec88b41095a3f9f650aa4812e9cc2a9c7144c6e3, source/receiver attachments побайтно связаны `actual06-C-receiver-identity-proof.json`. Данные синтетические, private keys не экспортировались.
+
+Первый CUA Allow наB отклонила auto-review: общего разрешения этапа недостаточно для конкретного изменения paste access. Никакого обхода через CLI/другой driver не было. Root задал отдельный вопрос; пользователь прямо ответил «Да, разрешаю эту настройку в тестовых симуляторах 07». После нового конкретного согласия тот же public CUA Allow успешно выполнен, selected/readback PNG сохранён. Это разрешение касается CipherKeyboard paste-from-other-apps только на созданных для07 тестовых симуляторах, не Mac/личного iPhone. История отказа и последующего согласия сохранена.
+
+UI/clipboard queue R1 освобождена, source/контракт не изменены verifier/reviewer. Начат раунд2: builder исправляет R1–R4 во всём изменении и пишет регрессии. Все21eval будут проверены заново после нового frozen source; first-userRelease остаётся отдельным заключительным шагом. Предварительное согласие пользователя на разумные решения и успешное итоговое принятие продолжает действовать.
+
 ## Отчёт для человека
-Цикл выполняется; продукт ещё не проверен.
+Раунд1 не принят:4/21pass,6fail,11pending; четыре открытых класса исправляются в раунде2. Полный обязательный контракт сохраняется; merge не выполнялся.
