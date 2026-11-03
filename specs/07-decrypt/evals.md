@@ -145,8 +145,8 @@
 - **Шаги:** `scripts/test.sh core`, `scripts/lint.sh`, `scripts/build.sh`, `CONFIGURATION=Release scripts/build.sh`, `scripts/test.sh ui`; дополнительные harness-тесты 05/06 для затронутых модулей; аудит entitlements/Release на отсутствие новых прав и debug fixtures; миграция старой записи сохраняет ключ и добавляет только публичные метаданные.
 - **Ожидается:** все exit 0, полный UI без failing/skipped обязательных сценариев; клавиатура собирается без модулей записи ключей; учебное превью/набор/контакты/шифрование сохранены; SHA/runtime/счётчики в отчёте. Focused не заменяет полный suite; E18/E20 этапа 06 не меняются. Архитектура/AC14/15.
 - **Почему провалит плохую работу:** ловит работающее превью при сломанном extension, Debug-only реализацию и регрессию шифрования.
-- **Статус:** pending
-- **Доказательство:** R7 pending.
+- **Статус:** fail
+- **Доказательство:** R7: полный стандартный UI на чистом 402 pt дал 40 pass, 1 fail, 0 skip. Единственный сбой в `ContactsUITests.testAddContactByPasteAndRelaunch` на ожидании готовности Save до касания. Проверки ядра, линтера, сборок и аудита Release прошли. [Отчёт](evidence/verifier-round7/report.md) · [Итог UI](evidence/verifier-round7/full-ui-summary.json) · [Отдельная диагностика тайм-аута](evidence/verifier-round7/contacts-diag-original-5s-timings.txt)
 
 ## E20 · Независимая security review [security]
 - **Тип:** command
