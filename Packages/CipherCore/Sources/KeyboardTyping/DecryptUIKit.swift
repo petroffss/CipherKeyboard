@@ -181,6 +181,33 @@
                 content.widthAnchor.constraint(equalTo: scroll.frameLayoutGuide.widthAnchor),
             ])
         }
+        private func chromeFont(landscape: Bool) -> UIFont {
+            let inherited = UIFont.preferredFont(forTextStyle: .headline, compatibleWith: traitCollection)
+            guard traitCollection.preferredContentSizeCategory.isAccessibilityCategory else { return inherited }
+            if !landscape {
+                let titleHeight = ceil(
+                    ((title.text ?? "") as NSString).boundingRect(
+                        with: CGSize(width: max(1, bounds.width - 14 - 45), height: .greatestFiniteMagnitude),
+                        options: [.usesLineFragmentOrigin, .usesFontLeading], attributes: [.font: inherited]
+                    ).height)
+                let closeHeight = max(48, inherited.lineHeight + 20)
+                let bodyHeight = bounds.height - titleHeight - closeHeight - 4 * 12
+                let minimumBodyHeight: CGFloat
+                if hasResult {
+                    let senderLine = ceil(sender.font.lineHeight)
+                    let messageLine = ceil(plaintext.font.lineHeight) + 20
+                    // Portrait gives the identity at most half, then places a gap before the message.
+                    minimumBodyHeight = 2 * max(senderLine, messageLine + resultRow.spacing)
+                } else {
+                    minimumBodyHeight = ceil(status.font.lineHeight) + 16
+                }
+                if bodyHeight >= minimumBodyHeight { return inherited }
+            }
+
+            // Compact only the pinned controls when full-size lines need more room to scroll.
+            let compact = traitCollection.modifyingTraits { $0.preferredContentSizeCategory = .extraExtraLarge }
+            return UIFont.preferredFont(forTextStyle: .headline, compatibleWith: compact)
+        }
         public override func layoutSubviews() {
             let landscape = bounds.width > 500 && bounds.width > bounds.height
             let axis: NSLayoutConstraint.Axis = landscape ? .horizontal : .vertical
@@ -189,15 +216,9 @@
                 resultRow.axis = axis
             }
             identityWidth.isActive = landscape; identityHeight.isActive = !landscape
-            // Keep at least one full accessibility-sized line in the short landscape scrollports.
-            let category = traitCollection.preferredContentSizeCategory
-            let chromeTraits =
-                landscape && category.isAccessibilityCategory
-                ? traitCollection.modifyingTraits { $0.preferredContentSizeCategory = .extraExtraLarge }
-                : traitCollection
-            let chromeFont = UIFont.preferredFont(forTextStyle: .headline, compatibleWith: chromeTraits)
-            if title.font != chromeFont { title.font = chromeFont }
-            if close.titleLabel?.font != chromeFont { close.titleLabel?.font = chromeFont }
+            let pinnedFont = chromeFont(landscape: landscape)
+            if title.font != pinnedFont { title.font = pinnedFont }
+            if close.titleLabel?.font != pinnedFont { close.titleLabel?.font = pinnedFont }
             closeHeight.constant = max(48, (close.titleLabel?.font.lineHeight ?? 28) + 20)
             super.layoutSubviews()
             if !landscape && body.bounds.width > 0 {
