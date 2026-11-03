@@ -19,7 +19,7 @@
                 ?? "contact"
             let context = Context()
             let contact = Contact(
-                name: name == "long" ? String(repeating: "Анна ", count: 8) : "Анна", publicKey: sender.publicKey)
+                name: name == "long" ? "Александра Константинопольская — работа" : "Анна", publicKey: sender.publicKey)
             let model = DecryptCoordinator(
                 surface: .app,
                 identity: {
@@ -29,7 +29,7 @@
                 },
                 contacts: { name == "contacts-warning" ? .unreadable : .contacts(name == "unknown" ? [] : [contact]) },
                 opener: { text, own, book in
-                    if name == "busy" { try await Task.sleep(for: .seconds(3)) }
+                    if name == "busy" { try await Task.sleep(for: .seconds(30)) }
                     if name == "generic" { throw CocoaError(.coderInvalidValue) }
                     let opened = try CipherMessage.open(text, as: own, contacts: book)
                     if name == "changed" { await MainActor.run { context.changed = true } }

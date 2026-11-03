@@ -287,6 +287,7 @@
                     "enc-sending",
                     "enc-success", "enc-limit", "enc-no-key", "enc-key-error", "enc-contacts-error", "enc-no-access",
                     "enc-changed", "enc-selection", "enc-failure", "enc-document-changed", "enc-long-name",
+                    "enc-proof-decrypt",
                 ]
                 debugChoices = names.map { name in
                     let button = UIButton(type: .system)
@@ -752,6 +753,10 @@
                     controls.isHidden = false; decryptPanel.clear()
                 }
             }
+            #if DEBUG
+                // The design picker must stay above a currently presented decrypt panel.
+                layoutDebugPicker()
+            #endif
             if panelHeight != height { panelHeight = height; heightChanged?(height) }
         }
         #if DEBUG

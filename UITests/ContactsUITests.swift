@@ -651,26 +651,27 @@ final class ContactsUITests: XCTestCase {
         replaceText(in: field, with: text, app: app)
     }
 
-    /// Стирает текст поля целиком и вводит новый. Курсор ставится в конец нажатием у правого нижнего края текста.
+    /// Стирает текст через системное выделение целиком, затем вводит новый.
     @MainActor
     private func replaceText(in field: XCUIElement, with text: String, app: XCUIApplication) {
         func currentText() -> String {
             let value = (field.value as? String) ?? ""
             return value == (field.placeholderValue ?? "") ? "" : value
         }
-        // Сначала XCTest раскрывает само поле и ставит фокус. На 375 pt прежняя экранная координата
-        // могла лежать на клавиатуре и менять ключ вместо имени. После фокуса берём обновлённую рамку.
         field.tap()
-        // Нажатие в правый нижний угол текста (внутри отступа 12 pt) ставит курсор в конец последней строки.
-        let frame = field.frame
-        let end = app.coordinate(withNormalizedOffset: .zero)
-            .withOffset(CGVector(dx: frame.maxX - 14, dy: frame.maxY - 14))
-        end.tap()
-        var attempts = 0
-        while !currentText().isEmpty && attempts < 3 {
-            attempts += 1
-            field.typeText(String(repeating: XCUIKeyboardKey.delete.rawValue, count: currentText().count + 2))
-            if !currentText().isEmpty { end.tap() }
+        if !currentText().isEmpty {
+            // Tapping blank space in a multi-line field can open iOS AutoFill instead of moving the caret.
+            // Select All is independent of wrapping and also proves the actual native editing action.
+            field.press(forDuration: 1.1)
+            let selectAll = app.descendants(matching: .any).matching(
+                NSPredicate(
+                    format: "label IN %@", ["Select All", "Выбрать всё", "Выделить всё", "Выбрать все", "Выделить все"]
+                )
+            ).firstMatch
+            if !selectAll.waitForExistence(timeout: 2) { field.doubleTap() }
+            XCTAssertTrue(selectAll.waitForExistence(timeout: 3), app.debugDescription)
+            selectAll.tap()
+            field.typeText(XCUIKeyboardKey.delete.rawValue)
         }
         XCTAssertEqual(currentText(), "", "поле не очистилось")
         if !text.isEmpty { field.typeText(text) }

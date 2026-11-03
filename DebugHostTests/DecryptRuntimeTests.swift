@@ -26,6 +26,75 @@ final class DecryptRuntimeTests: XCTestCase {
         let raw = try XCTUnwrap(host.buttons["keyboard.debugFixtures"].value as? String)
         return try XCTUnwrap(JSONSerialization.jsonObject(with: Data(raw.utf8)) as? [String: Any])
     }
+    /// One retained ciphertext crosses actual 06 insertion, explicit host copying and both shipping 07 surfaces.
+    @MainActor func testActualInsertedCiphertextSelfRoundTrip() throws {
+        let app = XCUIApplication(bundleIdentifier: "dev.cipherkeyboard.app")
+        app.launchArguments = []; app.launch()
+        XCTAssertTrue(app.staticTexts["mykey.fingerprint"].waitForExistence(timeout: 15)); app.terminate()
+        app.launchArguments = ["-encrypt-seed"]; app.launch()
+        XCTAssertEqual(
+            app.staticTexts["encrypt.seedResult"].label,
+            "PASS: real Keychain identity; 20 synthetic public contacts")
+        app.terminate(); try TypingTestSupport.configureKeyboard(fullAccess: true)
+        XCUIDevice.shared.orientation = .portrait
+        let host = XCUIApplication(bundleIdentifier: "dev.cipherkeyboard.typinghost")
+        host.launchEnvironment = [:]; host.launch(); TypingTestSupport.openCipher(in: host)
+        try TypingTestSupport.tapHostControl("Курсор", in: host)
+        host.buttons["keyboard.recipient"].tap()
+        let anna = host.buttons.matching(
+            NSPredicate(
+                format: "identifier BEGINSWITH %@ AND label BEGINSWITH %@", "keyboard.recipient.", "Анна06,"
+            )
+        ).firstMatch
+        XCTAssertTrue(anna.waitForExistence(timeout: 5)); anna.tap()
+        TypingTestSupport.fixture("enc-proof-decrypt", in: host)
+        let expected = "  Привет, Анна!\nЗавтра в 19:30 👨‍👩‍👧‍👦  "
+        XCTAssertEqual(TypingTestSupport.draft(in: host).value as? String, expected)
+        host.buttons["keyboard.encrypt"].tap()
+        let inserted = XCTNSPredicateExpectation(
+            predicate: NSPredicate(format: "label BEGINSWITH %@", "Зашифровано для "),
+            object: host.staticTexts["keyboard.encrypt.status"])
+        XCTAssertEqual(XCTWaiter.wait(for: [inserted], timeout: 5), .completed)
+        let field = try XCTUnwrap(host.textViews["host.editor"].value as? String)
+        XCTAssertTrue(field.hasPrefix("До ckmsg1:")); XCTAssertTrue(field.hasSuffix("встречи!"))
+        XCTAssertTrue(
+            host.staticTexts["host.trace"].label.hasPrefix(
+                "insertions=1;deletions=0;replacements=0;ciphertext=true;"))
+        let ciphertext = String(field.dropFirst(3).dropLast("встречи!".count))
+        let retained = XCTAttachment(string: ciphertext); retained.name = "actual-06-inserted-for-07";
+        retained.lifetime = .keepAlways; add(retained)
+        host.terminate()
+        let readerHost = self.host(ciphertext)
+        readerHost.buttons["keyboard.decrypt"].tap()
+        let allow = readerHost.alerts.buttons.matching(
+            NSPredicate(
+                format: "label CONTAINS[c] %@ OR label CONTAINS[c] %@", "Allow", "Разрешить"
+            )
+        ).firstMatch
+        if allow.waitForExistence(timeout: 2) { allow.tap() }
+        let text = readerHost.staticTexts["keyboard.decrypt.text"]
+        XCTAssertTrue(text.waitForExistence(timeout: 5)); XCTAssertEqual(text.label, expected)
+        XCTAssertEqual(readerHost.staticTexts["keyboard.decrypt.sender"].label, "От: вы")
+        XCTAssertEqual(readerHost.staticTexts["keyboard.decrypt.signature"].label, "✓ Подпись верна")
+        let proof = XCTAttachment(screenshot: readerHost.screenshot()); proof.name = "actual-06-to-07-keyboard-self";
+        proof.lifetime = .keepAlways; add(proof)
+        readerHost.buttons["keyboard.decrypt.close"].tap()
+        XCTAssertEqual(readerHost.textViews["host.editor"].value as? String, "До встречи!")
+        app.launchArguments = []; app.launch();
+        app.tabBars.buttons.matching(NSPredicate(format: "label == %@", "Расшифровать")).firstMatch.tap()
+        let paste = app.descendants(matching: .any)["decrypt.paste"].firstMatch
+        XCTAssertTrue(paste.waitForExistence(timeout: 5)); paste.tap()
+        let received = XCTNSPredicateExpectation(
+            predicate: NSPredicate(format: "value == %@", ciphertext), object: app.textViews["decrypt.input"])
+        XCTAssertEqual(XCTWaiter.wait(for: [received], timeout: 5), .completed)
+        app.buttons["decrypt.submit"].tap()
+        XCTAssertTrue(app.staticTexts["decrypt.text"].waitForExistence(timeout: 5))
+        XCTAssertEqual(app.staticTexts["decrypt.text"].label, expected)
+        XCTAssertEqual(app.staticTexts["decrypt.sender"].label, "От: вы")
+        let appProof = XCTAttachment(screenshot: app.screenshot()); appProof.name = "actual-06-to-07-app-self";
+        appProof.lifetime = .keepAlways; add(appProof)
+        app.buttons["decrypt.close"].tap()
+    }
     @MainActor func testExplicitClipboardRead() throws {
         let ciphertext = try prepare(); try TypingTestSupport.configureKeyboard(fullAccess: true)
         let host = host(ciphertext)

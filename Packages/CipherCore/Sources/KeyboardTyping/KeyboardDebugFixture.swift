@@ -22,6 +22,10 @@
                 panel.adapter.seedForTesting("  Привет, Анна! 👨‍👩‍👧‍👦\nе\u{301}  \n")
                 panel.debugFixture = "fixture=enc-proof-unicode;"; return
             }
+            if name == "enc-proof-decrypt" {
+                panel.adapter.seedForTesting("  Привет, Анна!\nЗавтра в 19:30 👨‍👩‍👧‍👦  ")
+                panel.debugFixture = "fixture=enc-proof-decrypt;"; return
+            }
             if name == "enc-bytes4096" {
                 panel.adapter.seedForTesting(String(repeating: "a", count: 4096));
                 panel.debugFixture = "fixture=enc-bytes4096;"; return

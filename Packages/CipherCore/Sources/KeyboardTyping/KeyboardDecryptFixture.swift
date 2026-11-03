@@ -17,14 +17,17 @@
             if state == "idle" {
                 // Reuse the approved compose fixture: selected Anna and the exact visible draft.
                 KeyboardEncryptFixture.apply(to: panel, state: "ready")
+                panel.adapter.seedForTesting("До встречи!\nВозьми документы.", cursor: 7)
             }
             let context = Context()
             let key = state == "self" ? context.own : context.sender
-            let name = state == "long" ? String(repeating: "Анна ", count: 8) : "Анна"
+            let name = state == "long" ? "Александра Константинопольская — работа" : "Анна"
             let contact = Contact(name: name, publicKey: context.sender.publicKey)
+            let marker = "Последняя строка"
+            let paragraph = String(repeating: "Текст 👋\n", count: 250)
             let plain =
                 state == "long"
-                ? String(repeating: "Длинное сообщение 🙂\n", count: 100) + "Последняя строка"
+                ? paragraph + String(repeating: "a", count: 4096 - paragraph.utf8.count - marker.utf8.count) + marker
                 : "  Привет, Анна!\nЗавтра в 19:30 👨‍👩‍👧‍👦  "
             guard
                 let ciphertext = try? CipherMessage.seal(

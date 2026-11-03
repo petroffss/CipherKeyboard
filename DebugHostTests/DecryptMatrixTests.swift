@@ -11,6 +11,49 @@ final class DecryptMatrixTests: XCTestCase {
         "empty", "input", "busy", "contact", "self", "unknown", "long", "no-message", "corrupt", "foreign", "version",
         "paste-error", "key-error", "contacts-warning", "changed", "oversize",
     ]
+    /// A bounded builder diagnostic; the independent verifier still captures all 94 approved frames.
+    @MainActor func testDesignSmoke() throws {
+        XCUIDevice.shared.orientation = .portrait
+        try TypingTestSupport.configureKeyboard(fullAccess: true)
+        let host = XCUIApplication(bundleIdentifier: "dev.cipherkeyboard.typinghost")
+        host.launch(); TypingTestSupport.openCipher(in: host)
+        for state in ["idle", "busy", "corrupt", "long"] {
+            TypingTestSupport.fixture("dec-" + state, in: host)
+            if state == "long" {
+                XCTAssertTrue(host.staticTexts["keyboard.decrypt.text"].waitForExistence(timeout: 5))
+                XCTAssertEqual(host.staticTexts["keyboard.decrypt.text"].label.utf8.count, 4096)
+            }
+            if state == "corrupt" {
+                XCTAssertTrue(host.staticTexts["keyboard.decrypt.status"].waitForExistence(timeout: 5))
+            }
+            capture(host, name: "smoke-keyboard-" + state)
+        }
+        XCUIDevice.shared.orientation = .landscapeLeft
+        TypingTestSupport.waitLayout(in: host, width: 874)
+        capture(host, name: "smoke-keyboard-long-landscape")
+        XCUIDevice.shared.orientation = .portrait
+        host.terminate()
+        for state in ["empty", "busy", "long"] {
+            let app = XCUIApplication(bundleIdentifier: "dev.cipherkeyboard.app")
+            app.launchArguments = ["-keystore", "memory", "-decrypt-fixture", "-decrypt-state", state]
+            app.launch()
+            XCTAssertTrue(app.staticTexts["mykey.fingerprint"].waitForExistence(timeout: 15))
+            app.tabBars.buttons.matching(NSPredicate(format: "label == %@", "Расшифровать")).firstMatch.tap()
+            if state == "empty" {
+                capture(app, name: "smoke-app-empty"); app.terminate(); continue
+            }
+            let submit = app.buttons["decrypt.submit"]
+            XCTAssertTrue(submit.waitForExistence(timeout: 5)); submit.tap()
+            XCTAssertTrue(app.buttons["decrypt.close"].waitForExistence(timeout: 5))
+            capture(app, name: "smoke-app-" + state)
+            if state == "long" {
+                XCUIDevice.shared.orientation = .landscapeLeft
+                capture(app, name: "smoke-app-long-landscape")
+                XCUIDevice.shared.orientation = .portrait
+            }
+            app.terminate()
+        }
+    }
     @MainActor func testCaptureCurrentProfile() throws {
         XCUIDevice.shared.orientation = .portrait
         let host = XCUIApplication(bundleIdentifier: "dev.cipherkeyboard.typinghost")
@@ -81,7 +124,15 @@ final class DecryptMatrixTests: XCTestCase {
         XCUIDevice.shared.orientation = .portrait
     }
     @MainActor private func capture(_ app: XCUIApplication, name: String) {
-        let frame = XCTAttachment(screenshot: app.screenshot()); frame.name = "decrypt-" + name;
+        var previous = CGRect.null, stableSince = Date()
+        let settled = XCTNSPredicateExpectation(
+            predicate: NSPredicate { _, _ in
+                let frame = app.frame
+                if frame != previous { previous = frame; stableSince = Date() }
+                return Date().timeIntervalSince(stableSince) >= 0.6
+            }, object: nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [settled], timeout: 5), .completed)
+        let frame = XCTAttachment(screenshot: XCUIScreen.main.screenshot()); frame.name = "decrypt-" + name;
         frame.lifetime = .keepAlways; add(frame)
         let hierarchy = XCTAttachment(string: app.debugDescription); hierarchy.name = "decrypt-" + name + "-ax";
         hierarchy.lifetime = .keepAlways; add(hierarchy)

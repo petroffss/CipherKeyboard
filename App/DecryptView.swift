@@ -19,7 +19,7 @@ struct DecryptView: View {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 16) {
                         Text("Вставьте зашифрованное сообщение").font(.body)
-                        DecryptInput(model: model).frame(height: 154)
+                        DecryptInput(model: model).frame(height: 212)
                         if model.busy {
                             ProgressView("Расшифровываем…")
                                 .accessibilityIdentifier("decrypt.status")
