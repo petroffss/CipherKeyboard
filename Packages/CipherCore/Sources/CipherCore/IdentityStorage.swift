@@ -20,6 +20,10 @@ public enum IdentityStorageError: Error, Equatable, Sendable {
     case unavailable(status: OSStatus)
     /// Запись есть, но это не личность (не 64 байта или не ключи). Запись не трогаем.
     case corruptedRecord(byteCount: Int)
+    /// Старую запись нужно открыть в приложении, чтобы добавить открытый ключ.
+    case missingPublicMetadata
+    /// Атрибут открытого ключа повреждён или не соответствует приватному ключу.
+    case invalidPublicMetadata
 }
 
 /// Результат чтения личности без права создания.
@@ -32,32 +36,48 @@ public enum IdentityReadResult: Sendable {
     case unavailable(IdentityStorageError)
 }
 
+/// Только открытый ключ. Проверка статуса клавиатуры не читает приватные данные.
+public enum IdentityMetadataReadResult: Equatable, Sendable {
+    case publicKey(PublicKey)
+    case missing
+    case unavailable(IdentityStorageError)
+}
+
 /// Только чтение личности — для клавиатуры. Метода создания или записи у типа нет.
 public struct IdentityReader: Sendable {
-    private let storage: any SecretStorage
+    private let readIdentity: @Sendable () -> IdentityReadResult
 
     public init(storage: any SecretStorage) {
-        self.storage = storage
+        readIdentity = {
+            let result = storage.read()
+            switch result.status {
+            case errSecSuccess:
+                do throws(IdentityStorageError) {
+                    return .identity(try decodeIdentity(result.data))
+                } catch {
+                    return .unavailable(error)
+                }
+            case errSecItemNotFound: return .missing
+            default: return .unavailable(.unavailable(status: result.status))
+            }
+        }
+    }
+
+    private init(readIdentity: @escaping @Sendable () -> IdentityReadResult) {
+        self.readIdentity = readIdentity
     }
 
     /// Читатель общего Keychain приложения и клавиатуры.
-    public static var keychain: IdentityReader { IdentityReader(storage: KeychainSecretStorage.identity) }
-
-    public func read() -> IdentityReadResult {
-        let result = storage.read()
-        switch result.status {
-        case errSecSuccess:
-            do {
-                return .identity(try decodeIdentity(result.data))
-            } catch {
-                return .unavailable(error)
-            }
-        case errSecItemNotFound:
-            return .missing
-        default:
-            return .unavailable(.unavailable(status: result.status))
-        }
+    public static var keychain: IdentityReader {
+        IdentityReader { KeychainSecretStorage.identity.read().result }
     }
+
+    /// Атрибуты той же записи Keychain, без запроса её секретного значения.
+    public static func readKeychainMetadata() -> IdentityMetadataReadResult {
+        KeychainSecretStorage.identity.readMetadata()
+    }
+
+    public func read() -> IdentityReadResult { readIdentity() }
 }
 
 /// Разбор записи личности. `package`: нужен `IdentityStore` из `CipherCoreIdentityStore`, снаружи пакета не виден.
@@ -69,60 +89,109 @@ package func decodeIdentity(_ data: Data?) throws(IdentityStorageError) -> Ident
     return identity
 }
 
-/// Запись личности в Keychain, общем для приложения и клавиатуры (access group = App Group).
-/// `package`: снаружи пакета тип не виден — клавиатура получает только `IdentityReader.keychain`,
-/// а `add` в настоящий Keychain доступен лишь `IdentityStore.keychain` (модуль `CipherCoreIdentityStore`).
-package struct KeychainSecretStorage: SecretStorage {
-    package let service: String
-    package let account: String
-    package let accessGroup: String
+/// Одна запись общего Keychain. В этом модуле есть только чтение. Запись выполняет IdentityStore приложения.
+package struct KeychainSecretStorage: Sendable {
+    private let service: String
+    private let account: String
+    private let accessGroup: String
 
-    package init(service: String, account: String, accessGroup: String) {
-        self.service = service
-        self.account = account
-        self.accessGroup = accessGroup
-    }
-
-    /// Единственная запись личности: 64 байта приватных ключей.
     package static let identity = KeychainSecretStorage(
         service: "dev.cipherkeyboard.identity", account: "identity.v1", accessGroup: "group.dev.cipherkeyboard")
 
     /// Атрибуты, по которым запись находится: класс, сервис, аккаунт, группа доступа.
-    func baseQuery() -> [String: Any] {
+    private func baseQuery() -> [String: Any] {
         [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: service,
             kSecAttrAccount as String: account,
             kSecAttrAccessGroup as String: accessGroup,
+            kSecAttrSynchronizable as String: false,
         ]
     }
 
-    /// Запрос чтения: одна запись, вернуть данные. Синхронизируемые записи (iCloud) не ищутся.
-    func readQuery() -> [String: Any] {
+    func readQuery(includeSecret: Bool, includeReference: Bool = false) -> [String: Any] {
         var query = baseQuery()
-        query[kSecReturnData as String] = true
+        query[kSecReturnAttributes as String] = true
         query[kSecMatchLimit as String] = kSecMatchLimitOne
+        if includeSecret { query[kSecReturnData as String] = true }
+        if includeReference { query[kSecReturnPersistentRef as String] = true }
         return query
     }
 
-    /// Запрос добавления: только на этом устройстве, только когда разблокировано, без iCloud.
-    func addQuery(data: Data) -> [String: Any] {
+    package func addQuery(data: Data, publicKey: PublicKey) -> [String: Any] {
         var query = baseQuery()
         query[kSecAttrAccessible as String] = kSecAttrAccessibleWhenUnlockedThisDeviceOnly
-        query[kSecAttrSynchronizable as String] = false
+        query.merge(publicMetadataAttributes(publicKey)) { _, value in value }
         query[kSecValueData as String] = data
         return query
     }
 
-    package func read() -> (status: OSStatus, data: Data?) {
-        var result: CFTypeRef?
-        let status = SecItemCopyMatching(readQuery() as CFDictionary, &result)
-        guard status == errSecSuccess else { return (status, nil) }
-        return (status, result as? Data)
+    package func publicMetadataAttributes(_ publicKey: PublicKey) -> [String: Any] {
+        [kSecAttrGeneric as String: Data(publicKey.raw)]
     }
 
-    package func add(_ data: Data) -> OSStatus {
-        SecItemAdd(addQuery(data: data) as CFDictionary, nil)
+    package func legacyUpdateQuery(reference: Data) -> [String: Any] {
+        [kSecValuePersistentRef as String: reference]
+    }
+
+    private func copyItem(_ query: [String: Any]) -> (OSStatus, [String: Any]?) {
+        var result: CFTypeRef?
+        let status = SecItemCopyMatching(query as CFDictionary, &result)
+        return (status, result as? [String: Any])
+    }
+
+    /// Keychain may omit an unset generic attribute or return an empty value for a legacy item.
+    static func metadata(from attributes: [String: Any]) -> IdentityMetadataReadResult {
+        guard let value = attributes[kSecAttrGeneric as String] else {
+            return .unavailable(.missingPublicMetadata)
+        }
+        guard let raw = value as? Data else { return .unavailable(.invalidPublicMetadata) }
+        guard !raw.isEmpty else { return .unavailable(.missingPublicMetadata) }
+        guard let key = try? PublicKey(validatingRaw: Array(raw)) else { return .unavailable(.invalidPublicMetadata) }
+        return .publicKey(key)
+    }
+
+    package func readMetadata() -> IdentityMetadataReadResult {
+        let (status, item) = copyItem(readQuery(includeSecret: false))
+        switch status {
+        case errSecSuccess:
+            guard let item else { return .unavailable(.invalidPublicMetadata) }
+            return Self.metadata(from: item)
+        case errSecItemNotFound: return .missing
+        default: return .unavailable(.unavailable(status: status))
+        }
+    }
+
+    static func decode(
+        item: [String: Any], allowLegacy: Bool
+    ) throws(IdentityStorageError) -> (Identity, legacyReference: Data?) {
+        let identity = try decodeIdentity(item[kSecValueData as String] as? Data)
+        switch metadata(from: item) {
+        case .publicKey(let key) where key == identity.publicKey:
+            return (identity, nil)
+        case .unavailable(.missingPublicMetadata):
+            guard allowLegacy, let reference = item[kSecValuePersistentRef as String] as? Data else {
+                throw .missingPublicMetadata
+            }
+            return (identity, reference)
+        default: throw .invalidPublicMetadata
+        }
+    }
+
+    package func read(allowLegacy: Bool = false) -> (result: IdentityReadResult, legacyReference: Data?) {
+        let (status, item) = copyItem(readQuery(includeSecret: true, includeReference: allowLegacy))
+        switch status {
+        case errSecSuccess:
+            guard let item else { return (.unavailable(.corruptedRecord(byteCount: 0)), nil) }
+            do throws(IdentityStorageError) {
+                let (identity, reference) = try Self.decode(item: item, allowLegacy: allowLegacy)
+                return (.identity(identity), reference)
+            } catch {
+                return (.unavailable(error), nil)
+            }
+        case errSecItemNotFound: return (.missing, nil)
+        default: return (.unavailable(.unavailable(status: status)), nil)
+        }
     }
 }
 

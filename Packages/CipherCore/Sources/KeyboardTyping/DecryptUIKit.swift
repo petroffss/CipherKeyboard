@@ -38,6 +38,8 @@
         private let textScroll = UIScrollView()
         private let sender = UILabel()
         private let signature = UILabel()
+        private let messageDate = UILabel()
+        private let ageWarning = UILabel()
         private let hint = UILabel()
         private let warning = UILabel()
         private let plaintext = UILabel()
@@ -68,21 +70,25 @@
             lock.tintColor = KeyboardPanel.accent; lock.isAccessibilityElement = false
             identityContent.axis = .vertical; identityContent.spacing = 6
             for (label, suffix) in [
-                (sender, "sender"), (signature, "signature"), (plaintext, "text"), (status, "status"),
+                (sender, "sender"), (signature, "signature"), (messageDate, "date"), (ageWarning, "ageWarning"),
+                (plaintext, "text"), (status, "status"),
             ] { label.accessibilityIdentifier = prefix + "." + suffix }
-            for label in [sender, signature, hint, warning, plaintext, status, statusHint] {
+            for label in [sender, signature, messageDate, ageWarning, hint, warning, plaintext, status, statusHint] {
                 label.numberOfLines = 0; label.adjustsFontForContentSizeCategory = true
                 label.font = .preferredFont(forTextStyle: label == plaintext ? .body : .subheadline)
                 label.lineBreakMode = .byWordWrapping
             }
             sender.font = .preferredFont(forTextStyle: .headline)
             signature.textColor = KeyboardPanel.accent
+            messageDate.textColor = .secondaryLabel; ageWarning.textColor = KeyboardPanel.danger
             hint.textColor = .secondaryLabel; warning.textColor = KeyboardPanel.danger
             statusHint.textColor = .secondaryLabel; statusHint.font = .preferredFont(forTextStyle: .footnote)
             status.textAlignment = .center; statusHint.textAlignment = .center
             errorIcon.tintColor = KeyboardPanel.danger; errorIcon.isAccessibilityElement = false
             errorIcon.contentMode = .scaleAspectFit
-            for label in [sender, signature, hint, warning] { identityContent.addArrangedSubview(label) }
+            for label in [sender, signature, ageWarning, messageDate, hint, warning] {
+                identityContent.addArrangedSubview(label)
+            }
             resultRow.spacing = 12; resultRow.alignment = .fill
             resultRow.addArrangedSubview(identityScroll); resultRow.addArrangedSubview(textScroll)
             textSurface.backgroundColor = .systemGroupedBackground; textSurface.layer.cornerRadius = 10
@@ -238,6 +244,11 @@
             title.text = hasResult ? "Расшифровано" : "Расшифровка"
             lock.isHidden = !hasResult; resultRow.isHidden = !hasResult; statusScroll.isHidden = hasResult
             sender.text = result?.sender; signature.text = hasResult ? "✓ Подпись верна" : nil
+            ageWarning.text = result?.olderThanSevenDays == true ? "Сообщению больше 7 дней" : nil
+            messageDate.text = result.map {
+                guard let date = $0.createdAt else { return "Дата сообщения неизвестна" }
+                return "Дата по часам отправителя: " + date.formatted(date: .numeric, time: .shortened)
+            }
             plaintext.text = result?.text
             // UIKit's inferred label normalizes line separators; publish the exact verified text for VoiceOver.
             plaintext.accessibilityLabel = result?.text
@@ -255,7 +266,9 @@
             close.backgroundColor = hasResult ? KeyboardPanel.accent : .clear
             close.setTitleColor(hasResult ? .white : KeyboardPanel.accent, for: .normal)
             close.layer.borderWidth = hasResult ? 0 : 1.5; close.layer.borderColor = KeyboardPanel.accent.cgColor
-            for label in [sender, signature, hint, warning, plaintext, status] { label.isHidden = label.text == nil }
+            for label in [sender, signature, messageDate, ageWarning, hint, warning, plaintext, status] {
+                label.isHidden = label.text == nil
+            }
             let next = (title.text ?? "") + (model.status ?? "") + (result?.sender ?? "")
             if next != announcement {
                 announcement = next
@@ -268,7 +281,11 @@
             setNeedsLayout()
         }
         public func clear() {
-            for label in [title, sender, signature, hint, warning, plaintext, status, statusHint] { label.text = nil }
+            for label in [
+                title, sender, signature, messageDate, ageWarning, hint, warning, plaintext, status, statusHint,
+            ] {
+                label.text = nil
+            }
             plaintext.accessibilityLabel = nil
             announcement = ""; hasResult = false; isBusy = false
             resultRow.isHidden = true; statusScroll.isHidden = true; spinner.stopAnimating()

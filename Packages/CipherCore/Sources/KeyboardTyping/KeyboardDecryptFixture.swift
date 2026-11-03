@@ -45,8 +45,8 @@
             let text: String
             switch state {
             case "no-message": text = "Обычное сообщение"
-            case "corrupt": text = "ckmsg1:invalid"
-            case "version": text = "ckmsg2:AA"
+            case "corrupt": text = "ckmsg2:invalid"
+            case "version": text = "ckmsg3:AA"
             case "oversize": text = String(repeating: "a", count: 65537)
             default: text = ciphertext
             }

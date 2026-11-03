@@ -47,7 +47,7 @@
                 model.setInput(
                     name == "no-message"
                         ? "Обычная фраза"
-                        : name == "corrupt" ? "ckmsg1:invalid" : name == "version" ? "ckmsg2:AA" : ciphertext)
+                        : name == "corrupt" ? "ckmsg2:invalid" : name == "version" ? "ckmsg3:AA" : ciphertext)
             }
             if name == "paste-error" { model.pasteFailed() }
             if name == "oversize" { model.setInput(String(repeating: "a", count: 65537)) }

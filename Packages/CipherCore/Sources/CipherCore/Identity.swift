@@ -4,8 +4,8 @@ import Foundation
 /// Своя личность: приватные X25519 и Ed25519. Не `Codable` — приватная часть отдаётся только `privateKeyData()`.
 /// В описаниях и `dump` видно только `Identity(<отпечаток>)`.
 public struct Identity: Sendable, CustomStringConvertible, CustomDebugStringConvertible, CustomReflectable {
-    /// 32 байта приватного X25519 + 32 байта приватного Ed25519.
-    private let secret: [UInt8]
+    private let agreement: Curve25519.KeyAgreement.PrivateKey
+    private let signing: Curve25519.Signing.PrivateKey
     public let publicKey: PublicKey
 
     /// Новая случайная личность. `package`: создаётся только через `IdentityStore` (или в тестах ядра).
@@ -18,10 +18,9 @@ public struct Identity: Sendable, CustomStringConvertible, CustomDebugStringConv
     /// Восстанавливает личность из 64 байт `privateKeyData()`. Другая длина → `CipherError.invalidKey`.
     public init(privateKeyData: Data) throws {
         guard privateKeyData.count == 64 else { throw CipherError.invalidKey }
-        let bytes = Array(privateKeyData)
         do {
-            let agreement = try Curve25519.KeyAgreement.PrivateKey(rawRepresentation: bytes[0..<32])
-            let signing = try Curve25519.Signing.PrivateKey(rawRepresentation: bytes[32..<64])
+            let agreement = try Curve25519.KeyAgreement.PrivateKey(rawRepresentation: privateKeyData.prefix(32))
+            let signing = try Curve25519.Signing.PrivateKey(rawRepresentation: privateKeyData.suffix(32))
             self.init(agreement: agreement, signing: signing)
         } catch {
             throw CipherError.invalidKey
@@ -29,7 +28,8 @@ public struct Identity: Sendable, CustomStringConvertible, CustomDebugStringConv
     }
 
     private init(agreement: Curve25519.KeyAgreement.PrivateKey, signing: Curve25519.Signing.PrivateKey) {
-        secret = Array(agreement.rawRepresentation) + Array(signing.rawRepresentation)
+        self.agreement = agreement
+        self.signing = signing
         publicKey = PublicKey(
             trustedRaw: Array(agreement.publicKey.rawRepresentation) + Array(signing.publicKey.rawRepresentation))
     }
@@ -37,16 +37,11 @@ public struct Identity: Sendable, CustomStringConvertible, CustomDebugStringConv
     /// 64 байта: приватный X25519 (32) + приватный Ed25519 (32). Только для хранения в Keychain.
     /// `package`: приложению и клавиатуре приватные байты недоступны — их пишет в Keychain только `IdentityStore`.
     package func privateKeyData() -> Data {
-        Data(secret)
+        agreement.rawRepresentation + signing.rawRepresentation
     }
 
-    func agreementKey() throws -> Curve25519.KeyAgreement.PrivateKey {
-        try Curve25519.KeyAgreement.PrivateKey(rawRepresentation: secret[0..<32])
-    }
-
-    func signingKey() throws -> Curve25519.Signing.PrivateKey {
-        try Curve25519.Signing.PrivateKey(rawRepresentation: secret[32..<64])
-    }
+    func agreementKey() -> Curve25519.KeyAgreement.PrivateKey { agreement }
+    func signingKey() -> Curve25519.Signing.PrivateKey { signing }
 
     public var description: String { "Identity(\(publicKey.fingerprint.description))" }
     public var debugDescription: String { description }

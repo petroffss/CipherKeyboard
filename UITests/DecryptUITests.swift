@@ -23,6 +23,8 @@ final class DecryptUITests: XCTestCase {
             let sender = app.staticTexts["decrypt.sender"]
             XCTAssertTrue(sender.waitForExistence(timeout: 5)); XCTAssertTrue(sender.label.hasPrefix(expected))
             XCTAssertEqual(app.staticTexts["decrypt.signature"].label, "✓ Подпись верна")
+            XCTAssertTrue(app.staticTexts["decrypt.date"].label.hasPrefix("Дата по часам отправителя: "))
+            XCTAssertFalse(app.staticTexts["decrypt.ageWarning"].exists)
             XCTAssertEqual(app.staticTexts["decrypt.text"].label, "  Привет, Анна!\nЗавтра в 19:30 👨‍👩‍👧‍👦  ")
             XCTAssertFalse(app.textViews["decrypt.input"].exists)
             app.buttons["decrypt.close"].tap(); XCTAssertTrue(app.textViews["decrypt.input"].exists)
@@ -96,7 +98,7 @@ final class DecryptUITests: XCTestCase {
         let app = launch()
         let input = app.textViews["decrypt.input"]
         let value = input.value as? String
-        XCTAssertTrue(value?.hasPrefix("ckmsg1:") == true)
+        XCTAssertTrue(value?.hasPrefix("ckmsg2:") == true)
         let portrait = waitForLayout(in: app, landscape: false, requireSubmit: true)
         XCUIDevice.shared.orientation = .landscapeLeft
         let landscape = waitForLayout(in: app, landscape: true, requireSubmit: false)

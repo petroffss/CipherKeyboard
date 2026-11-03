@@ -24,7 +24,7 @@ Swift 6 · iOS 18+, только iPhone · SwiftUI (приложение) + UIKi
 | Установка зависимостей | нет — нужен только Xcode 27+ с симулятором iOS 27 |
 | Запуск (dev) | `scripts/run.sh` → приложение в iOS Simulator «iPhone 17» (другой: `DEVICE="iPhone 18 Pro" scripts/run.sh`; без окна: `HEADLESS=1`) |
 | Тесты | `scripts/test.sh` — ядро + UI-тесты в симуляторе (~1,5 мин); только ядро: `scripts/test.sh core` (секунды); только UI: `scripts/test.sh ui` |
-| Линтер | `scripts/lint.sh` — swift-format + запрет сетевых API |
+| Линтер | `scripts/lint.sh` — swift-format + запрет сетевых API + контроль точек вывода расширения |
 | Форматтер | `scripts/format.sh` (после правок .swift запускается хуком сам) |
 | Проверка типов | входит в сборку: компилятор Swift 6 со строгой проверкой параллелизма |
 | Сборка | `scripts/build.sh` |

@@ -19,7 +19,7 @@ struct FindInTextTests {
         let newlineEvery10 = stride(from: 0, to: chars.count, by: 10)
             .map { String(chars[$0..<min($0 + 10, chars.count)]) }
             .joined(separator: "\n")
-        let spacedPrefix = "ck msg1:\u{00A0}" + m.dropFirst("ckmsg1:".count)
+        let spacedPrefix = "ck msg2:\u{00A0}" + m.dropFirst("ckmsg2:".count)
 
         #expect(try opened(m) == "Тест", "как есть")
         #expect(try opened(newlineEvery10) == "Тест", "\\n каждые 10 символов")
@@ -28,7 +28,7 @@ struct FindInTextTests {
         #expect(try opened("Привет! " + m + " спасибо") == "Тест", "слова вокруг")
         #expect(try opened(m + "ok") == "Тест", "слово сразу после, без пробела")
         #expect(try opened(m + "\nok") == "Тест", "слово на следующей строке")
-        #expect(try opened(m + " ckmsg1:AAAA") == "Тест", "обрывок второго сообщения после")
+        #expect(try opened(m + " ckmsg2:AAAA") == "Тест", "обрывок второго сообщения после")
         #expect(try opened("🔒 CipherKeyboard: " + m) == "Тест", "подпись перед сообщением")
     }
 
@@ -50,7 +50,7 @@ struct MalformedInputTests {
     }
 
     private func body(_ message: String) -> Substring {
-        message.dropFirst("ckmsg1:".count)
+        message.dropFirst("ckmsg2:".count)
     }
 
     private func open(_ text: String) throws {
@@ -69,13 +69,13 @@ struct MalformedInputTests {
     @Test("Другая версия → unsupportedVersion")
     func unsupportedVersion() throws {
         let m = try message()
-        #expect(throws: CipherError.unsupportedVersion) { try open("ckmsg2:" + body(m)) }
+        #expect(throws: CipherError.unsupportedVersion) { try open("ckmsg3:" + body(m)) }
         #expect(throws: CipherError.unsupportedVersion) { try open("ckmsg10:" + body(m)) }
     }
 
     @Test("Только префикс → malformed")
     func prefixOnly() {
-        #expect(throws: CipherError.malformed) { try open("ckmsg1:") }
+        #expect(throws: CipherError.malformed) { try open("ckmsg2:") }
     }
 
     @Test("Без последнего символа → malformed")
@@ -92,7 +92,7 @@ struct MalformedInputTests {
 
     @Test("50 символов «A» → malformed")
     func fiftyAs() {
-        #expect(throws: CipherError.malformed) { try open("ckmsg1:" + String(repeating: "A", count: 50)) }
+        #expect(throws: CipherError.malformed) { try open("ckmsg2:" + String(repeating: "A", count: 50)) }
     }
 
     @Test("* вместо символа в середине → malformed")
@@ -104,7 +104,7 @@ struct MalformedInputTests {
 
     @Test("1 000 000 символов «A» → malformed быстрее 1 секунды")
     func megabyteOfGarbage() {
-        let garbage = "ckmsg1:" + String(repeating: "A", count: 1_000_000)
+        let garbage = "ckmsg2:" + String(repeating: "A", count: 1_000_000)
         let clock = ContinuousClock()
         let elapsed = clock.measure {
             #expect(throws: CipherError.malformed) { try open(garbage) }
@@ -115,8 +115,8 @@ struct MalformedInputTests {
     @Test("Верный заголовок настоящего сообщения + 1 000 000 «A» → ошибка быстрее 1 секунды")
     func realHeaderThenMegabyte() throws {
         let m = try message()
-        let header = m.dropFirst("ckmsg1:".count).prefix(8)
-        let garbage = "ckmsg1:" + header + String(repeating: "A", count: 1_000_000)
+        let header = m.dropFirst("ckmsg2:".count).prefix(8)
+        let garbage = "ckmsg2:" + header + String(repeating: "A", count: 1_000_000)
         let clock = ContinuousClock()
         let elapsed = clock.measure {
             do {

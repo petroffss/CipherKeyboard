@@ -7,7 +7,8 @@ public struct KeyboardSharedStatus: Sendable {
     public let isWarning: Bool
     public static func read(
         hasFullAccess: Bool,
-        identity: () -> IdentityReadResult = { IdentityReader.keychain.read() },
+        identity: (() -> IdentityReadResult)? = nil,
+        identityMetadata: (() -> IdentityMetadataReadResult)? = nil,
         contacts: () -> ContactsReadResult = { ContactsReader.appGroup.read() }
     ) -> KeyboardSharedStatus {
         guard hasFullAccess else {
@@ -16,10 +17,13 @@ public struct KeyboardSharedStatus: Sendable {
         }
         let status: String
         let identityWarning: Bool
-        switch identity() {
-        case .identity(let identity):
-            status = "Ваш ключ: " + identity.publicKey.fingerprint.short; identityWarning = false
+        let metadata = identityMetadata?() ?? identity?().publicMetadata ?? IdentityReader.readKeychainMetadata()
+        switch metadata {
+        case .publicKey(let publicKey):
+            status = "Ваш ключ: " + publicKey.fingerprint.short; identityWarning = false
         case .missing: status = "Откройте приложение CipherKeyboard, чтобы создать ключ"; identityWarning = true
+        case .unavailable(.missingPublicMetadata):
+            status = "Откройте приложение CipherKeyboard для обновления ключа"; identityWarning = true
         case .unavailable: status = "Не удалось открыть хранилище ключей"; identityWarning = true
         }
         let count: String

@@ -117,7 +117,8 @@ private struct DecryptInput: UIViewRepresentable {
         editor.textContainerInset = UIEdgeInsets(top: 12, left: 10, bottom: 12, right: 10)
         editor.backgroundColor = .secondarySystemGroupedBackground
         editor.layer.cornerRadius = 10; editor.layer.borderWidth = 1
-        editor.accessibilityIdentifier = "decrypt.input"; editor.accessibilityLabel = "ckmsg1:…"
+        editor.accessibilityIdentifier = "decrypt.input"
+        editor.accessibilityLabel = CipherMessage.outputPrefix + "…"
         editor.autocorrectionType = .no; editor.spellCheckingType = .no
         editor.autocapitalizationType = .none; editor.smartQuotesType = .no; editor.smartDashesType = .no
         editor.smartInsertDeleteType = .no; editor.isSecureTextEntry = false
@@ -240,7 +241,8 @@ private final class CiphertextEntryView: UITextView {
     private let placeholder = UILabel()
     override init(frame: CGRect, textContainer: NSTextContainer?) {
         super.init(frame: frame, textContainer: textContainer)
-        placeholder.text = "ckmsg1:…"; placeholder.font = .preferredFont(forTextStyle: .body)
+        placeholder.text = CipherMessage.outputPrefix + "…"
+        placeholder.font = .preferredFont(forTextStyle: .body)
         placeholder.textColor = .placeholderText; placeholder.isUserInteractionEnabled = false
         placeholder.isAccessibilityElement = false; addSubview(placeholder)
     }

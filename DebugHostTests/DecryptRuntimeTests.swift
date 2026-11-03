@@ -22,7 +22,7 @@ final class DecryptRuntimeTests: XCTestCase {
         host.buttons["keyboard.decrypt"].tap()
         let sender = host.staticTexts["keyboard.decrypt.sender"]
         XCTAssertTrue(sender.waitForExistence(timeout: 5), host.debugDescription)
-        XCTAssertEqual(sender.label, "От: Анна07")
+        XCTAssertEqual(sender.label, "От: " + preparedSenderName)
         XCTAssertEqual(host.staticTexts["keyboard.decrypt.signature"].label, "✓ Подпись верна")
         let panel = host.otherElements["keyboard.decrypt.panel"]
         XCTAssertTrue(panel.frame.contains(sender.frame), host.debugDescription)
@@ -42,15 +42,21 @@ final class DecryptRuntimeTests: XCTestCase {
         let restored = XCTAttachment(string: host.debugDescription)
         restored.name = "native402-restored-compose-geometry"; restored.lifetime = .keepAlways; add(restored)
     }
+    @MainActor private var preparedSenderName = ""
     @MainActor private func prepare(_ mode: String = "contact") throws -> String {
         let app = XCUIApplication(bundleIdentifier: "dev.cipherkeyboard.app")
         app.launchArguments = []; app.launch()
         XCTAssertTrue(app.staticTexts["mykey.fingerprint"].waitForExistence(timeout: 15)); app.terminate()
-        app.launchArguments = ["-decrypt-seed"]
+        app.launchArguments = ["-contacts", "memory", "-simulator-test-shared-contacts", "-decrypt-seed"]
         app.launchEnvironment = ["CIPHER_DECRYPT_SYNTHETIC_CASE": mode]; app.launch()
         let output = app.staticTexts["decrypt.seedResult"]
         XCTAssertTrue(output.waitForExistence(timeout: 5))
-        let ciphertext = output.label; XCTAssertTrue(ciphertext.hasPrefix("ckmsg1:"), ciphertext)
+        let ready = XCTNSPredicateExpectation(
+            predicate: NSPredicate(format: "label BEGINSWITH %@ OR label BEGINSWITH %@", "ckmsg", "FAIL:"),
+            object: output)
+        XCTAssertEqual(XCTWaiter.wait(for: [ready], timeout: 8), .completed)
+        preparedSenderName = output.value as? String ?? ""
+        let ciphertext = output.label; XCTAssertTrue(ciphertext.hasPrefix("ckmsg2:"), ciphertext)
         app.terminate(); return ciphertext
     }
     @MainActor private func host(_ ciphertext: String) -> XCUIApplication {
@@ -69,27 +75,57 @@ final class DecryptRuntimeTests: XCTestCase {
         let app = XCUIApplication(bundleIdentifier: "dev.cipherkeyboard.app")
         app.launchArguments = []; app.launch()
         XCTAssertTrue(app.staticTexts["mykey.fingerprint"].waitForExistence(timeout: 15)); app.terminate()
-        app.launchArguments = ["-decrypt-seed"]
+        app.launchArguments = ["-contacts", "memory", "-simulator-test-shared-contacts", "-decrypt-seed"]
         app.launchEnvironment = ["CIPHER_DECRYPT_SYNTHETIC_CASE": "export-own-public-key"]; app.launch()
         let output = app.staticTexts["decrypt.seedResult"]
-        XCTAssertTrue(output.waitForExistence(timeout: 5)); XCTAssertTrue(output.label.hasPrefix("ckpub1:"))
+        let publicReady = XCTNSPredicateExpectation(
+            predicate: NSPredicate(format: "label BEGINSWITH %@", "ckpub1:"), object: output)
+        XCTAssertEqual(XCTWaiter.wait(for: [publicReady], timeout: 8), .completed)
+        XCTAssertTrue(output.label.hasPrefix("ckpub1:"))
         let publicKey = XCTAttachment(string: output.label); publicKey.name = "actual-keychain-public-key";
         publicKey.lifetime = .keepAlways; add(publicKey); app.terminate()
         if let key = ProcessInfo.processInfo.environment["CIPHER_NATIVE_IMPORT_PUBLIC_KEY"] {
             let name = try XCTUnwrap(ProcessInfo.processInfo.environment["CIPHER_NATIVE_IMPORT_NAME"])
-            app.launchEnvironment = [
-                "CIPHER_DECRYPT_SYNTHETIC_CASE": "import-contact",
-                "CIPHER_DECRYPT_IMPORT_PUBLIC_KEY": key, "CIPHER_DECRYPT_IMPORT_NAME": name,
-            ]
-            app.launch(); XCTAssertTrue(output.waitForExistence(timeout: 5))
-            XCTAssertEqual(output.label, "PASS: imported public contact"); app.terminate()
+            // Import through the ordinary Contacts screen, using the simulator QR source only as input.
+            app.launchArguments = ["-contacts-scan", key]
+            app.launchEnvironment = [:]
+            app.launch()
+            XCTAssertTrue(app.staticTexts["mykey.fingerprint"].waitForExistence(timeout: 15))
+            let contacts = app.tabBars.buttons.matching(
+                NSPredicate(format: "identifier == %@ OR label == %@", "tab.contacts", "Контакты")
+            ).firstMatch
+            XCTAssertTrue(contacts.waitForExistence(timeout: 5)); contacts.tap()
+            let row = app.buttons.matching(
+                NSPredicate(format: "identifier == %@ AND label BEGINSWITH %@", "contacts.row", name + ",")
+            ).firstMatch
+            if !row.exists {
+                let first = app.buttons["contacts.addFirst"]
+                let add = first.exists ? first : app.buttons["contacts.add"]
+                XCTAssertTrue(add.waitForExistence(timeout: 5)); add.tap()
+                app.buttons["addcontact.scan"].tap()
+                let fingerprint = app.staticTexts["addcontact.fingerprint"]
+                XCTAssertTrue(fingerprint.waitForExistence(timeout: 8))
+                let field = app.textFields["addcontact.name"]
+                XCTAssertTrue(field.waitForExistence(timeout: 5)); field.tap(); field.typeText(name)
+                let exact = XCTNSPredicateExpectation(
+                    predicate: NSPredicate(format: "value == %@", name), object: field)
+                XCTAssertEqual(XCTWaiter.wait(for: [exact], timeout: 5), .completed)
+                let save = app.buttons["addcontact.save"]
+                XCTAssertTrue(save.isEnabled && save.isHittable); save.tap()
+                XCTAssertTrue(app.staticTexts["addcontact.title"].waitForNonExistence(timeout: 5))
+            }
+            XCTAssertTrue(row.waitForExistence(timeout: 5)); row.tap()
+            let imported = app.staticTexts["contact.publicKey"]
+            XCTAssertTrue(imported.waitForExistence(timeout: 5))
+            XCTAssertEqual(imported.label, key)
+            app.terminate()
         }
     }
     /// Receiver phase consumes the exact retained C from the other device; it never creates a replacement envelope.
     @MainActor func testProvidedCiphertextReceiver() throws {
         let ciphertext = try XCTUnwrap(ProcessInfo.processInfo.environment["CIPHER_NATIVE_PROVIDED_CIPHERTEXT"])
         let sender = try XCTUnwrap(ProcessInfo.processInfo.environment["CIPHER_NATIVE_EXPECTED_SENDER"])
-        XCTAssertTrue(ciphertext.hasPrefix("ckmsg1:"))
+        XCTAssertTrue(ciphertext.hasPrefix("ckmsg2:"))
         try Self.configurePastePermission(allow: true)
         try TypingTestSupport.configureKeyboard(fullAccess: true)
         let expected = "  Привет, Анна!\nЗавтра в 19:30 👨‍👩‍👧‍👦  "
@@ -177,7 +213,7 @@ final class DecryptRuntimeTests: XCTestCase {
         let host = self.host(ciphertext)
         host.buttons["keyboard.decrypt"].tap()
         XCTAssertTrue(host.staticTexts["keyboard.decrypt.text"].waitForExistence(timeout: 5), host.debugDescription)
-        XCTAssertEqual(host.staticTexts["keyboard.decrypt.sender"].label, "От: Анна07")
+        XCTAssertEqual(host.staticTexts["keyboard.decrypt.sender"].label, "От: " + preparedSenderName)
     }
     @MainActor func testSystemPastePermissionDeny() throws {
         addTeardownBlock { try await MainActor.run { try DecryptRuntimeTests.configurePastePermission(allow: true) } }
@@ -204,7 +240,7 @@ final class DecryptRuntimeTests: XCTestCase {
         let app = XCUIApplication(bundleIdentifier: "dev.cipherkeyboard.app")
         app.launchArguments = []; app.launch()
         XCTAssertTrue(app.staticTexts["mykey.fingerprint"].waitForExistence(timeout: 15)); app.terminate()
-        app.launchArguments = ["-encrypt-seed"]; app.launch()
+        app.launchArguments = ["-contacts", "memory", "-simulator-test-shared-contacts", "-encrypt-seed"]; app.launch()
         XCTAssertEqual(
             app.staticTexts["encrypt.seedResult"].label,
             "PASS: real Keychain identity; 20 synthetic public contacts")
@@ -214,7 +250,7 @@ final class DecryptRuntimeTests: XCTestCase {
         host.launchEnvironment = [:]; host.launch(); TypingTestSupport.openCipher(in: host)
         try TypingTestSupport.tapHostControl("Курсор", in: host)
         host.buttons["keyboard.recipient"].tap()
-        let recipientName = ProcessInfo.processInfo.environment["CIPHER_NATIVE_RECIPIENT_NAME"] ?? "Анна06"
+        let recipientName = ProcessInfo.processInfo.environment["CIPHER_NATIVE_RECIPIENT_NAME"] ?? "Анна06 тест"
         let anna = host.buttons.matching(
             NSPredicate(
                 format: "identifier BEGINSWITH %@ AND label BEGINSWITH %@", "keyboard.recipient.", recipientName + ","
@@ -230,7 +266,7 @@ final class DecryptRuntimeTests: XCTestCase {
             object: host.staticTexts["keyboard.encrypt.status"])
         XCTAssertEqual(XCTWaiter.wait(for: [inserted], timeout: 5), .completed)
         let field = try XCTUnwrap(host.textViews["host.editor"].value as? String)
-        XCTAssertTrue(field.hasPrefix("До ckmsg1:")); XCTAssertTrue(field.hasSuffix("встречи!"))
+        XCTAssertTrue(field.hasPrefix("До ckmsg2:")); XCTAssertTrue(field.hasSuffix("встречи!"))
         XCTAssertTrue(
             host.staticTexts["host.trace"].label.hasPrefix(
                 "insertions=1;deletions=0;replacements=0;ciphertext=true;"))
@@ -302,7 +338,7 @@ final class DecryptRuntimeTests: XCTestCase {
         let text = host.staticTexts["keyboard.decrypt.text"]
         XCTAssertTrue(text.waitForExistence(timeout: 5), host.debugDescription)
         XCTAssertEqual(text.label, "  Привет, Анна!\nЗавтра в 19:30 👨‍👩‍👧‍👦  ")
-        XCTAssertEqual(host.staticTexts["keyboard.decrypt.sender"].label, "От: Анна07")
+        XCTAssertEqual(host.staticTexts["keyboard.decrypt.sender"].label, "От: " + preparedSenderName)
         XCTAssertEqual(host.staticTexts["keyboard.decrypt.signature"].label, "✓ Подпись верна")
         XCTAssertEqual(try metrics(host)["decryptClipboardContentReads"] as? Int, initial + 1)
         XCTAssertEqual(try metrics(host)["decryptClipboardMetadataReads"] as? Int, initialMetadata + 1)
@@ -348,11 +384,11 @@ final class DecryptRuntimeTests: XCTestCase {
             copy(ciphertext); tab("Расшифровать"); pasteAndSubmit()
             let text = app.staticTexts["decrypt.text"]
             XCTAssertTrue(text.waitForExistence(timeout: 5)); XCTAssertEqual(text.label.utf8.count, 4096)
-            XCTAssertEqual(app.staticTexts["decrypt.sender"].label, "От: Анна07")
+            XCTAssertEqual(app.staticTexts["decrypt.sender"].label, "От: " + preparedSenderName)
             app.buttons["decrypt.close"].tap()
             XCTAssertTrue(app.textViews["decrypt.input"].exists)
             XCTAssertFalse(app.buttons["decrypt.submit"].isEnabled)
-            copy("ckmsg1:invalid"); tab("Расшифровать"); pasteAndSubmit()
+            copy("ckmsg2:invalid"); tab("Расшифровать"); pasteAndSubmit()
             let error = app.staticTexts["decrypt.status"]
             XCTAssertTrue(error.waitForExistence(timeout: 5));
             XCTAssertEqual(error.label, "Сообщение повреждено или подделано")
@@ -488,7 +524,7 @@ final class DecryptRuntimeTests: XCTestCase {
             start.tap()
             XCTAssertTrue(text.waitForExistence(timeout: 5), host.debugDescription)
             XCTAssertEqual(text.label, "  Привет, Анна!\nЗавтра в 19:30 👨‍👩‍👧‍👦  ")
-            XCTAssertEqual(sender.label, "От: Анна07")
+            XCTAssertEqual(sender.label, "От: " + preparedSenderName)
             XCTAssertEqual(signature.label, "✓ Подпись верна")
             let recovered = try metrics(host)
             XCTAssertEqual(

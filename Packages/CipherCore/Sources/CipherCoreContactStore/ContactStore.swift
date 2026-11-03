@@ -78,9 +78,16 @@ extension FileContactStorage: ContactStorageWriting {
     public func recoverInterruptedWrite() throws {
         try Self.writeLock.withLock {
             guard let stagingDirectory else { return }
-            if FileManager.default.fileExists(atPath: stagingDirectory.path) {
-                try FileManager.default.removeItem(at: stagingDirectory)
+            let manager = FileManager.default
+            if manager.fileExists(atPath: stagingDirectory.path) {
+                try manager.removeItem(at: stagingDirectory)
             }
+            #if os(iOS)
+                // Upgrade an existing book without rewriting or clearing any contacts.
+                if let url, manager.fileExists(atPath: url.path) {
+                    try manager.setAttributes([.protectionKey: FileProtectionType.complete], ofItemAtPath: url.path)
+                }
+            #endif
         }
     }
 
@@ -95,13 +102,13 @@ extension FileContactStorage: ContactStorageWriting {
             if manager.fileExists(atPath: directory.path) { try manager.removeItem(at: directory) }
             try manager.createDirectory(
                 at: directory, withIntermediateDirectories: false,
-                attributes: [.protectionKey: FileProtectionType.completeUntilFirstUserAuthentication])
+                attributes: [.protectionKey: FileProtectionType.complete])
             defer { try? manager.removeItem(at: directory) }
             var values = URLResourceValues()
             values.isExcludedFromBackup = true
             try directory.setResourceValues(values)
             var staging = directory.appendingPathComponent("pending")
-            try data.write(to: staging, options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
+            try data.write(to: staging, options: [.atomic, .completeFileProtection])
             try staging.setResourceValues(values)
             guard Darwin.rename(staging.path, url.path) == 0 else {
                 throw POSIXError(POSIXErrorCode(rawValue: errno) ?? .EIO)

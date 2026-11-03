@@ -22,6 +22,13 @@
         public var hasSelection: Bool { !(textDocumentProxy.selectedText ?? "").isEmpty }
         public func insertCiphertext(_ ciphertext: String) { textDocumentProxy.insertText(ciphertext) }
         public let panel = KeyboardPanel()
+        #if DEBUG && targetEnvironment(simulator)
+            open var simulatorProbeIdentity: (() -> IdentityReadResult)? { nil }
+            open var simulatorProbeContacts: (() -> ContactsReadResult)? { nil }
+            private final class ProbeRecipientPreference: RecipientPreference {
+                var recipientID: UUID?
+            }
+        #endif
         private var panelHeight: NSLayoutConstraint?
         private var observedFullAccess: Bool?
 
@@ -51,9 +58,20 @@
             }
             #if DEBUG
                 let faults = panel.debugFaults
+                #if targetEnvironment(simulator)
+                    let testIdentity = simulatorProbeIdentity
+                    let testContacts = simulatorProbeContacts
+                    let preference: any RecipientPreference =
+                        testIdentity == nil ? LocalRecipientPreference() : ProbeRecipientPreference()
+                #else
+                    let testIdentity: (() -> IdentityReadResult)? = nil
+                    let testContacts: (() -> ContactsReadResult)? = nil
+                    let preference: any RecipientPreference = LocalRecipientPreference()
+                #endif
                 coordinator = EncryptInsertCoordinator(
-                    adapter: panel.adapter, host: self, preference: LocalRecipientPreference(),
+                    adapter: panel.adapter, host: self, preference: preference,
                     access: { [weak self] in self?.hasFullAccess == true },
+                    identity: testIdentity, contacts: testContacts ?? { ContactsReader.appGroup.read() },
                     seal: { text, sender, recipient in try await faults.seal(text, sender: sender, recipient: recipient)
                     })
             #else
@@ -62,9 +80,15 @@
                     access: { [weak self] in self?.hasFullAccess == true })
             #endif
             panel.enableEncryption(coordinator)
+            #if DEBUG && targetEnvironment(simulator)
+                let usesSimulatorProbe = simulatorProbeIdentity != nil
+            #else
+                let usesSimulatorProbe = false
+            #endif
             decrypt = DecryptCoordinator(
                 surface: .keyboard,
-                access: { [weak self] in self?.hasFullAccess == true }, clipboard: SystemDecryptClipboard(),
+                access: { [weak self] in !usesSimulatorProbe && self?.hasFullAccess == true },
+                clipboard: SystemDecryptClipboard(),
                 blocked: { [weak self] in self?.coordinator?.busy == true },
                 document: { [weak self] in self?.documentIdentifier ?? UUID() })
             panel.enableDecryption(decrypt)
@@ -92,8 +116,15 @@
             super.viewWillAppear(animated)
             hostSessionActive = true
             let permitted = hasFullAccess
-            KeyboardAccessRecorder.record(hasFullAccess: permitted) { FileKeyboardSetupStorage.appGroup }
-            let status = KeyboardSharedStatus.read(hasFullAccess: permitted)
+            #if DEBUG && targetEnvironment(simulator)
+                let usesSimulatorProbe = simulatorProbeIdentity != nil
+            #else
+                let usesSimulatorProbe = false
+            #endif
+            if !usesSimulatorProbe {
+                KeyboardAccessRecorder.record(hasFullAccess: permitted) { FileKeyboardSetupStorage.appGroup }
+            }
+            let status = KeyboardSharedStatus.read(hasFullAccess: permitted && !usesSimulatorProbe)
             panel.statusText = status.identity
             panel.contactsText = status.contacts
             panel.statusIsWarning = status.isWarning

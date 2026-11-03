@@ -195,7 +195,7 @@
             if range.length > 0 { replacements += 1 }
             lastCiphertext = text
             trace.text =
-                "insertions=\(insertions);deletions=\(deletions);replacements=\(replacements);ciphertext=\(text.hasPrefix("ckmsg1:"));length=\(text.utf8.count)"
+                "insertions=\(insertions);deletions=\(deletions);replacements=\(replacements);ciphertext=\(text.hasPrefix("ckmsg2:"));length=\(text.utf8.count)"
             return true
         }
         private func update() {

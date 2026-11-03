@@ -1,29 +1,37 @@
-#if DEBUG
+#if DEBUG && targetEnvironment(simulator)
     import CipherCore
     import CipherCoreContactStore
+    import CipherCoreIdentityStore
     import Foundation
 
-    /// Explicit setup on disposable test simulators. Writes only synthetic public contacts, never a draft.
     enum EncryptSetupProbe {
+        /// A throwaway key. Its secret stays in this process and is never exported to a fixture file.
+        static func makeIdentity() throws -> Identity {
+            try IdentityStore(storage: InMemorySecretStorage()).loadOrCreate()
+        }
+
         static var publicKey: String {
+            guard LaunchStorage.permitsSharedSimulatorFixtures else { return "" }
             if case .identity(let identity) = IdentityReader.keychain.read() { return identity.publicKey.string }
             return ""
         }
-        static func run() -> String {
-            guard case .identity(let own) = IdentityReader.keychain.read() else { return "FAIL: identity prerequisite" }
+
+        /// Real-extension tests explicitly opt into sharing only newly generated public keys.
+        static func seedSharedSimulatorBook() -> String {
+            guard LaunchStorage.permitsSharedSimulatorFixtures,
+                case .identity(let own) = IdentityReader.keychain.read()
+            else { return "FAIL: simulator test fixture opt-in and identity required" }
             do {
                 let store = ContactStore.appGroup
                 for index in 0..<20 {
                     let name =
                         index == 0
-                        ? "Анна06"
-                        : (index == 19 ? String(repeating: "Я", count: 40) : String(format: "Контакт06 %02d", index))
-                    let key = try Identity(privateKeyData: Data(repeating: UInt8(22 + index), count: 64)).publicKey
+                        ? "Анна06 тест"
+                        : (index == 19
+                            ? (String(repeating: "Я", count: 39) + "Ю") : String(format: "Тест06 %02d", index))
                     guard case .contacts(let existing) = store.read() else { return "FAIL: contacts unreadable" }
-                    if let match = existing.first(where: { $0.name == name }) {
-                        guard match.publicKey == key else { return "FAIL: existing fixture name has another key" }
-                    } else {
-                        try store.add(name: name, key: key.string, own: own.publicKey)
+                    if !existing.contains(where: { $0.name == name }) {
+                        try store.add(name: name, key: makeIdentity().publicKey.string, own: own.publicKey)
                     }
                 }
                 return "PASS: real Keychain identity; 20 synthetic public contacts"

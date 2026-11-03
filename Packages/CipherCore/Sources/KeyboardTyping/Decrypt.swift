@@ -20,6 +20,17 @@ public struct DecryptResult: Equatable, Sendable {
     public let sender: String
     public let unknown: Bool
     public let contactsWarning: Bool
+    public let createdAt: Date?
+    public let olderThanSevenDays: Bool
+
+    init(text: String, sender: String, unknown: Bool, contactsWarning: Bool, createdAt: Date?, now: Date) {
+        self.text = text
+        self.sender = sender
+        self.unknown = unknown
+        self.contactsWarning = contactsWarning
+        self.createdAt = createdAt
+        self.olderThanSevenDays = createdAt.map { now.timeIntervalSince($0) > 7 * 24 * 60 * 60 } ?? false
+    }
 }
 
 /// Shared application/extension state machine. A generation fences every suspension.
@@ -48,7 +59,7 @@ public struct DecryptResult: Equatable, Sendable {
     public var onChange: (() -> Void)?
     @ObservationIgnored private let surface: Surface
     @ObservationIgnored private let access: () -> Bool
-    @ObservationIgnored private let identity: () -> IdentityReadResult
+    @ObservationIgnored private let identityAccess: KeyboardIdentityAccess
     @ObservationIgnored private let contacts: () -> ContactsReadResult
     @ObservationIgnored private let clipboard: (any DecryptClipboardReading)?
     @ObservationIgnored private let blocked: () -> Bool
@@ -73,7 +84,8 @@ public struct DecryptResult: Equatable, Sendable {
 
     public init(
         surface: Surface, access: @escaping () -> Bool = { true },
-        identity: @escaping () -> IdentityReadResult = { IdentityReader.keychain.read() },
+        identity: (() -> IdentityReadResult)? = nil,
+        identityMetadata: (() -> IdentityMetadataReadResult)? = nil,
         contacts: @escaping () -> ContactsReadResult = { ContactsReader.appGroup.read() },
         clipboard: (any DecryptClipboardReading)? = nil, blocked: @escaping () -> Bool = { false },
         document: @escaping () -> UUID = { UUID(uuid: (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)) },
@@ -82,7 +94,8 @@ public struct DecryptResult: Equatable, Sendable {
             try await Task.detached { try CipherMessage.open(text, as: identity, contacts: contacts) }.value
         }
     ) {
-        self.surface = surface; self.access = access; self.identity = identity; self.contacts = contacts
+        self.surface = surface; self.access = access; self.contacts = contacts
+        identityAccess = KeyboardIdentityAccess(identity: identity, metadata: identityMetadata)
         self.clipboard = clipboard; self.blocked = blocked; self.document = document; self.opener = opener
         self.fingerprintText = fingerprintText
         #if DEBUG
@@ -109,8 +122,8 @@ public struct DecryptResult: Equatable, Sendable {
         if let shownDocument, shownDocument != document() { deactivate(); return }
         guard !busy else { return }
         let previous = baseline
-        guard let value = readIdentity() else { result = nil; changed(); return }
-        if let previous, previous != value.publicKey {
+        guard let value = readIdentityMetadata() else { result = nil; changed(); return }
+        if let previous, previous != value {
             result = nil; presenting = surface == .keyboard && presenting; error = Self.changedMessage
         }
         changed()
@@ -128,8 +141,8 @@ public struct DecryptResult: Equatable, Sendable {
         inputGeneration = UUID()
         result = nil; error = nil
         let previousIdentity = baseline
-        guard let own = readIdentity() else { presenting = surface == .keyboard; changed(); return }
-        if let previousIdentity, previousIdentity != own.publicKey {
+        guard let own = readIdentityMetadata() else { presenting = surface == .keyboard; changed(); return }
+        if let previousIdentity, previousIdentity != own {
             presenting = surface == .keyboard; error = Self.changedMessage; changed(); return
         }
         if surface == .app && input.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty { changed(); return }
@@ -137,7 +150,7 @@ public struct DecryptResult: Equatable, Sendable {
         let token = UUID(), generation = session, currentDocument = document()
         operation = token; busy = true; presenting = true; shownDocument = currentDocument; changed()
         let field = surface == .app ? input : nil
-        let reader = clipboard, open = opener
+        let reader = clipboard, open = opener, readSecret = identityAccess.readSecret
         let snapshot: ClipboardText?
         if field == nil, let synchronous = reader as? any DecryptClipboardSnapshotReading {
             guard valid(token, generation, currentDocument) else { return }
@@ -168,7 +181,7 @@ public struct DecryptResult: Equatable, Sendable {
                 value = await reader?.readText() ?? .empty
             }
             guard self?.valid(token, generation, currentDocument) == true else { return }
-            guard self?.identityStillMatches(own.publicKey, token: token) == true else { return }
+            guard self?.identityStillMatches(own, token: token) == true else { return }
             do {
                 switch value {
                 case .empty: throw CipherError.noMessage
@@ -177,7 +190,14 @@ public struct DecryptResult: Equatable, Sendable {
                     guard text.utf8.count <= Self.limit else {
                         self?.finish(error: Self.oversize, token: token); return
                     }
-                    let opened = try await open(text, own, initialContacts)
+                    let opened: OpenedMessage
+                    do {
+                        guard let loaded = await readSecret() else { return }
+                        guard self?.valid(token, generation, currentDocument) == true,
+                            let identity = self?.validateSecret(loaded, expected: own, token: token)
+                        else { return }
+                        opened = try await open(text, identity, initialContacts)
+                    }
                     #if DEBUG
                         if delayOpen, self?.valid(token, generation, currentDocument) == true {
                             self?.debugHeldOpenCount += 1
@@ -188,15 +208,15 @@ public struct DecryptResult: Equatable, Sendable {
                         }
                     #endif
                     guard let self, self.valid(token, generation, currentDocument) else { return }
-                    guard let current = self.readIdentity() else {
+                    guard let current = self.readIdentityMetadata() else {
                         self.finish(error: self.error, token: token); return
                     }
-                    guard current.publicKey == own.publicKey else {
+                    guard current == own else {
                         self.finish(error: Self.changedMessage, token: token); return
                     }
                     let (book, unreadable) = self.readContacts()
                     let sender: String, unknown: Bool
-                    if opened.senderKey == current.publicKey {
+                    if opened.senderKey == current {
                         sender = "От: вы"; unknown = false
                     } else if let contact = book.first(where: { $0.publicKey == opened.senderKey }) {
                         sender = "От: " + contact.name; unknown = false
@@ -204,13 +224,15 @@ public struct DecryptResult: Equatable, Sendable {
                         sender = "От неизвестного ключа " + self.fingerprintText(opened.senderKey)
                         unknown = true
                     }
+                    guard self.valid(token, generation, currentDocument) else { return }
                     self.result = DecryptResult(
-                        text: opened.text, sender: sender, unknown: unknown, contactsWarning: unreadable && unknown)
+                        text: opened.text, sender: sender, unknown: unknown, contactsWarning: unreadable && unknown,
+                        createdAt: opened.createdAt, now: Date())
                     self.finish(error: nil, token: token)
                 }
             } catch {
                 guard let self, self.valid(token, generation, currentDocument) else { return }
-                guard self.identityStillMatches(own.publicKey, token: token) else { return }
+                guard self.identityStillMatches(own, token: token) else { return }
                 self.finish(error: self.message(error), token: token)
             }
         }
@@ -238,26 +260,42 @@ public struct DecryptResult: Equatable, Sendable {
         self.error = error; operation = nil; task = nil; busy = false; changed()
     }
     private func identityStillMatches(_ key: PublicKey, token: UUID) -> Bool {
-        guard let current = readIdentity() else { finish(error: error, token: token); return false }
-        guard current.publicKey == key else { finish(error: Self.changedMessage, token: token); return false }
+        guard let current = readIdentityMetadata() else { finish(error: error, token: token); return false }
+        guard current == key else { finish(error: Self.changedMessage, token: token); return false }
         return true
     }
-    private func readIdentity() -> Identity? {
-        guard access() else { identityAvailable = false; result = nil; return nil }
-        switch identity() {
-        case .identity(let own): identityAvailable = true; baseline = own.publicKey; return own
-        case .missing:
-            result = nil
-            identityAvailable = false
-            error =
-                surface == .keyboard ? EncryptInsertCoordinator.missingMessage : "Ключ недоступен — повторите попытку"
-        case .unavailable:
-            result = nil
-            identityAvailable = false
-            error =
-                surface == .keyboard ? EncryptInsertCoordinator.keyErrorMessage : "Ключ недоступен — повторите попытку"
+    private func validateSecret(_ loaded: IdentityReadResult, expected: PublicKey, token: UUID) -> Identity? {
+        switch loaded {
+        case .identity(let own) where own.publicKey == expected:
+            return own
+        case .identity:
+            finish(error: Self.changedMessage, token: token)
+        case .missing, .unavailable:
+            setIdentityUnavailable(loaded.publicMetadata)
+            finish(error: error, token: token)
         }
         return nil
+    }
+    private func readIdentityMetadata() -> PublicKey? {
+        guard access() else { identityAvailable = false; result = nil; return nil }
+        let metadata = identityAccess.readMetadata()
+        if case .publicKey(let key) = metadata {
+            identityAvailable = true; baseline = key
+            return key
+        }
+        setIdentityUnavailable(metadata)
+        return nil
+    }
+    private func setIdentityUnavailable(_ metadata: IdentityMetadataReadResult) {
+        result = nil
+        identityAvailable = false
+        if surface == .app {
+            error = "Ключ недоступен — повторите попытку"
+        } else if metadata == .missing {
+            error = EncryptInsertCoordinator.missingMessage
+        } else {
+            error = EncryptInsertCoordinator.keyErrorMessage
+        }
     }
     private func readContacts() -> ([Contact], Bool) {
         guard access() else { return ([], true) }

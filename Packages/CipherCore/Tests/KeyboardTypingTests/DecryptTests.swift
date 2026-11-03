@@ -73,6 +73,73 @@ private actor DecryptOpenGate {
 }
 
 @Suite @MainActor struct DecryptTests {
+    @Test func resultAgeUsesStrictSevenDayThreshold() {
+        let now = Date(timeIntervalSince1970: 1_700_000_000)
+        let threshold: TimeInterval = 604_800
+        for (date, warn) in [
+            (nil, false), (now.addingTimeInterval(1), false), (now.addingTimeInterval(-threshold + 1), false),
+            (now.addingTimeInterval(-threshold), false), (now.addingTimeInterval(-threshold - 1), true),
+        ] {
+            let result = DecryptResult(
+                text: "Текст", sender: "От: Анна", unknown: false, contactsWarning: false, createdAt: date, now: now)
+            #expect(result.createdAt == date)
+            #expect(result.olderThanSevenDays == warn)
+        }
+    }
+
+    @Test func oldTimestampReachesBothDecryptSurfaces() async throws {
+        let date = Date(timeIntervalSince1970: 1_700_000_000)
+        for surface in [DecryptCoordinator.Surface.keyboard, .app] {
+            let r = DecryptRig(surface: surface)
+            let ciphertext = try CipherMessage.seal("Текст", from: r.a, to: [r.b.publicKey], createdAt: date)
+            r.model.activate()
+            if surface == .app { r.model.setInput(ciphertext) } else { r.clipboard.value = .text(ciphertext) }
+            r.model.start(); await r.settle()
+            #expect(r.model.result?.text == "Текст")
+            #expect(r.model.result?.createdAt == date)
+            #expect(r.model.result?.olderThanSevenDays == true)
+            r.model.close()
+            #expect(r.model.result == nil)
+        }
+    }
+
+    @Test func metadataChecksDoNotLoadSecretAndMismatchesFailClosed() async throws {
+        let sender = Identity.generate(), own = Identity.generate(), foreign = Identity.generate()
+        let clipboard = DecryptSnapshotSpy(), gate = DecryptOpenGate()
+        clipboard.value = .text(try CipherMessage.seal("Текст", from: sender, to: [own.publicKey]))
+        var secretReads = 0, metadata = own.publicKey
+        let model = DecryptCoordinator(
+            surface: .keyboard,
+            identity: {
+                secretReads += 1; return .identity(own)
+            },
+            identityMetadata: { .publicKey(metadata) },
+            contacts: { .contacts([]) }, clipboard: clipboard,
+            opener: { try await gate.run($0, $1, $2) })
+        model.activate(); model.refresh()
+        #expect(model.canStart)
+        #expect(secretReads == 0)
+
+        model.start()
+        while await gate.calls == 0 { await Task.yield() }
+        #expect(secretReads == 1)
+        metadata = foreign.publicKey
+        await gate.release()
+        while model.busy { await Task.yield() }
+        #expect(model.result == nil)
+        #expect(model.error == DecryptCoordinator.changedMessage)
+        #expect(secretReads == 1)
+
+        // The metadata now claims a different key than the actual private identity.
+        model.close()
+        model.start()
+        while model.busy { await Task.yield() }
+        #expect(model.result == nil)
+        #expect(await gate.calls == 1)
+        #expect(model.error == DecryptCoordinator.changedMessage)
+        #expect(secretReads == 2)
+    }
+
     @Test func synchronousSnapshotStillHonorsGates() async throws {
         let own = Identity.generate(), sender = Identity.generate(), reader = DecryptSnapshotSpy()
         reader.value = .text(try CipherMessage.seal("  Проверено\n🙂  ", from: sender, to: [own.publicKey]))
@@ -175,7 +242,7 @@ private actor DecryptOpenGate {
         }.joined()
         for value in [
             "до " + valid + " после", wrapped, valid + " " + second,
-            "ckmsg1:invalid " + second, foreign + " " + second, "ckmsg2:AA " + second, "", "фраза",
+            "ckmsg2:invalid " + second, foreign + " " + second, "ckmsg3:AA " + second, "", "фраза",
         ] {
             r.model.close(); r.clipboard.value = .text(value); r.model.start(); await r.settle()
             do {
@@ -194,9 +261,9 @@ private actor DecryptOpenGate {
         let r = DecryptRig(); try r.ready("SecretCanary07")
         let foreign = try CipherMessage.seal("чужое", from: r.a, to: [r.c.publicKey])
         for (value, expected) in [
-            ("ckmsg1:invalid", "Сообщение повреждено или подделано"),
+            ("ckmsg2:invalid", "Сообщение повреждено или подделано"),
             (foreign, "Сообщение зашифровано не для вас"),
-            ("ckmsg2:AA", "Сообщение из более новой версии CipherKeyboard — обновите приложение"),
+            ("ckmsg3:AA", "Сообщение из более новой версии CipherKeyboard — обновите приложение"),
             ("фраза", "В буфере нет зашифрованного сообщения. Скопируйте его в чате"),
         ] {
             r.model.start(); await r.settle(); #expect(r.model.result?.text == "SecretCanary07")
@@ -218,7 +285,7 @@ private actor DecryptOpenGate {
         var variants = [String(valid.dropLast()), forged]
         for index in [raw.count / 2, raw.count - 1] {
             var changed = raw; changed[index] ^= 1
-            variants.append("ckmsg1:" + Base64URL.encode(changed))
+            variants.append("ckmsg2:" + Base64URL.encode(changed))
         }
         for invalid in variants {
             r.clipboard.value = .text(valid); r.model.start(); await r.settle()

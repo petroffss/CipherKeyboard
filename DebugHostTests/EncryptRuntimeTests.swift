@@ -8,7 +8,7 @@ final class EncryptRuntimeTests: XCTestCase {
         app.launchArguments = []; app.launch()
         XCTAssertTrue(app.staticTexts["mykey.fingerprint"].waitForExistence(timeout: 15))
         app.terminate()
-        app.launchArguments = ["-encrypt-seed"]; app.launch()
+        app.launchArguments = ["-contacts", "memory", "-simulator-test-shared-contacts", "-encrypt-seed"]; app.launch()
         XCTAssertEqual(
             app.staticTexts["encrypt.seedResult"].label, "PASS: real Keychain identity; 20 synthetic public contacts")
         let sender = try XCTUnwrap(app.staticTexts["encrypt.seedResult"].value as? String)
@@ -21,7 +21,8 @@ final class EncryptRuntimeTests: XCTestCase {
     @MainActor private func selectAnna(in host: XCUIApplication) {
         host.buttons["keyboard.recipient"].tap()
         let anna = host.buttons.matching(
-            NSPredicate(format: "identifier BEGINSWITH %@ AND label BEGINSWITH %@", "keyboard.recipient.", "Анна06,")
+            NSPredicate(
+                format: "identifier BEGINSWITH %@ AND label BEGINSWITH %@", "keyboard.recipient.", "Анна06 тест,")
         ).firstMatch
         XCTAssertTrue(anna.waitForExistence(timeout: 4), host.debugDescription)
         anna.tap()
@@ -55,14 +56,14 @@ final class EncryptRuntimeTests: XCTestCase {
         geometry.name = proofName; geometry.lifetime = .keepAlways; add(geometry)
         row.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.35)).tap()
         XCTAssertTrue(list.waitForNonExistence(timeout: 5), "Recipient picker must close after ordinary touch")
-        XCTAssertEqual(host.buttons["keyboard.recipient"].label, "Кому: " + String(repeating: "Я", count: 40))
+        XCTAssertEqual(host.buttons["keyboard.recipient"].label, "Кому: " + (String(repeating: "Я", count: 39) + "Ю"))
         XCTAssertTrue(TypingTestSupport.draft(in: host).waitForExistence(timeout: 5))
     }
     @MainActor private func nativeCiphertext(from result: String) -> String {
         let prefix = "До ", suffix = "встречи!"
         XCTAssertTrue(result.hasPrefix(prefix)); XCTAssertTrue(result.hasSuffix(suffix))
         let ciphertext = String(result.dropFirst(prefix.count).dropLast(suffix.count))
-        XCTAssertNotNil(ciphertext.range(of: #"\Ackmsg1:[A-Za-z0-9_-]+\z"#, options: .regularExpression))
+        XCTAssertNotNil(ciphertext.range(of: #"\Ackmsg2:[A-Za-z0-9_-]+\z"#, options: .regularExpression))
         return ciphertext
     }
     /// Only retained native C and a public closed case ID cross into the app.
@@ -71,7 +72,7 @@ final class EncryptRuntimeTests: XCTestCase {
         _ ciphertext: String, caseID: String, proofName: String
     ) -> String {
         let app = XCUIApplication(bundleIdentifier: "dev.cipherkeyboard.app")
-        app.launchArguments = ["-encrypt-self-open"]
+        app.launchArguments = ["-contacts", "memory", "-encrypt-self-open"]
         app.launchEnvironment = [
             "CIPHER_INSERTED_SYNTHETIC_CIPHERTEXT": ciphertext,
             "CIPHER_INSERTED_SYNTHETIC_CASE": caseID,
@@ -92,7 +93,7 @@ final class EncryptRuntimeTests: XCTestCase {
     @MainActor func testRealInsertAndTenCycles() throws {
         XCUIDevice.shared.orientation = .portrait
         let app = XCUIApplication(bundleIdentifier: "dev.cipherkeyboard.app")
-        app.launchArguments = ["-encrypt-seed"]; app.launch()
+        app.launchArguments = ["-contacts", "memory", "-simulator-test-shared-contacts", "-encrypt-seed"]; app.launch()
         let sender = try XCTUnwrap(app.staticTexts["encrypt.seedResult"].value as? String)
         XCTAssertTrue(sender.hasPrefix("ckpub1:"))
         let publicProof = XCTAttachment(string: sender); publicProof.name = "encrypt06-sender-public-key";
@@ -122,7 +123,7 @@ final class EncryptRuntimeTests: XCTestCase {
             XCTAssertEqual(XCTWaiter.wait(for: [success], timeout: 5), .completed)
             XCTAssertEqual(TypingTestSupport.draft(in: host).value as? String, "")
             let result = try XCTUnwrap(field.value as? String)
-            XCTAssertTrue(result.hasPrefix("До ckmsg1:")); XCTAssertTrue(result.hasSuffix("встречи!"))
+            XCTAssertTrue(result.hasPrefix("До ckmsg2:")); XCTAssertTrue(result.hasSuffix("встречи!"))
             XCTAssertTrue(
                 host.staticTexts["host.trace"].label.hasPrefix(
                     "insertions=1;deletions=0;replacements=0;ciphertext=true;"))
@@ -148,7 +149,7 @@ final class EncryptRuntimeTests: XCTestCase {
     @MainActor func testNativeLiteralAndUnicodeActualSenderProof() throws {
         XCUIDevice.shared.orientation = .portrait
         let app = XCUIApplication(bundleIdentifier: "dev.cipherkeyboard.app")
-        app.launchArguments = ["-encrypt-seed"]; app.launch()
+        app.launchArguments = ["-contacts", "memory", "-simulator-test-shared-contacts", "-encrypt-seed"]; app.launch()
         let seeded = app.staticTexts["encrypt.seedResult"]
         XCTAssertTrue(seeded.waitForExistence(timeout: 15))
         XCTAssertEqual(seeded.label, "PASS: real Keychain identity; 20 synthetic public contacts")
@@ -215,7 +216,7 @@ final class EncryptRuntimeTests: XCTestCase {
                         "FAIL: unsupported synthetic case")
                 }
                 XCTAssertEqual(
-                    actualSenderVerdict("ckmsg1:broken", caseID: proofCase.id, proofName: "encrypt06-native-malformed"),
+                    actualSenderVerdict("ckmsg2:broken", caseID: proofCase.id, proofName: "encrypt06-native-malformed"),
                     "FAIL: self-open")
                 var tampered = ciphertext
                 let byte = tampered.index(tampered.endIndex, offsetBy: -8)
@@ -279,7 +280,7 @@ final class EncryptRuntimeTests: XCTestCase {
         XCTAssertEqual(state["cursor"] as? Int, cursor)
         XCTAssertEqual(state["resolvedTheme"] as? String, theme)
         XCTAssertEqual(TypingTestSupport.draft(in: host).value as? String, text)
-        XCTAssertTrue(host.buttons["keyboard.recipient"].label.contains(String(repeating: "Я", count: 40)))
+        XCTAssertTrue(host.buttons["keyboard.recipient"].label.contains((String(repeating: "Я", count: 39) + "Ю")))
         XCTAssertFalse(host.scrollViews["keyboard.recipient.list"].exists)
         XCTAssertEqual(host.textViews["host.editor"].value as? String, "До встречи!")
         let available = panel.frame.width - 88
@@ -296,7 +297,7 @@ final class EncryptRuntimeTests: XCTestCase {
     }
     @MainActor func testNativeCaretFollowsFinalViewportBothThemes() throws {
         let app = XCUIApplication(bundleIdentifier: "dev.cipherkeyboard.app")
-        app.launchArguments = ["-encrypt-seed"]; app.launch()
+        app.launchArguments = ["-contacts", "memory", "-simulator-test-shared-contacts", "-encrypt-seed"]; app.launch()
         let seed = app.staticTexts["encrypt.seedResult"]
         XCTAssertTrue(seed.waitForExistence(timeout: 15))
         XCTAssertEqual(seed.label, "PASS: real Keychain identity; 20 synthetic public contacts")
@@ -320,7 +321,7 @@ final class EncryptRuntimeTests: XCTestCase {
             let long = host.buttons.matching(
                 NSPredicate(
                     format: "identifier BEGINSWITH %@ AND label BEGINSWITH %@", "keyboard.recipient.",
-                    String(repeating: "Я", count: 40))
+                    (String(repeating: "Я", count: 39) + "Ю"))
             ).firstMatch
             XCTAssertTrue(long.isHittable)
             activateVisibleLongRecipient(
@@ -475,12 +476,12 @@ final class EncryptRuntimeTests: XCTestCase {
         let long = host.buttons.matching(
             NSPredicate(
                 format: "identifier BEGINSWITH %@ AND label BEGINSWITH %@", "keyboard.recipient.",
-                String(repeating: "Я", count: 40))
+                (String(repeating: "Я", count: 39) + "Ю"))
         ).firstMatch
         XCTAssertTrue(long.isHittable)
         activateVisibleLongRecipient(
             long, in: host, list: list, proofName: "encrypt-native-multiline-long-row-before-activation")
-        XCTAssertTrue(host.buttons["keyboard.recipient"].label.contains(String(repeating: "Я", count: 40)))
+        XCTAssertTrue(host.buttons["keyboard.recipient"].label.contains((String(repeating: "Я", count: 39) + "Ю")))
         XCTAssertEqual(TypingTestSupport.draft(in: host).value as? String, draft)
         for landscape in [true, false] {
             XCUIDevice.shared.orientation = landscape ? .landscapeLeft : .portrait
@@ -569,12 +570,12 @@ final class EncryptRuntimeTests: XCTestCase {
         XCTAssertEqual(field.value as? String, before)
         settings.buttons["keyboard.encrypt"].tap()
         let inserted = XCTNSPredicateExpectation(
-            predicate: NSPredicate(format: "value BEGINSWITH %@", "ckmsg1:"), object: field)
+            predicate: NSPredicate(format: "value BEGINSWITH %@", "ckmsg2:"), object: field)
         XCTAssertEqual(XCTWaiter.wait(for: [inserted], timeout: 5), .completed)
         XCTAssertEqual(editor.value as? String, "")
         let actualCiphertext = try XCTUnwrap(field.value as? String)
         let app = XCUIApplication(bundleIdentifier: "dev.cipherkeyboard.app")
-        app.launchArguments = ["-encrypt-self-open"]
+        app.launchArguments = ["-contacts", "memory", "-encrypt-self-open"]
         app.launchEnvironment = ["CIPHER_INSERTED_SYNTHETIC_CIPHERTEXT": actualCiphertext]
         app.launch()
         let selfOpen = app.staticTexts["encrypt.selfOpenResult"]

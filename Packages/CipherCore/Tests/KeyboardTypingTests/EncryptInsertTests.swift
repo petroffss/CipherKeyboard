@@ -136,7 +136,7 @@ private actor SealGate {
         for text in ["Привет, Анна!", "  👨‍👩‍👧‍👦 е\u{301}\nПривет  \n", String(repeating: "a", count: 4096)] {
             let r = Rig(); r.ready(text); r.coordinator.encrypt(); await r.settle()
             let value = try #require(r.host.inserted.only)
-            #expect(value.hasPrefix("ckmsg1:")); #expect(!value.contains(where: { $0.isWhitespace }))
+            #expect(value.hasPrefix("ckmsg2:")); #expect(!value.contains(where: { $0.isWhitespace }))
             let opened = try CipherMessage.open(value, as: r.b, contacts: [])
             #expect(Array(opened.text.utf8) == Array(text.utf8)); #expect(opened.senderKey == r.a.publicKey)
             #expect(opened.sender == .unknown(r.a.publicKey.fingerprint))
@@ -250,6 +250,44 @@ private actor SealGate {
             }
         }
     }
+    @Test func metadataDrivesStatusAndCommitWithoutReadingTheSecret() async throws {
+        let sender = Identity.generate(), foreign = Identity.generate(), recipient = Identity.generate()
+        let host = Host(), input = KeyboardInputAdapter(), preference = Preference(), gate = SealGate()
+        let contact = Contact(name: "Анна", publicKey: recipient.publicKey)
+        var secret = sender, secretReads = 0
+        let model = EncryptInsertCoordinator(
+            adapter: input, host: host, preference: preference, access: { true },
+            identity: {
+                secretReads += 1; return .identity(secret)
+            },
+            identityMetadata: { .publicKey(sender.publicKey) },
+            contacts: { .contacts([contact]) },
+            seal: { try await gate.run($0, $1, $2) })
+        model.open(); model.refresh(); model.openPicker(); model.select(contact.id)
+        input.seedForTesting("черновик", cursor: 3)
+        #expect(model.canEncrypt)
+        #expect(secretReads == 0)
+
+        model.encrypt()
+        while await gate.calls == 0 { await Task.yield() }
+        #expect(secretReads == 1)
+        await gate.finish()
+        while model.busy { await Task.yield() }
+        #expect(secretReads == 1)
+        #expect(try CipherMessage.open(#require(host.inserted.only), as: recipient, contacts: []).text == "черновик")
+
+        secret = foreign
+        input.seedForTesting("другой черновик", cursor: 5)
+        model.encrypt()
+        while model.busy { await Task.yield() }
+        #expect(secretReads == 2)
+        #expect(await gate.calls == 1)
+        #expect(host.inserted.count == 1)
+        #expect(input.input.text == "другой черновик")
+        #expect(model.error == EncryptInsertCoordinator.changedMessage)
+        #expect(model.selected == nil)
+    }
+
     @Test func identityRevalidation() async throws {
         for mutation in 0..<4 {
             let gate = SealGate(), r = Rig(seal: { try await gate.run($0, $1, $2) })
@@ -535,7 +573,7 @@ private actor SealGate {
         for offset in [1, data.count / 2, data.count - 1] {
             data[offset] ^= 1
             let tampered =
-                "ckmsg1:"
+                "ckmsg2:"
                 + data.base64EncodedString().replacingOccurrences(of: "+", with: "-").replacingOccurrences(
                     of: "/", with: "_"
                 ).replacingOccurrences(of: "=", with: "")

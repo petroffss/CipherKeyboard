@@ -6,6 +6,8 @@ public struct OpenedMessage: Sendable {
     public let text: String
     public let senderKey: PublicKey
     public let sender: Sender
+    /// Дата по часам отправителя, защищённая шифрованием и подписью. У ckmsg1 даты нет.
+    public let createdAt: Date?
 }
 
 /// Кто отправил сообщение. Подпись к этому моменту уже проверена.
@@ -18,19 +20,25 @@ public enum Sender: Sendable, Equatable {
     case unknown(Fingerprint)
 }
 
-/// Шифрование и расшифровка сообщений `ckmsg1:…` (раскладка — FORMAT.md).
+/// Создаёт сообщения `ckmsg2`, открывает `ckmsg1` и `ckmsg2` (раскладка — FORMAT.md).
 public enum CipherMessage: Sendable {
     public static let maxPlaintextBytes = 4096
     /// Вместе с отправителем.
     public static let maxRecipients = 16
 
-    /// Доменная строка: HKDF для ключей записей и производных ключа сообщения, префикс подписываемых байт.
-    static let domain = Array("CipherKeyboard v1".utf8)
-    static let signatureDomain = domain
+    public static let outputPrefix = Envelope.Version.timestamped.prefix
+    /// Последняя секунда 9999-12-31 UTC. Даты вне диапазона календаря формата не принимаются.
+    private static let maxTimestamp: UInt64 = 253_402_300_799
     private static let wrapNonce = [UInt8](repeating: 0, count: Envelope.nonceCount)
 
     /// Шифрует `text` для `to` и для самого отправителя (его ядро добавляет само), подписывает ключом отправителя.
     public static func seal(_ text: String, from sender: Identity, to recipients: [PublicKey]) throws -> String {
+        try seal(text, from: sender, to: recipients, createdAt: Date())
+    }
+
+    static func seal(_ text: String, from sender: Identity, to recipients: [PublicKey], createdAt: Date) throws
+        -> String
+    {
         let plaintext = Array(text.utf8)
         guard !plaintext.isEmpty else { throw CipherError.emptyMessage }
         guard plaintext.count <= maxPlaintextBytes else {
@@ -45,7 +53,11 @@ public enum CipherMessage: Sendable {
             unique.append(key)
         }
         guard unique.count <= maxRecipients else { throw CipherError.tooManyRecipients }
+        guard let timestamp = UInt64(exactly: floor(createdAt.timeIntervalSince1970)),
+            timestamp <= maxTimestamp
+        else { throw CipherError.malformed }
 
+        let version = Envelope.Version.timestamped
         do {
             let messageKey = SymmetricKey(size: .bits256)
             let ephemeral = Curve25519.KeyAgreement.PrivateKey()
@@ -55,26 +67,22 @@ public enum CipherMessage: Sendable {
                 let point = try Curve25519.KeyAgreement.PublicKey(rawRepresentation: key.agreementRaw)
                 let wrapKey = try wrappingKey(
                     secret: ephemeral.sharedSecretFromKeyAgreement(with: point),
-                    ephemeralRaw: ephemeralRaw, recipientRaw: key.agreementRaw)
+                    ephemeralRaw: ephemeralRaw, recipientRaw: key.agreementRaw, version: version)
                 let box = try ChaChaPoly.seal(
                     messageKey.withUnsafeBytes { Array($0) }, using: wrapKey,
                     nonce: ChaChaPoly.Nonce(data: wrapNonce))
                 entries.append(Array(box.ciphertext) + Array(box.tag))
             }
 
-            // Настоящая длина и текст, дополненный нулями до кратного 32: в открытом заголовке — только дополненная.
-            let padded = pad(plaintext)
+            let payload = withUnsafeBytes(of: timestamp.bigEndian) { Array($0) } + pad(plaintext)
             var envelope = Envelope(
-                senderKey: sender.publicKey.raw, ephemeralKey: ephemeralRaw, entries: entries,
-                commitment: commitment(to: messageKey), nonce: Array(ChaChaPoly.Nonce()), ciphertext: [],
-                signature: [])
-            let aad = Envelope.textAAD(
-                header: Envelope.header(entries: entries.count, paddedCount: padded.count - Envelope.lengthCount),
-                senderKey: envelope.senderKey, ephemeralKey: envelope.ephemeralKey, entries: entries,
-                commitment: envelope.commitment)
+                version: version, senderKey: sender.publicKey.raw, ephemeralKey: ephemeralRaw, entries: entries,
+                commitment: commitment(to: messageKey, version: version), nonce: Array(ChaChaPoly.Nonce()),
+                ciphertext: [UInt8](repeating: 0, count: payload.count + Envelope.tagCount), signature: [])
             let box = try ChaChaPoly.seal(
-                padded, using: textKey(from: messageKey), nonce: ChaChaPoly.Nonce(data: envelope.nonce),
-                authenticating: aad)
+                payload, using: textKey(from: messageKey, version: version),
+                nonce: ChaChaPoly.Nonce(data: envelope.nonce),
+                authenticating: envelope.textAAD)
             envelope.ciphertext = Array(box.ciphertext) + Array(box.tag)
             envelope.signature = Array(try sender.signingKey().signature(for: envelope.signedBytes))
             return envelope.string
@@ -112,23 +120,33 @@ public enum CipherMessage: Sendable {
 
         // 4. Обязательство на ключ сообщения: ChaCha20-Poly1305 не привязывает шифротекст к ключу, поэтому без
         // этой сверки отправитель мог бы дать разным получателям разные ключи и разные тексты под одной подписью.
-        guard constantTimeEquals(commitment(to: messageKey), envelope.commitment) else {
+        guard constantTimeEquals(commitment(to: messageKey, version: envelope.version), envelope.commitment) else {
             throw CipherError.tampered
         }
 
         // 5. Текст. Ключ отправителя входит в AAD: подмена отправителя с переподписью ломает расшифровку.
-        let padded: [UInt8]
+        let payload: [UInt8]
         do {
             let box = try ChaChaPoly.SealedBox(
                 nonce: ChaChaPoly.Nonce(data: envelope.nonce),
                 ciphertext: envelope.ciphertext.dropLast(Envelope.tagCount),
                 tag: envelope.ciphertext.suffix(Envelope.tagCount))
-            padded = Array(
-                try ChaChaPoly.open(box, using: textKey(from: messageKey), authenticating: envelope.textAAD))
+            payload = Array(
+                try ChaChaPoly.open(
+                    box, using: textKey(from: messageKey, version: envelope.version), authenticating: envelope.textAAD))
         } catch {
             throw CipherError.tampered
         }
-        let plaintext = try unpad(padded)
+        let timestampCount = envelope.version.timestampCount
+        let createdAt: Date?
+        if envelope.version == .timestamped {
+            let timestamp = payload.prefix(timestampCount).reduce(UInt64(0)) { ($0 << 8) | UInt64($1) }
+            guard timestamp <= maxTimestamp else { throw CipherError.malformed }
+            createdAt = Date(timeIntervalSince1970: TimeInterval(timestamp))
+        } else {
+            createdAt = nil
+        }
+        let plaintext = try unpad(Array(payload.dropFirst(timestampCount)))
         guard let message = String(validating: plaintext, as: UTF8.self) else { throw CipherError.malformed }
 
         let sender: Sender
@@ -139,7 +157,7 @@ public enum CipherMessage: Sendable {
         } else {
             sender = .unknown(senderKey.fingerprint)
         }
-        return OpenedMessage(text: message, senderKey: senderKey, sender: sender)
+        return OpenedMessage(text: message, senderKey: senderKey, sender: sender, createdAt: createdAt)
     }
 
     /// Открытая часть для шифрования: настоящая длина (UInt16 BE) ‖ текст ‖ нули до кратного 32.
@@ -164,12 +182,13 @@ public enum CipherMessage: Sendable {
     /// Все ключи сообщения, которые раскрылись своим ключом записи. Перебираются все записи, без досрочного выхода.
     private static func unwrapMessageKeys(_ envelope: Envelope, as identity: Identity) -> [SymmetricKey] {
         let ownRaw = identity.publicKey.agreementRaw
-        guard let own = try? identity.agreementKey(),
-            let ephemeral = try? Curve25519.KeyAgreement.PublicKey(rawRepresentation: envelope.ephemeralKey),
+        let own = identity.agreementKey()
+        guard let ephemeral = try? Curve25519.KeyAgreement.PublicKey(rawRepresentation: envelope.ephemeralKey),
             let secret = try? own.sharedSecretFromKeyAgreement(with: ephemeral),
             let nonce = try? ChaChaPoly.Nonce(data: wrapNonce)
         else { return [] }
-        let wrapKey = wrappingKey(secret: secret, ephemeralRaw: envelope.ephemeralKey, recipientRaw: ownRaw)
+        let wrapKey = wrappingKey(
+            secret: secret, ephemeralRaw: envelope.ephemeralKey, recipientRaw: ownRaw, version: envelope.version)
         var keys: [SymmetricKey] = []
         for entry in envelope.entries {
             guard
@@ -183,29 +202,31 @@ public enum CipherMessage: Sendable {
     }
 
     /// HKDF-SHA256(общий секрет, salt пустой, info = домен ‖ эфемерный X25519 ‖ X25519 получателя) → 32 байта.
-    private static func wrappingKey(secret: SharedSecret, ephemeralRaw: [UInt8], recipientRaw: [UInt8])
-        -> SymmetricKey
-    {
+    private static func wrappingKey(
+        secret: SharedSecret, ephemeralRaw: [UInt8], recipientRaw: [UInt8], version: Envelope.Version
+    ) -> SymmetricKey {
         secret.hkdfDerivedSymmetricKey(
-            using: SHA256.self, salt: [UInt8](), sharedInfo: domain + ephemeralRaw + recipientRaw,
+            using: SHA256.self, salt: [UInt8](), sharedInfo: version.domain + ephemeralRaw + recipientRaw,
             outputByteCount: 32)
     }
 
     /// Производная ключа сообщения `K`: HKDF-SHA256(ikm = K, salt пустой, info = домен ‖ метка) → 32 байта.
-    private static func derive(from messageKey: SymmetricKey, label: String) -> SymmetricKey {
+    private static func derive(from messageKey: SymmetricKey, label: String, version: Envelope.Version) -> SymmetricKey
+    {
         HKDF<SHA256>.deriveKey(
-            inputKeyMaterial: messageKey, salt: [UInt8](), info: domain + Array(label.utf8), outputByteCount: 32)
+            inputKeyMaterial: messageKey, salt: [UInt8](), info: version.domain + Array(label.utf8), outputByteCount: 32
+        )
     }
 
     /// Ключ ChaCha20-Poly1305 для текста: производная `K` с меткой `text`.
-    static func textKey(from messageKey: SymmetricKey) -> SymmetricKey {
-        derive(from: messageKey, label: "text")
+    private static func textKey(from messageKey: SymmetricKey, version: Envelope.Version) -> SymmetricKey {
+        derive(from: messageKey, label: "text", version: version)
     }
 
     /// Обязательство на ключ сообщения: производная `K` с меткой `commit`. Лежит в сообщении под подписью;
     /// два разных `K` с одним обязательством — коллизия SHA-256.
-    static func commitment(to messageKey: SymmetricKey) -> [UInt8] {
-        derive(from: messageKey, label: "commit").withUnsafeBytes { Array($0) }
+    private static func commitment(to messageKey: SymmetricKey, version: Envelope.Version) -> [UInt8] {
+        derive(from: messageKey, label: "commit", version: version).withUnsafeBytes { Array($0) }
     }
 
     /// Сравнение без досрочного выхода: время не зависит от того, в каком байте расхождение.

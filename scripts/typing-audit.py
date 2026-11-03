@@ -55,7 +55,9 @@ def snapshot(udid, output):
     recipient_preferences = {}
     defaults_without_recipient = {}
     patterns = [CANARY.encode(), CANARY.encode("utf-16le"), CANARY.encode("utf-16be")]
-    if ENCRYPT: patterns += [b"ckmsg1:", "ckmsg1:".encode("utf-16le"), "ckmsg1:".encode("utf-16be")]
+    if ENCRYPT:
+        for prefix in ("ckmsg1:", "ckmsg2:"):
+            patterns.extend(prefix.encode(encoding) for encoding in ("ascii", "utf-16le", "utf-16be"))
     for label, root in roots.items():
         for path in sorted(root.rglob("*")):
             if not path.is_file() or path.is_symlink():
