@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Линтер: swift-format (правила — .swift-format) + обещание «без сети»: сетевые API в коде запрещены.
+# Линтер: swift-format (правила — .swift-format), запрет сетевых API и контроль границ расширения.
 source "$(dirname "$0")/common.sh"
 
 swift_files | xargs xcrun swift-format lint --strict --parallel
@@ -9,4 +9,5 @@ if swift_files | xargs grep -nE "$NETWORK_API"; then
     echo "lint: найден сетевой код — CipherKeyboard обещает работу без сети (CLAUDE.md, REVIEW.md)" >&2
     exit 1
 fi
+python3 scripts/check-keyboard-boundaries.py
 echo "Линтер: OK ($(swift_files | wc -l | tr -d ' ') файлов)"

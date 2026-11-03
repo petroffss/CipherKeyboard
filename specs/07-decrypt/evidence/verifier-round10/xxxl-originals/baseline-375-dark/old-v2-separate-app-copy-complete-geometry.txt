@@ -1,0 +1,40 @@
+Attributes: Application, 0x10b231a40, pid: 53572, label: 'TypingHost'
+Element subtree:
+ →Application, 0x10b231a40, pid: 53572, label: 'TypingHost'
+    Window (Main), 0x10b230000, {{0.0, 0.0}, {375.0, 667.0}}
+      Other, 0x10b230280, {{0.0, 0.0}, {375.0, 667.0}}
+        Other, 0x10b230dc0, {{0.0, 0.0}, {375.0, 667.0}}
+          Other, 0x10b230500, {{0.0, 0.0}, {375.0, 667.0}}
+            Other, 0x10b231540, {{16.0, 24.0}, {343.0, 99.5}}
+              StaticText, 0x10b231180, {{16.0, 24.0}, {343.0, 20.5}}, label: 'Тестовый хозяин · только Debug'
+              Other, 0x10b2317c0, {{16.0, 46.5}, {343.0, 32.0}}
+                Button, 0x10b231900, {{16.0, 46.5}, {50.5, 32.0}}, label: 'Пустое'
+                  StaticText, 0x10b231400, {{17.5, 53.5}, {48.0, 18.0}}, label: 'Пустое'
+                Button, 0x10b230640, {{74.5, 46.5}, {50.5, 32.0}}, label: 'С выделением'
+                  StaticText, 0x10b230f00, {{78.5, 53.5}, {43.0, 18.0}}, label: 'С выделением'
+                Button, 0x10b231680, {{133.0, 46.5}, {50.5, 32.0}}, label: 'Скрыть'
+                  StaticText, 0x10b230c80, {{135.5, 53.5}, {46.0, 18.0}}, label: 'Скрыть'
+                Button, 0x10b2312c0, {{191.5, 46.5}, {50.5, 32.0}}, label: 'Открыть'
+                  StaticText, 0x10b230780, {{194.0, 53.5}, {46.0, 18.0}}, label: 'Открыть'
+                Button, 0x10b231040, {{250.0, 46.5}, {50.5, 32.0}}, label: 'Курсор'
+                  StaticText, 0x10b231cc0, {{252.0, 53.5}, {47.0, 18.0}}, label: 'Курсор'
+                Button, 0x10b230b40, {{308.5, 46.5}, {50.5, 32.0}}, label: 'Поле2'
+                  StaticText, 0x10b230a00, {{311.0, 53.5}, {46.0, 18.0}}, label: 'Поле2'
+              StaticText, 0x10b2308c0, {{16.0, 80.5}, {343.0, 29.0}}, identifier: 'host.diagnostics', label: 'Текст: До встречи!
+Выделение UTF-16: 3, 7'
+              Other, 0x10b231b80, {{16.0, 111.5}, {343.0, 12.0}}
+                StaticText, 0x10b231e00, {{16.0, 111.5}, {111.5, 12.0}}, identifier: 'host.focus'
+                StaticText, 0x10b233340, {{131.5, 111.5}, {112.0, 12.0}}, identifier: 'host.controlsGeometry', label: 'width=375.0;height=667.0;field=16.0,615.0,343.0,48.0;keyboardTop=667.0;Курсор=275.25,62.5;Открыть=216.75,62.5;Поле2=333.75,62.5;Пустое=41.25,62.5;С выделением=99.75,62.5;Скрыть=158.25,62.5'
+                StaticText, 0x10b232bc0, {{247.5, 111.5}, {111.5, 12.0}}, identifier: 'host.trace'
+            TextView, 0x10b232f80, {{16.0, 615.0}, {343.0, 48.0}}, identifier: 'host.editor', value: До встречи!
+              Other, 0x10b233d40, {{326.0, 615.0}, {30.0, 48.0}}, label: 'Vertical scroll bar, 1 page', value: 0 %
+                Other, 0x10b2326c0, {{353.0, 576.0}, {3.0, 36.0}}
+              Other, 0x10b233200, {{16.0, 636.0}, {343.0, 24.0}}, label: 'Horizontal scroll bar, 1 page', value: 0 %
+                Other, 0x10b2335c0, {{-26.0, 657.0}, {36.0, 3.0}}
+Path to element:
+ →Application, 0x10b231a40, pid: 53572, label: 'TypingHost'
+Query chain:
+ →Find: Application 'dev.cipherkeyboard.typinghost'
+  Output: {
+    Application, 0x10b233480, pid: 53572, label: 'TypingHost'
+  }

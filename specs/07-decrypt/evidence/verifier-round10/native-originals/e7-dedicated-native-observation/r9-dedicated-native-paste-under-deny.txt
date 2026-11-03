@@ -1,0 +1,1 @@
+Selected system Deny; dedicated native Paste; denial prompt=false; priorInputPreserved=false; externalPayloadDelivered=false; status=<none>; noOpen=true

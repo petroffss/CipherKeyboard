@@ -1,6 +1,8 @@
-import CipherCore
+import CryptoKit
 import Foundation
 import Testing
+
+@testable import CipherCore
 
 /// Золотой вектор `ckmsg1`: сгенерирован один раз и сохранён литералами. Если тест упал после правки ядра —
 /// формат изменился, и старые сообщения пользователей перестанут открываться. Меняйте версию, а не вектор.
@@ -24,10 +26,18 @@ enum GoldenVector {
         + "KDU0VHA-xN_pS4Yx3lrwB8-A0_uY25wWyPKdEmQyCYXLUprepY4fsSRmoipXkxcg1t4qgYcjiSCavSgKEAY8-yXxavU_7YzG3t3S3q9E"
         + "nGR7QNeK-06Tft0cIcGz-aipRBfTgEocVhAB_3-wDczvXDVhNXscSYI4pJRSRc3IBnO7uAUrtyhNk-mD_YCX1FCeHMWcbF7JZIgzGdum"
         + "QE"
+    /// Независимая сборка по FORMAT.md с фиксированными K, E, nonce и временем.
+    static let timestampedMessage =
+        "ckmsg2:AgIAQH1Z7capGsSK9ApiGUXS9NQytLDMw6QJ137RPR6pkIlm7JjqV3hQY3Y0x_8FlITDvy138W5QCS_kL2StOorQentYaa_0UF"
+        + "SXMsuq7V5d-bMKbaMcsOV0K61a1KGnaPGme2eqcS75IZ6fLMm5PEZyTgC3FCjmHP0x_WEdVSO7gTFu3yYw69ioMxoUsDO1Y0Epv1Pn9ze"
+        + "GDw7_ADoblHPr8SevKRGWU1kkKrACFhkUUFD1gvNs-6SsDVpq5y0508mcO8xNFdwtdw1v70SYyuYmDTltZrHDrPeRXpUHE8uHFpYMQUJD"
+        + "REVGR0hJSktMOgQd23zEpyw6SJE6p1aFoj4IT0oEoagst6MOeiT6HiMdV0tgvP_59w-GHNDJAndXFjsB0rG_gDq-IqUrCSVPXZEtUY8fX"
+        + "3ULk6ZmLUxmSNX5Idy-DaULCkC2HSZmSd3JZFJ6sXo0LOOtiEqkAcI6c5S72E-cHUrKJiVzTjRPV2eRn9NP_BklRg7bRcwiOSvPRQ3kR7"
+        + "Pn-1nqDQ"
     static let text = "Золотой вектор CipherKeyboard 🔐\nстрока 2"
 }
 
-@Suite("Золотой вектор ckmsg1")
+@Suite("Золотые векторы ckmsg1 и ckmsg2")
 struct GoldenVectorTests {
     private func identity(_ hex: String) throws -> Identity {
         try Identity(privateKeyData: Data(try #require(bytes(hex: hex))))
@@ -46,6 +56,7 @@ struct GoldenVectorTests {
         let contactA = Contact(name: "A", publicKey: a.publicKey)
         let opened = try CipherMessage.open(GoldenVector.message, as: b, contacts: [contactA])
         #expect(Array(opened.text.utf8) == Array(GoldenVector.text.utf8))
+        #expect(opened.createdAt == nil)
         #expect(opened.sender == .contact(contactA))
         guard case .contact(let contact) = opened.sender else {
             Issue.record("ожидался .contact, получено \(opened.sender)")
@@ -60,7 +71,65 @@ struct GoldenVectorTests {
         let a = try identity(GoldenVector.privateKeyA)
         let opened = try CipherMessage.open(GoldenVector.message, as: a, contacts: [])
         #expect(Array(opened.text.utf8) == Array(GoldenVector.text.utf8))
+        #expect(opened.createdAt == nil)
         #expect(opened.sender == .me)
+    }
+
+    @Test("Независимый вектор v2 открывается с датой у отправителя и получателя")
+    func timestampedVectorOpens() throws {
+        let a = try identity(GoldenVector.privateKeyA)
+        let b = try identity(GoldenVector.privateKeyB)
+        let contact = Contact(name: "A", publicKey: a.publicKey)
+        let timestamp = Date(timeIntervalSince1970: 1_700_000_000)
+        for (reader, expectedSender) in [(a, Sender.me), (b, .contact(contact))] {
+            let opened = try CipherMessage.open(GoldenVector.timestampedMessage, as: reader, contacts: [contact])
+            #expect(Array(opened.text.utf8) == Array(GoldenVector.text.utf8))
+            #expect(opened.sender == expectedSender)
+            #expect(opened.createdAt == timestamp)
+        }
+        let body = try #require(decodedMessage(GoldenVector.timestampedMessage))
+        #expect(body.prefix(4).elementsEqual([2, 2, 0, 64]))
+        #expect(body.count == 234 + 2 * 48 + 64)
+        #expect(!contains(body, [0, 0, 0, 0, 0x65, 0x53, 0xf1, 0x00]))
+    }
+
+    @Test("Seal записывает целые секунды, сохраняя лимит 4096 байт текста")
+    func timestampedSealRoundTrip() throws {
+        let a = try identity(GoldenVector.privateKeyA)
+        let b = try identity(GoldenVector.privateKeyB)
+        let text = String(repeating: "a", count: 4096)
+        let createdAt = Date(timeIntervalSince1970: 1_700_000_000.875)
+        let message = try CipherMessage.seal(text, from: a, to: [b.publicKey], createdAt: createdAt)
+        #expect(message.hasPrefix("ckmsg2:"))
+        let opened = try CipherMessage.open(message, as: b, contacts: [])
+        #expect(opened.text == text)
+        #expect(opened.createdAt == Date(timeIntervalSince1970: 1_700_000_000))
+    }
+
+    @Test("Смена префикса между v1 и v2 даёт malformed")
+    func versionPrefixMustMatchHeader() throws {
+        let b = try identity(GoldenVector.privateKeyB)
+        for (prefix, message) in [("ckmsg2:", GoldenVector.message), ("ckmsg1:", GoldenVector.timestampedMessage)] {
+            #expect(throws: CipherError.malformed) {
+                try CipherMessage.open(prefix + message.dropFirst(7), as: b, contacts: [])
+            }
+        }
+    }
+
+    @Test("Подмена байта даты ломает подпись, переподпись не восстанавливает тег")
+    func timestampTampering() throws {
+        let a = try identity(GoldenVector.privateKeyA)
+        let b = try identity(GoldenVector.privateKeyB)
+        let body = try #require(decodedMessage(GoldenVector.timestampedMessage))
+        var envelope = try Envelope(bytes: body)
+        envelope.ciphertext[7] ^= 1
+        #expect(throws: CipherError.tampered) {
+            try CipherMessage.open(envelope.string, as: b, contacts: [])
+        }
+        envelope.signature = Array(try a.signingKey().signature(for: envelope.signedBytes))
+        #expect(throws: CipherError.tampered) {
+            try CipherMessage.open(envelope.string, as: b, contacts: [])
+        }
     }
 
     @Test("Вектор с одним изменённым символом в середине не открывается")

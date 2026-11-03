@@ -1,0 +1,209 @@
+{
+  "timestamp": "2026-11-03T22:00:04.975636+03:00",
+  "device": "CipherKeyboard-Typing-DecryptBuilderR1-402",
+  "udid": "1A29E451-25ED-4EF6-A322-608AAD27032D",
+  "roots": {
+    "app": "/Users/segei/Library/Developer/CoreSimulator/Devices/1A29E451-25ED-4EF6-A322-608AAD27032D/data/Containers/Data/Application/1F1C1D7E-A977-4F46-BBCA-E42140E55391",
+    "group": "/Users/segei/Library/Developer/CoreSimulator/Devices/1A29E451-25ED-4EF6-A322-608AAD27032D/data/Containers/Shared/AppGroup/388A7DC3-A3D6-413B-8804-97CB9311AE7F",
+    "extension": "/Users/segei/Library/Developer/CoreSimulator/Devices/1A29E451-25ED-4EF6-A322-608AAD27032D/data/Containers/Data/PluginKitPlugin/9F3A9F87-F85F-4155-BC2C-1B89ECF990AE",
+    "host": "/Users/segei/Library/Developer/CoreSimulator/Devices/1A29E451-25ED-4EF6-A322-608AAD27032D/data/Containers/Data/Application/CE8854CD-49EA-4DD6-9E14-15FC904915E4"
+  },
+  "files": {
+    "app/.com.apple.mobile_container_manager.metadata.plist": {
+      "size": 599,
+      "sha256": "0436bc36764ee58b78bc892a4bcd3e1fdf9be22c8ba0829b27c0f47aa0df4f05"
+    },
+    "app/Library/Caches/dev.cipherkeyboard.app/com.apple.metal/functions.data": {
+      "size": 114688,
+      "sha256": "18e98972ac6af137159e5c243101f00164f94e993f338b20fdcb5e79c0cee2bf"
+    },
+    "app/Library/Caches/dev.cipherkeyboard.app/com.apple.metal/functions.list": {
+      "size": 1612,
+      "sha256": "7dd756bcc1bca8d489bb85013ea4c85359f7f5ad896062d7b2623165d5d48636"
+    },
+    "app/Library/Caches/dev.cipherkeyboard.app/com.apple.metal/libraries.data": {
+      "size": 131072,
+      "sha256": "119f29e063478db6eeb7c37313ac60a9ff1e9aa03ba38a78996ae0819c60ce86"
+    },
+    "app/Library/Caches/dev.cipherkeyboard.app/com.apple.metal/libraries.list": {
+      "size": 772,
+      "sha256": "3f963dc0325dbba84b520efae8b9689b697ae46c0299d1cac847e99234ad707a"
+    },
+    "app/Library/LanguageModeling/ru-dynamic.lm/Info.plist": {
+      "size": 1429,
+      "sha256": "0db6b9d9684b8cdebe154940d821bcd74cbdf178e73d91a9367d50073e29fe78"
+    },
+    "app/Library/Preferences/dev.cipherkeyboard.app.plist": {
+      "size": 112,
+      "sha256": "f1f30a1d63c152f4e0b836aaf2df87546a5cf6a7e3cf334d8c144164cf9cf978"
+    },
+    "app/Library/Saved Application State/dev.cipherkeyboard.app.savedState/7A5CE9E6-CE1C-4A62-9197-795838506A69/data.data": {
+      "size": 2000,
+      "sha256": "e2a4079b6c4b07b75c5d62770857f8d3c0225e7bfffb594ff92b57478b6ae418"
+    },
+    "app/Library/Saved Application State/dev.cipherkeyboard.app.savedState/7A5CE9E6-CE1C-4A62-9197-795838506A69/userInfo.data": {
+      "size": 1155,
+      "sha256": "b4415b80b52879b297cbb6e893665a65f6e1d4e806810d451dfbe96edfc812fa"
+    },
+    "app/Library/Saved Application State/dev.cipherkeyboard.app.savedState/KnownSceneSessions/data.data": {
+      "size": 1256,
+      "sha256": "a3d0c0203586822afd44dd324e52afac7018830889854f74142416b07d946ae0"
+    },
+    "app/Library/SplashBoard/Snapshots/dev.cipherkeyboard.app - {DEFAULT GROUP}/0DD0FE9C-4DED-44C3-B1F2-A67D30A11FD4@3x.ktx": {
+      "size": 2292,
+      "sha256": "a1d1777c7d166ae924317b1d5c7c514497b598418f80efeea698f353b3f7a875"
+    },
+    "app/Library/SplashBoard/Snapshots/dev.cipherkeyboard.app - {DEFAULT GROUP}/49A96747-E0C8-4D90-8F55-037C2B145F6C@3x.ktx": {
+      "size": 2292,
+      "sha256": "46f2a8e49bbf7f05ba4812fd0a7fb3c06fa0a8b9d56d197c91f55a55b491e7d9"
+    },
+    "app/Library/SplashBoard/Snapshots/dev.cipherkeyboard.app - {DEFAULT GROUP}/64BE94EE-3A19-4E3D-909E-FAEB6FB74CFA@3x.ktx": {
+      "size": 2316,
+      "sha256": "6ab94aaddeff06f8f587695bc5af4c9d174b172ba6bddc18c9a3d31a4dd4ecf0"
+    },
+    "app/Library/SplashBoard/Snapshots/dev.cipherkeyboard.app - {DEFAULT GROUP}/9593D87F-A924-4A55-819E-2477DB3629E2@3x.ktx": {
+      "size": 2316,
+      "sha256": "ef8bf1cddeedaf4b85e32bf341f7d2d770614fdc722465fa580c00cd5e8e8b76"
+    },
+    "app/Library/SplashBoard/Snapshots/sceneID:dev.cipherkeyboard.app-7A5CE9E6-CE1C-4A62-9197-795838506A69/5932556A-3C84-4C05-B824-4094301FA88D@3x.ktx": {
+      "size": 2291,
+      "sha256": "727aa458814bca5a077ad534474430b37e905fd7b226206c323e2420ff3eff2a"
+    },
+    "app/Library/SplashBoard/Snapshots/sceneID:dev.cipherkeyboard.app-7A5CE9E6-CE1C-4A62-9197-795838506A69/5AA9E633-3174-437E-8E52-352B1B18EF11@3x.ktx": {
+      "size": 2292,
+      "sha256": "46f2a8e49bbf7f05ba4812fd0a7fb3c06fa0a8b9d56d197c91f55a55b491e7d9"
+    },
+    "group/.com.apple.mobile_container_manager.metadata.plist": {
+      "size": 601,
+      "sha256": "a53ac17ad16e6a7816714f926b32802659aba4257cff12aaa5bdbfea432ace8a"
+    },
+    "group/contacts.v1.json": {
+      "size": 5040,
+      "sha256": "09ace19aa04a78c12a9c3bb9125aa4285225cae0f8d98f397dabc630e02f0267"
+    },
+    "group/keyboard-access.v1.json": {
+      "size": 37,
+      "sha256": "4816b57bb0d9742befb1e72e6e2d14c19a94caad7a4519cc29b2f5916d1c4455"
+    },
+    "extension/.com.apple.mobile_container_manager.metadata.plist": {
+      "size": 693,
+      "sha256": "22a59f1d4a18377a41dd78ff580ee4fcfef186630ddd7d65f9daef7412b1a82f"
+    },
+    "extension/Library/Preferences/dev.cipherkeyboard.app.keyboard.plist": {
+      "size": 112,
+      "sha256": "aee5bdeb4cfc62122be4b0f467cfdaad14bd0464d80dac0a25cad9db0d6305af"
+    },
+    "host/.com.apple.mobile_container_manager.metadata.plist": {
+      "size": 606,
+      "sha256": "56c5fa989045bd16a785f74d1abd7239ffe6f943b1ff9e9e5e62409554ee7b17"
+    },
+    "host/Library/Saved Application State/dev.cipherkeyboard.typinghost.savedState/KnownSceneSessions/data.data": {
+      "size": 1247,
+      "sha256": "622890b240740315b8194c461306c571441b0943f4f7e05a03e8c11e516791fc"
+    },
+    "host/Library/SplashBoard/Snapshots/dev.cipherkeyboard.typinghost - {DEFAULT GROUP}/13CD491A-A9BB-4A1E-9D6C-4A7DD9AA8097@3x.ktx": {
+      "size": 2316,
+      "sha256": "ef8bf1cddeedaf4b85e32bf341f7d2d770614fdc722465fa580c00cd5e8e8b76"
+    },
+    "host/Library/SplashBoard/Snapshots/dev.cipherkeyboard.typinghost - {DEFAULT GROUP}/59AD6FB8-8C45-48BB-82A8-0D54DD3BB6B5@3x.ktx": {
+      "size": 2316,
+      "sha256": "6ab94aaddeff06f8f587695bc5af4c9d174b172ba6bddc18c9a3d31a4dd4ecf0"
+    },
+    "host/Library/SplashBoard/Snapshots/dev.cipherkeyboard.typinghost - {DEFAULT GROUP}/633B45BD-9207-49E0-8A7C-96E3E6F43B6D@3x.ktx": {
+      "size": 2292,
+      "sha256": "a1d1777c7d166ae924317b1d5c7c514497b598418f80efeea698f353b3f7a875"
+    },
+    "host/Library/SplashBoard/Snapshots/dev.cipherkeyboard.typinghost - {DEFAULT GROUP}/AC336F44-D631-4F49-B795-713087C807CD@3x.ktx": {
+      "size": 2292,
+      "sha256": "46f2a8e49bbf7f05ba4812fd0a7fb3c06fa0a8b9d56d197c91f55a55b491e7d9"
+    },
+    "host/Library/SplashBoard/Snapshots/sceneID:dev.cipherkeyboard.typinghost-default/09135DF6-5179-4ED9-BBA5-AA3EFD0B16EC@3x.ktx": {
+      "size": 29889,
+      "sha256": "048514182854ebd800e6cbc71a2ca242b60a56f5a253d320d296d8e1fe9540cb"
+    },
+    "host/Library/SplashBoard/Snapshots/sceneID:dev.cipherkeyboard.typinghost-default/19867DBE-155C-48BD-AE96-86DDE72396F6@3x.ktx": {
+      "size": 34781,
+      "sha256": "1c6b859aca2dbf52bea0e45098482edd3c587ba218ffdf022a957268e26527da"
+    },
+    "host/Library/SplashBoard/Snapshots/sceneID:dev.cipherkeyboard.typinghost-default/5A25889A-9327-4947-8EE3-0C4A33ADD31F@3x.ktx": {
+      "size": 28809,
+      "sha256": "c6459cb4129dda4dabda149fa122c311bb38c0e746012aef035b63fd0626a897"
+    },
+    "host/Library/SplashBoard/Snapshots/sceneID:dev.cipherkeyboard.typinghost-default/B3A96EDC-1FF2-40D6-87AC-D4DD87552F74@3x.ktx": {
+      "size": 47317,
+      "sha256": "ca6b39164f70015acb8c896b3b8fdfef21bac91a99b0550acccc9f2f46268fed"
+    }
+  },
+  "defaults": {
+    "app/Library/Preferences/dev.cipherkeyboard.app.plist": {
+      "keys": [
+        "keyboard.lastRecipientID"
+      ],
+      "canonicalSha256": "53d87a8c91c9297f7980de5b2a7fb11873a56414922bc9b6bde84c281d1a03f5"
+    },
+    "extension/Library/Preferences/dev.cipherkeyboard.app.keyboard.plist": {
+      "keys": [
+        "keyboard.lastRecipientID"
+      ],
+      "canonicalSha256": "91537658eb1208aaea9ce35b477eb09774953547546ca599bc3b8ec8b182408e"
+    }
+  },
+  "keychainMetadata": [
+    {
+      "agrp": "079bb32dcb6598f795a3ada164cd966a71352f851ce6359c4801f482165f5169",
+      "svce": "758b5ef8b7ccd6bc038281b6a0987900b4a350eb0bcbfea0b758ca64f60124f8",
+      "acct": "3786d8140b099437f803f15377bbf456c00622979c00de2969e8b4a7ea67d048",
+      "cdat": "a5bb66ce7babfea52ed6115526fd5267e06896b0a02c50a025798e02b68a6552",
+      "mdat": "3966905d20df4cec3b5bf7807397346986e4159a46750a044720e6588f806b11",
+      "UUID": "a38e614db15d4fa21ccbf0e48466ef45b217423c79d6b2186efdcdd409a7ddb8",
+      "persistref": "5afadc9a61762aa54ee63243c1a79a257ab84e62143767a9739e0192cfcce5b0"
+    }
+  ],
+  "keychainMetadataSelectedColumns": [
+    "agrp",
+    "svce",
+    "acct",
+    "cdat",
+    "mdat",
+    "UUID",
+    "persistref"
+  ],
+  "keychainMetadataRows": 1,
+  "clipboardSha256": null,
+  "clipboardBytes": null,
+  "canaryMatches": [],
+  "snapshotFiles": [
+    "/Users/segei/Library/Developer/CoreSimulator/Devices/1A29E451-25ED-4EF6-A322-608AAD27032D/data/Containers/Data/Application/1F1C1D7E-A977-4F46-BBCA-E42140E55391/Library/SplashBoard/Snapshots/dev.cipherkeyboard.app - {DEFAULT GROUP}/0DD0FE9C-4DED-44C3-B1F2-A67D30A11FD4@3x.ktx",
+    "/Users/segei/Library/Developer/CoreSimulator/Devices/1A29E451-25ED-4EF6-A322-608AAD27032D/data/Containers/Data/Application/1F1C1D7E-A977-4F46-BBCA-E42140E55391/Library/SplashBoard/Snapshots/dev.cipherkeyboard.app - {DEFAULT GROUP}/49A96747-E0C8-4D90-8F55-037C2B145F6C@3x.ktx",
+    "/Users/segei/Library/Developer/CoreSimulator/Devices/1A29E451-25ED-4EF6-A322-608AAD27032D/data/Containers/Data/Application/1F1C1D7E-A977-4F46-BBCA-E42140E55391/Library/SplashBoard/Snapshots/dev.cipherkeyboard.app - {DEFAULT GROUP}/64BE94EE-3A19-4E3D-909E-FAEB6FB74CFA@3x.ktx",
+    "/Users/segei/Library/Developer/CoreSimulator/Devices/1A29E451-25ED-4EF6-A322-608AAD27032D/data/Containers/Data/Application/1F1C1D7E-A977-4F46-BBCA-E42140E55391/Library/SplashBoard/Snapshots/dev.cipherkeyboard.app - {DEFAULT GROUP}/9593D87F-A924-4A55-819E-2477DB3629E2@3x.ktx",
+    "/Users/segei/Library/Developer/CoreSimulator/Devices/1A29E451-25ED-4EF6-A322-608AAD27032D/data/Containers/Data/Application/1F1C1D7E-A977-4F46-BBCA-E42140E55391/Library/SplashBoard/Snapshots/sceneID:dev.cipherkeyboard.app-7A5CE9E6-CE1C-4A62-9197-795838506A69/5932556A-3C84-4C05-B824-4094301FA88D@3x.ktx",
+    "/Users/segei/Library/Developer/CoreSimulator/Devices/1A29E451-25ED-4EF6-A322-608AAD27032D/data/Containers/Data/Application/1F1C1D7E-A977-4F46-BBCA-E42140E55391/Library/SplashBoard/Snapshots/sceneID:dev.cipherkeyboard.app-7A5CE9E6-CE1C-4A62-9197-795838506A69/5AA9E633-3174-437E-8E52-352B1B18EF11@3x.ktx",
+    "/Users/segei/Library/Developer/CoreSimulator/Devices/1A29E451-25ED-4EF6-A322-608AAD27032D/data/Containers/Data/Application/CE8854CD-49EA-4DD6-9E14-15FC904915E4/Library/SplashBoard/Snapshots/dev.cipherkeyboard.typinghost - {DEFAULT GROUP}/13CD491A-A9BB-4A1E-9D6C-4A7DD9AA8097@3x.ktx",
+    "/Users/segei/Library/Developer/CoreSimulator/Devices/1A29E451-25ED-4EF6-A322-608AAD27032D/data/Containers/Data/Application/CE8854CD-49EA-4DD6-9E14-15FC904915E4/Library/SplashBoard/Snapshots/dev.cipherkeyboard.typinghost - {DEFAULT GROUP}/59AD6FB8-8C45-48BB-82A8-0D54DD3BB6B5@3x.ktx",
+    "/Users/segei/Library/Developer/CoreSimulator/Devices/1A29E451-25ED-4EF6-A322-608AAD27032D/data/Containers/Data/Application/CE8854CD-49EA-4DD6-9E14-15FC904915E4/Library/SplashBoard/Snapshots/dev.cipherkeyboard.typinghost - {DEFAULT GROUP}/633B45BD-9207-49E0-8A7C-96E3E6F43B6D@3x.ktx",
+    "/Users/segei/Library/Developer/CoreSimulator/Devices/1A29E451-25ED-4EF6-A322-608AAD27032D/data/Containers/Data/Application/CE8854CD-49EA-4DD6-9E14-15FC904915E4/Library/SplashBoard/Snapshots/dev.cipherkeyboard.typinghost - {DEFAULT GROUP}/AC336F44-D631-4F49-B795-713087C807CD@3x.ktx",
+    "/Users/segei/Library/Developer/CoreSimulator/Devices/1A29E451-25ED-4EF6-A322-608AAD27032D/data/Containers/Data/Application/CE8854CD-49EA-4DD6-9E14-15FC904915E4/Library/SplashBoard/Snapshots/sceneID:dev.cipherkeyboard.typinghost-default/09135DF6-5179-4ED9-BBA5-AA3EFD0B16EC@3x.ktx",
+    "/Users/segei/Library/Developer/CoreSimulator/Devices/1A29E451-25ED-4EF6-A322-608AAD27032D/data/Containers/Data/Application/CE8854CD-49EA-4DD6-9E14-15FC904915E4/Library/SplashBoard/Snapshots/sceneID:dev.cipherkeyboard.typinghost-default/19867DBE-155C-48BD-AE96-86DDE72396F6@3x.ktx",
+    "/Users/segei/Library/Developer/CoreSimulator/Devices/1A29E451-25ED-4EF6-A322-608AAD27032D/data/Containers/Data/Application/CE8854CD-49EA-4DD6-9E14-15FC904915E4/Library/SplashBoard/Snapshots/sceneID:dev.cipherkeyboard.typinghost-default/5A25889A-9327-4947-8EE3-0C4A33ADD31F@3x.ktx",
+    "/Users/segei/Library/Developer/CoreSimulator/Devices/1A29E451-25ED-4EF6-A322-608AAD27032D/data/Containers/Data/Application/CE8854CD-49EA-4DD6-9E14-15FC904915E4/Library/SplashBoard/Snapshots/sceneID:dev.cipherkeyboard.typinghost-default/B3A96EDC-1FF2-40D6-87AC-D4DD87552F74@3x.ktx"
+  ],
+  "sourceCoverage": {
+    "app": {
+      "readable": true,
+      "files": 16
+    },
+    "group": {
+      "readable": true,
+      "files": 3
+    },
+    "extension": {
+      "readable": true,
+      "files": 2
+    },
+    "host": {
+      "readable": true,
+      "files": 10
+    }
+  }
+}

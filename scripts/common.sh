@@ -9,7 +9,7 @@ SCHEME="CipherKeyboard"
 BUNDLE_ID="dev.cipherkeyboard.app"
 DEVICE="${DEVICE:-iPhone 17}"                  # симулятор по умолчанию; другой: DEVICE="iPhone 18 Pro" scripts/run.sh
 DERIVED="${DERIVED:-$ROOT/.build/DerivedData}"
-APP_PATH="$DERIVED/Build/Products/Debug-iphonesimulator/CipherKeyboard.app"
+APP_PATH="$DERIVED/Build/Products/${CONFIGURATION:-Debug}-iphonesimulator/CipherKeyboard.app"
 CORE_PACKAGE="Packages/CipherCore"
 SANDBOX_NAME="CipherKeyboard-Sandbox"
 
@@ -43,7 +43,7 @@ sys.exit("Симулятор «%s» не найден: xcrun simctl list devices
 build_app() {
     xcodebuild build -project "$PROJECT" -scheme "$SCHEME" \
         -destination "platform=iOS Simulator,name=$DEVICE" \
-        -derivedDataPath "$DERIVED" "CURRENT_PROJECT_VERSION=$(typing_revision)" -quiet "$@"
+        -derivedDataPath "$DERIVED" -configuration "${CONFIGURATION:-Debug}" "CURRENT_PROJECT_VERSION=$(typing_revision)" -quiet "$@"
 }
 
 # Загрузить симулятор (если ещё не загружен), поставить и открыть приложение.

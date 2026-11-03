@@ -40,12 +40,20 @@ enum LaunchStorage {
 
     /// Строка, которую сканер отдаёт вместо камеры (03 AC20, аргумент запуска только в Debug). В Release всегда `nil`.
     static var scannerOverride: String? {
-        #if DEBUG
+        #if DEBUG && targetEnvironment(simulator)
             return argument(after: "-contacts-scan")
         #else
             return nil
         #endif
     }
+
+    #if DEBUG && targetEnvironment(simulator)
+        /// Probe arguments never select a probe on a device or without an explicit isolated test launch.
+        static var permitsSimulatorProbes: Bool { argument(after: "-contacts") == "memory" }
+        static var permitsSharedSimulatorFixtures: Bool {
+            permitsSimulatorProbes && ProcessInfo.processInfo.arguments.contains("-simulator-test-shared-contacts")
+        }
+    #endif
 
     #if DEBUG
         private static func argument(after flag: String) -> String? {

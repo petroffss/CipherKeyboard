@@ -1,0 +1,1 @@
+Exact R10 B375 XXXL, light/dark. Step 7: both lines of age warning. Step 9: first two date label lines. Step 10: complete local date/time numeric row. Close visually fixed. Strict full AX rectangle assertion failed at 163/174.5 pt in both themes. Native XXXL hint test passed in both.

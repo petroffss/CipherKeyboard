@@ -1,8 +1,15 @@
 import Foundation
 
-/// Байтовая раскладка `ckmsg1` (см. FORMAT.md). Только формат — без криптографии.
+/// Байтовая раскладка `ckmsg1` и `ckmsg2` (см. FORMAT.md). Только формат — без криптографии.
 struct Envelope: Equatable, Sendable {
-    static let version: UInt8 = 1
+    enum Version: UInt8, Sendable {
+        case legacy = 1
+        case timestamped = 2
+
+        var timestampCount: Int { self == .timestamped ? MemoryLayout<UInt64>.size : 0 }
+        var prefix: String { "ckmsg\(rawValue):" }
+        var domain: [UInt8] { Array("CipherKeyboard v\(rawValue)".utf8) }
+    }
     static let headerCount = 4  // версия, число записей, дополненная длина текста (UInt16 BE)
     static let senderKeyCount = PublicKey.rawCount  // 64
     static let ephemeralKeyCount = 32
@@ -22,18 +29,19 @@ struct Envelope: Equatable, Sendable {
     /// Дальше этого числа символов после префикса тело не читается ни при каком заголовке.
     static let maxBodyCharacters = 20_000
 
+    let version: Version
     var senderKey: [UInt8]
     var ephemeralKey: [UInt8]
     var entries: [[UInt8]]
     var commitment: [UInt8]
     var nonce: [UInt8]
-    /// Зашифрованные настоящая длина (2) и дополненный текст + тег Poly1305 (16).
+    /// Зашифрованные дата (только v2), настоящая длина (2) и дополненный текст + тег Poly1305 (16).
     var ciphertext: [UInt8]
     var signature: [UInt8]
 
     /// Полная длина сообщения в байтах по полям заголовка.
-    static func totalCount(entries: Int, paddedCount: Int) -> Int {
-        fixedCount + entries * entryCount + paddedCount
+    static func totalCount(version: Version, entries: Int, paddedCount: Int) -> Int {
+        fixedCount + version.timestampCount + entries * entryCount + paddedCount
     }
 
     /// Дополненная длина текста для настоящей длины `textCount`: ближайшее сверху кратное 32.
@@ -47,16 +55,16 @@ struct Envelope: Equatable, Sendable {
     }
 
     /// Дополненная длина текста по длине зашифрованной части.
-    var paddedCount: Int { ciphertext.count - Self.lengthCount - Self.tagCount }
+    var paddedCount: Int { ciphertext.count - version.timestampCount - Self.lengthCount - Self.tagCount }
 
     var header: [UInt8] {
-        Self.header(entries: entries.count, paddedCount: paddedCount)
+        Self.header(version: version, entries: entries.count, paddedCount: paddedCount)
     }
 
     /// Версия (1 байт), число записей (1 байт), дополненная длина текста в байтах (UInt16, big-endian).
-    static func header(entries: Int, paddedCount: Int) -> [UInt8] {
+    static func header(version: Version, entries: Int, paddedCount: Int) -> [UInt8] {
         [
-            version, UInt8(truncatingIfNeeded: entries), UInt8(truncatingIfNeeded: paddedCount >> 8),
+            version.rawValue, UInt8(truncatingIfNeeded: entries), UInt8(truncatingIfNeeded: paddedCount >> 8),
             UInt8(truncatingIfNeeded: paddedCount),
         ]
     }
@@ -81,7 +89,7 @@ struct Envelope: Equatable, Sendable {
 
     /// Что подписывает Ed25519: доменная строка + все байты до подписи.
     var signedBytes: [UInt8] {
-        CipherMessage.signatureDomain + unsignedBytes
+        version.domain + unsignedBytes
     }
 
     var bytes: [UInt8] {
@@ -89,16 +97,19 @@ struct Envelope: Equatable, Sendable {
     }
 
     var string: String {
-        "ckmsg1:" + Base64URL.encode(bytes)
+        version.prefix + Base64URL.encode(bytes)
     }
 
     /// Разбор декодированных байт. Длина должна точно совпадать с заголовком.
     init(bytes: [UInt8]) throws(CipherError) {
-        guard bytes.count >= Self.headerCount, bytes[0] == Self.version else { throw .malformed }
+        guard bytes.count >= Self.headerCount, let version = Version(rawValue: bytes[0]) else {
+            throw .malformed
+        }
+        self.version = version
         let entryCount = Int(bytes[1])
         let paddedCount = Int(bytes[2]) << 8 | Int(bytes[3])
         guard (1...CipherMessage.maxRecipients).contains(entryCount), Self.isValidPaddedCount(paddedCount),
-            bytes.count == Self.totalCount(entries: entryCount, paddedCount: paddedCount)
+            bytes.count == Self.totalCount(version: version, entries: entryCount, paddedCount: paddedCount)
         else { throw .malformed }
         var offset = Self.headerCount
         func take(_ count: Int) -> [UInt8] {
@@ -110,14 +121,15 @@ struct Envelope: Equatable, Sendable {
         entries = (0..<entryCount).map { _ in take(Self.entryCount) }
         commitment = take(Self.commitmentCount)
         nonce = take(Self.nonceCount)
-        ciphertext = take(Self.lengthCount + paddedCount + Self.tagCount)
+        ciphertext = take(version.timestampCount + Self.lengthCount + paddedCount + Self.tagCount)
         signature = take(Self.signatureCount)
     }
 
     init(
-        senderKey: [UInt8], ephemeralKey: [UInt8], entries: [[UInt8]], commitment: [UInt8], nonce: [UInt8],
-        ciphertext: [UInt8], signature: [UInt8]
+        version: Version, senderKey: [UInt8], ephemeralKey: [UInt8], entries: [[UInt8]], commitment: [UInt8],
+        nonce: [UInt8], ciphertext: [UInt8], signature: [UInt8]
     ) {
+        self.version = version
         self.senderKey = senderKey
         self.ephemeralKey = ephemeralKey
         self.entries = entries
@@ -141,7 +153,12 @@ struct Envelope: Equatable, Sendable {
             start += 1
         }
         guard let found else { throw .noMessage }
-        guard found.version == Array("1".utf8) else { throw .unsupportedVersion }
+        let version: Version
+        switch found.version {
+        case Array("1".utf8): version = .legacy
+        case Array("2".utf8): version = .timestamped
+        default: throw .unsupportedVersion
+        }
 
         // Символы base64url подряд после префикса — но не дальше, чем может понадобиться.
         let bodyStart = found.bodyStart
@@ -156,14 +173,15 @@ struct Envelope: Equatable, Sendable {
         // Заголовок: первые 8 символов дают 6 байт, из них нужны 4.
         let headerChars = 8
         guard runLength(limit: headerChars) == headerChars,
-            let head = Base64URL.decode(bytes[bodyStart..<bodyStart + headerChars]), head[0] == Self.version
+            let head = Base64URL.decode(bytes[bodyStart..<bodyStart + headerChars]), head[0] == version.rawValue
         else { throw .malformed }
         let entryCount = Int(head[1])
         let paddedCount = Int(head[2]) << 8 | Int(head[3])
         guard (1...CipherMessage.maxRecipients).contains(entryCount), isValidPaddedCount(paddedCount) else {
             throw .malformed
         }
-        let needed = Base64URL.encodedLength(byteCount: totalCount(entries: entryCount, paddedCount: paddedCount))
+        let byteCount = totalCount(version: version, entries: entryCount, paddedCount: paddedCount)
+        let needed = Base64URL.encodedLength(byteCount: byteCount)
         guard needed <= maxBodyCharacters, runLength(limit: needed) == needed,
             let decoded = Base64URL.decode(bytes[bodyStart..<bodyStart + needed])
         else { throw .malformed }

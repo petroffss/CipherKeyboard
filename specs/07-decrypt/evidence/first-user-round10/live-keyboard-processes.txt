@@ -1,0 +1,3 @@
+47654	0	dev.cipherkeyboard.app.keyboard
+43163	0	UIKitApplication:dev.cipherkeyboard.app[c2c5][rb-legacy]
+42235	0	UIKitApplication:com.apple.mobilesafari[ff62][rb-legacy]

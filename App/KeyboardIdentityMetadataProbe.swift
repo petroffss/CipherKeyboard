@@ -1,4 +1,4 @@
-#if DEBUG
+#if DEBUG && targetEnvironment(simulator)
     import Security
 
     /// Audit precondition only: query the real identity's identifying attributes.

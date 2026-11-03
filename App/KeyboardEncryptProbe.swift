@@ -1,5 +1,6 @@
-#if DEBUG
+#if DEBUG && targetEnvironment(simulator)
     import CipherCore
+    import CipherCoreContactStore
     import KeyboardTyping
     import UIKit
 
@@ -24,6 +25,16 @@
         }
         private final class Controller: KeyboardExtensionController {
             let proxy = Proxy()
+            var identity: Identity?
+            var store: ContactStore?
+            override var simulatorProbeIdentity: (() -> IdentityReadResult)? {
+                guard let identity else { return nil }
+                return { .identity(identity) }
+            }
+            override var simulatorProbeContacts: (() -> ContactsReadResult)? {
+                guard let store else { return nil }
+                return { store.read() }
+            }
             override var textDocumentProxy: any UITextDocumentProxy { proxy }
             override var hasFullAccess: Bool { true }
         }
@@ -69,10 +80,17 @@
             } catch { return "FAIL: self-open" }
         }
         static func run() async -> String {
-            guard EncryptSetupProbe.run().hasPrefix("PASS"),
-                case .identity(let sender) = IdentityReader.keychain.read()
+            guard LaunchStorage.permitsSimulatorProbes,
+                let sender = try? EncryptSetupProbe.makeIdentity(),
+                let recipient = try? EncryptSetupProbe.makeIdentity(),
+                let third = try? EncryptSetupProbe.makeIdentity()
             else { return "FAIL: setup" }
+            let store = ContactStore(storage: InMemoryContactStorage())
+            guard (try? store.add(name: "Анна06", key: recipient.publicKey.string, own: sender.publicKey)) != nil
+            else { return "FAIL: in-memory contacts" }
             let controller = Controller()
+            controller.identity = sender
+            controller.store = store
             controller.loadViewIfNeeded(); controller.viewWillAppear(false)
             guard let coordinator = controller.panel.encryption,
                 let contact = coordinator.contacts.first(where: { $0.name == "Анна06" })
@@ -91,8 +109,6 @@
                 controller.panel.adapter.input.text.isEmpty, controller.panel.adapter.input.cursor == 0
             else { return "FAIL: host capability trace" }
             do {
-                let recipient = try Identity(privateKeyData: Data(repeating: 22, count: 64))
-                let third = try Identity(privateKeyData: Data(repeating: 77, count: 64))
                 let opened = try CipherMessage.open(value, as: recipient, contacts: [])
                 let own = try CipherMessage.open(value, as: sender, contacts: [])
                 guard Array(opened.text.utf8) == Array(draft.utf8), own.text == draft,

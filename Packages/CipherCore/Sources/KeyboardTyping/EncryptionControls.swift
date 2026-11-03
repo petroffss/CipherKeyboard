@@ -179,12 +179,20 @@
             recipient.titleLabel?.font = .systemFont(ofSize: landscape ? 14 : 15, weight: .semibold)
             encrypt.titleLabel?.font = recipient.titleLabel?.font
         }
-        func layoutNotice(x: CGFloat, y: CGFloat, width: CGFloat, height: CGFloat) {
-            let counterHeight: CGFloat = model.adapter.input.counter == nil ? 0 : 12
+        func layoutNotice(x: CGFloat, y: CGFloat, width: CGFloat, height: CGFloat, sharesCaption: Bool) -> CGFloat {
+            let serviceHeight: CGFloat = sharesCaption || model.adapter.input.counter != nil ? 12 : 0
+            let retryWidth: CGFloat
+            if sharesCaption {
+                let titleWidth = retry.titleLabel?.intrinsicContentSize.width ?? retry.intrinsicContentSize.width
+                retryWidth = max(44, ceil(titleWidth) + 8)
+            } else {
+                retryWidth = 94
+            }
+            let leadingWidth = width - 8 - (retry.isHidden ? 0 : retryWidth)
             notice.frame = CGRect(
-                x: x + 4, y: y + counterHeight, width: width - (retry.isHidden ? 8 : 102),
-                height: height - counterHeight)
-            retry.frame = CGRect(x: x + width - 94, y: y, width: 94, height: 44)
+                x: x + 4, y: y + serviceHeight, width: leadingWidth, height: height - serviceHeight)
+            retry.frame = CGRect(x: x + width - retryWidth, y: y, width: retryWidth, height: 44)
+            return leadingWidth
         }
         #if DEBUG
             var captureMetadata: [String: Any] {

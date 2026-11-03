@@ -12,7 +12,7 @@ final class KeyboardRuntimeTests: XCTestCase {
         XCTAssertTrue(app.staticTexts["mykey.fingerprint"].waitForExistence(timeout: 15))
         XCTAssertFalse(app.staticTexts["mykey.fingerprint"].label.isEmpty)
         app.terminate()
-        app.launchArguments = ["-typing-identity-metadata"]
+        app.launchArguments = ["-contacts", "memory", "-typing-identity-metadata"]
         app.launch()
         XCTAssertEqual(
             app.staticTexts["typing.identityMetadata"].label,

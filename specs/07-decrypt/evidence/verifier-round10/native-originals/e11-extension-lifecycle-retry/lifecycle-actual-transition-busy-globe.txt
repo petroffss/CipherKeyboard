@@ -1,0 +1,1 @@
+secondsAfterTap=6.7931400537490845;state=busy;event=globe

@@ -1,0 +1,4 @@
+2026-11-03 22:30:54.953 Df CipherKeyboard[35211:2e4742] [com.apple.Pasteboard:Pasteboard] Requesting item 0 of type public.utf8-plain-text from pasteboard named com.apple.UIKit.pboard.general, UUID 18C1A24D-504C-4975-9139-C4E86933C4FA
+2026-11-03 22:30:54.953 Df pasted[33238:2e5fe4] [com.apple.Pasteboard:Pasteboard] UserHasNotYetAuthorizedItemAccess
+2026-11-03 22:30:54.993 E  CipherKeyboard[35211:2e5bac] [com.apple.Pasteboard:Pasteboard] ...requesting item failed with error: Error Domain=PBErrorDomain Code=13 "Operation not authorized." UserInfo={NSLocalizedDescription=Operation not authorized.}
+2026-11-03 22:30:54.994 Df CipherKeyboard[35211:2e5bac] [com.apple.Pasteboard:Pasteboard] PBItemRepresentation _loadWithContext: _loader inner completion fired rep=0x1135c4340 type=public.utf8-plain-text data=0 bytes error=Error Domain=PBErrorDomain Code=13 "Operation not authorized." UserInfo={NSLocalizedDescription=Operation not authorized.}

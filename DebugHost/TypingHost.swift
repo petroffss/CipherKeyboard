@@ -113,6 +113,17 @@
                 stack.insertArrangedSubview(sentinel, at: 1)
                 stack.insertArrangedSubview(auditClipboard, at: 2)
             }
+            if let ciphertext = ProcessInfo.processInfo.environment["CIPHER_DECRYPT_SYNTHETIC_CIPHERTEXT"] {
+                let copy = UIButton(type: .system)
+                copy.setTitle("Скопировать шифротекст", for: .normal)
+                copy.accessibilityIdentifier = "host.copyCiphertext"
+                copy.addAction(
+                    UIAction { [weak copy] _ in
+                        UIPasteboard.general.string = ciphertext
+                        copy?.isHidden = true
+                    }, for: .touchUpInside)
+                stack.insertArrangedSubview(copy, at: 1)
+            }
             stack.spacing = 2
             stack.translatesAutoresizingMaskIntoConstraints = false
             view.addSubview(stack)
@@ -184,7 +195,7 @@
             if range.length > 0 { replacements += 1 }
             lastCiphertext = text
             trace.text =
-                "insertions=\(insertions);deletions=\(deletions);replacements=\(replacements);ciphertext=\(text.hasPrefix("ckmsg1:"));length=\(text.utf8.count)"
+                "insertions=\(insertions);deletions=\(deletions);replacements=\(replacements);ciphertext=\(text.hasPrefix("ckmsg2:"));length=\(text.utf8.count)"
             return true
         }
         private func update() {

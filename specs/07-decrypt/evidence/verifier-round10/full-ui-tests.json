@@ -1,0 +1,469 @@
+{
+  "devices" : [
+    {
+      "architecture" : "arm64",
+      "deviceId" : "8FD8F966-4360-43D8-BFC9-6D106E535756",
+      "deviceName" : "CipherKeyboard-UI-DecryptVerifierR8-402-170659",
+      "modelName" : "iPhone 18 Pro",
+      "osBuildNumber" : "24A434",
+      "osVersion" : "27.0",
+      "platform" : "iOS Simulator"
+    }
+  ],
+  "testNodes" : [
+    {
+      "children" : [
+        {
+          "children" : [
+            {
+              "children" : [
+                {
+                  "duration" : "52 с",
+                  "durationInSeconds" : 52.68670690059662,
+                  "name" : "testAddContactByPasteAndRelaunch()",
+                  "nodeIdentifier" : "ContactsUITests/testAddContactByPasteAndRelaunch()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/CipherKeyboard/CipherKeyboardUITests/ContactsUITests/testAddContactByPasteAndRelaunch",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                },
+                {
+                  "duration" : "1 мин",
+                  "durationInSeconds" : 60.93884289264679,
+                  "name" : "testCardAndRename()",
+                  "nodeIdentifier" : "ContactsUITests/testCardAndRename()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/CipherKeyboard/CipherKeyboardUITests/ContactsUITests/testCardAndRename",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                },
+                {
+                  "duration" : "36 с",
+                  "durationInSeconds" : 36.5373729467392,
+                  "name" : "testDeleteAsksConfirmation()",
+                  "nodeIdentifier" : "ContactsUITests/testDeleteAsksConfirmation()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/CipherKeyboard/CipherKeyboardUITests/ContactsUITests/testDeleteAsksConfirmation",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                },
+                {
+                  "duration" : "18 с",
+                  "durationInSeconds" : 18.423352003097534,
+                  "name" : "testDeleteShowsUnreadableReloadAndCanRetry()",
+                  "nodeIdentifier" : "ContactsUITests/testDeleteShowsUnreadableReloadAndCanRetry()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/CipherKeyboard/CipherKeyboardUITests/ContactsUITests/testDeleteShowsUnreadableReloadAndCanRetry",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                },
+                {
+                  "duration" : "29 с",
+                  "durationInSeconds" : 29.136561036109924,
+                  "name" : "testDoubleSaveCreatesOneContact()",
+                  "nodeIdentifier" : "ContactsUITests/testDoubleSaveCreatesOneContact()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/CipherKeyboard/CipherKeyboardUITests/ContactsUITests/testDoubleSaveCreatesOneContact",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                },
+                {
+                  "duration" : "36 с",
+                  "durationInSeconds" : 36.140761971473694,
+                  "name" : "testKeyCannotBeEdited()",
+                  "nodeIdentifier" : "ContactsUITests/testKeyCannotBeEdited()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/CipherKeyboard/CipherKeyboardUITests/ContactsUITests/testKeyCannotBeEdited",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                },
+                {
+                  "duration" : "1 мин 39 с",
+                  "durationInSeconds" : 99.42576396465302,
+                  "name" : "testLongListScrollsAndIsSorted()",
+                  "nodeIdentifier" : "ContactsUITests/testLongListScrollsAndIsSorted()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/CipherKeyboard/CipherKeyboardUITests/ContactsUITests/testLongListScrollsAndIsSorted",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                },
+                {
+                  "duration" : "54 с",
+                  "durationInSeconds" : 54.50942301750183,
+                  "name" : "testNameFieldVisibleAboveSaveWithKeyboard()",
+                  "nodeIdentifier" : "ContactsUITests/testNameFieldVisibleAboveSaveWithKeyboard()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/CipherKeyboard/CipherKeyboardUITests/ContactsUITests/testNameFieldVisibleAboveSaveWithKeyboard",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                },
+                {
+                  "duration" : "51 с",
+                  "durationInSeconds" : 51.130722999572754,
+                  "name" : "testNameValidationInSheet()",
+                  "nodeIdentifier" : "ContactsUITests/testNameValidationInSheet()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/CipherKeyboard/CipherKeyboardUITests/ContactsUITests/testNameValidationInSheet",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                },
+                {
+                  "duration" : "1 мин 2 с",
+                  "durationInSeconds" : 62.28403604030609,
+                  "name" : "testRejectsNonKeyAndNewerVersion()",
+                  "nodeIdentifier" : "ContactsUITests/testRejectsNonKeyAndNewerVersion()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/CipherKeyboard/CipherKeyboardUITests/ContactsUITests/testRejectsNonKeyAndNewerVersion",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                },
+                {
+                  "duration" : "1 мин 17 с",
+                  "durationInSeconds" : 77.95956099033356,
+                  "name" : "testRejectsOwnKeyAndDuplicates()",
+                  "nodeIdentifier" : "ContactsUITests/testRejectsOwnKeyAndDuplicates()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/CipherKeyboard/CipherKeyboardUITests/ContactsUITests/testRejectsOwnKeyAndDuplicates",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                },
+                {
+                  "duration" : "29 с",
+                  "durationInSeconds" : 29.613600969314575,
+                  "name" : "testRenameSurvivesUnreadableReloadAfterWriteFailure()",
+                  "nodeIdentifier" : "ContactsUITests/testRenameSurvivesUnreadableReloadAfterWriteFailure()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/CipherKeyboard/CipherKeyboardUITests/ContactsUITests/testRenameSurvivesUnreadableReloadAfterWriteFailure",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                },
+                {
+                  "duration" : "1 мин 5 с",
+                  "durationInSeconds" : 65.81879997253418,
+                  "name" : "testScannedPayloadIsHandledLikePaste()",
+                  "nodeIdentifier" : "ContactsUITests/testScannedPayloadIsHandledLikePaste()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/CipherKeyboard/CipherKeyboardUITests/ContactsUITests/testScannedPayloadIsHandledLikePaste",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                },
+                {
+                  "duration" : "29 с",
+                  "durationInSeconds" : 29.404754042625427,
+                  "name" : "testUnreadableStoreShowsErrorAndRetry()",
+                  "nodeIdentifier" : "ContactsUITests/testUnreadableStoreShowsErrorAndRetry()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/CipherKeyboard/CipherKeyboardUITests/ContactsUITests/testUnreadableStoreShowsErrorAndRetry",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                }
+              ],
+              "name" : "ContactsUITests",
+              "nodeIdentifierURL" : "test://com.apple.xcode/CipherKeyboard/CipherKeyboardUITests/ContactsUITests",
+              "nodeType" : "Test Suite",
+              "result" : "Passed"
+            },
+            {
+              "children" : [
+                {
+                  "duration" : "8 с",
+                  "durationInSeconds" : 8.759841084480286,
+                  "name" : "testAccessAndKeyErrors()",
+                  "nodeIdentifier" : "DecryptUITests/testAccessAndKeyErrors()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/CipherKeyboard/CipherKeyboardUITests/DecryptUITests/testAccessAndKeyErrors",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                },
+                {
+                  "duration" : "16 с",
+                  "durationInSeconds" : 16.449376940727234,
+                  "name" : "testAppPasteEditClose()",
+                  "nodeIdentifier" : "DecryptUITests/testAppPasteEditClose()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/CipherKeyboard/CipherKeyboardUITests/DecryptUITests/testAppPasteEditClose",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                },
+                {
+                  "duration" : "14 с",
+                  "durationInSeconds" : 14.755676984786987,
+                  "name" : "testBusyAndCancel()",
+                  "nodeIdentifier" : "DecryptUITests/testBusyAndCancel()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/CipherKeyboard/CipherKeyboardUITests/DecryptUITests/testBusyAndCancel",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                },
+                {
+                  "duration" : "1 мин 41 с",
+                  "durationInSeconds" : 101.80564308166504,
+                  "name" : "testErrorsAfterSuccess()",
+                  "nodeIdentifier" : "DecryptUITests/testErrorsAfterSuccess()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/CipherKeyboard/CipherKeyboardUITests/DecryptUITests/testErrorsAfterSuccess",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                },
+                {
+                  "duration" : "17 с",
+                  "durationInSeconds" : 17.39145004749298,
+                  "name" : "testExplicitClipboardRead()",
+                  "nodeIdentifier" : "DecryptUITests/testExplicitClipboardRead()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/CipherKeyboard/CipherKeyboardUITests/DecryptUITests/testExplicitClipboardRead",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                },
+                {
+                  "duration" : "27 с",
+                  "durationInSeconds" : 27.252562046051025,
+                  "name" : "testLifecycle()",
+                  "nodeIdentifier" : "DecryptUITests/testLifecycle()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/CipherKeyboard/CipherKeyboardUITests/DecryptUITests/testLifecycle",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                },
+                {
+                  "duration" : "32 с",
+                  "durationInSeconds" : 32.7514910697937,
+                  "name" : "testSenderVariants()",
+                  "nodeIdentifier" : "DecryptUITests/testSenderVariants()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/CipherKeyboard/CipherKeyboardUITests/DecryptUITests/testSenderVariants",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                }
+              ],
+              "name" : "DecryptUITests",
+              "nodeIdentifierURL" : "test://com.apple.xcode/CipherKeyboard/CipherKeyboardUITests/DecryptUITests",
+              "nodeType" : "Test Suite",
+              "result" : "Passed"
+            },
+            {
+              "children" : [
+                {
+                  "duration" : "4 с",
+                  "durationInSeconds" : 4.446725010871887,
+                  "name" : "testProductionControllerRoundTrip()",
+                  "nodeIdentifier" : "EncryptInsertUITests/testProductionControllerRoundTrip()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/CipherKeyboard/CipherKeyboardUITests/EncryptInsertUITests/testProductionControllerRoundTrip",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                },
+                {
+                  "duration" : "10 с",
+                  "durationInSeconds" : 10.613974928855896,
+                  "name" : "testSecurityProbeRequiresExplicitOptIn()",
+                  "nodeIdentifier" : "EncryptInsertUITests/testSecurityProbeRequiresExplicitOptIn()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/CipherKeyboard/CipherKeyboardUITests/EncryptInsertUITests/testSecurityProbeRequiresExplicitOptIn",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                }
+              ],
+              "name" : "EncryptInsertUITests",
+              "nodeIdentifierURL" : "test://com.apple.xcode/CipherKeyboard/CipherKeyboardUITests/EncryptInsertUITests",
+              "nodeType" : "Test Suite",
+              "result" : "Passed"
+            },
+            {
+              "children" : [
+                {
+                  "duration" : "14 с",
+                  "durationInSeconds" : 14.996760964393616,
+                  "name" : "testNormalPreviewAnchorGeometry()",
+                  "nodeIdentifier" : "KeyboardPreviewLayoutTests/testNormalPreviewAnchorGeometry()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/CipherKeyboard/CipherKeyboardUITests/KeyboardPreviewLayoutTests/testNormalPreviewAnchorGeometry",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                },
+                {
+                  "duration" : "1 мин 30 с",
+                  "durationInSeconds" : 90.90222799777985,
+                  "name" : "testRealKeysDynamicHeaderAndLifecycle()",
+                  "nodeIdentifier" : "KeyboardPreviewLayoutTests/testRealKeysDynamicHeaderAndLifecycle()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/CipherKeyboard/CipherKeyboardUITests/KeyboardPreviewLayoutTests/testRealKeysDynamicHeaderAndLifecycle",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                }
+              ],
+              "name" : "KeyboardPreviewLayoutTests",
+              "nodeIdentifierURL" : "test://com.apple.xcode/CipherKeyboard/CipherKeyboardUITests/KeyboardPreviewLayoutTests",
+              "nodeType" : "Test Suite",
+              "result" : "Passed"
+            },
+            {
+              "children" : [
+                {
+                  "duration" : "25 с",
+                  "durationInSeconds" : 25.705397963523865,
+                  "name" : "testPreviewTyping()",
+                  "nodeIdentifier" : "KeyboardTypingTests/testPreviewTyping()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/CipherKeyboard/CipherKeyboardUITests/KeyboardTypingTests/testPreviewTyping",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                },
+                {
+                  "duration" : "5 с",
+                  "durationInSeconds" : 5.397756099700928,
+                  "name" : "testProductionControllerIsolation()",
+                  "nodeIdentifier" : "KeyboardTypingTests/testProductionControllerIsolation()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/CipherKeyboard/CipherKeyboardUITests/KeyboardTypingTests/testProductionControllerIsolation",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                }
+              ],
+              "name" : "KeyboardTypingTests",
+              "nodeIdentifierURL" : "test://com.apple.xcode/CipherKeyboard/CipherKeyboardUITests/KeyboardTypingTests",
+              "nodeType" : "Test Suite",
+              "result" : "Passed"
+            },
+            {
+              "children" : [
+                {
+                  "duration" : "18 с",
+                  "durationInSeconds" : 18.807379961013794,
+                  "name" : "testAppLaunchesAndShowsMyKey()",
+                  "nodeIdentifier" : "LaunchSmokeTests/testAppLaunchesAndShowsMyKey()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/CipherKeyboard/CipherKeyboardUITests/LaunchSmokeTests/testAppLaunchesAndShowsMyKey",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                }
+              ],
+              "name" : "LaunchSmokeTests",
+              "nodeIdentifierURL" : "test://com.apple.xcode/CipherKeyboard/CipherKeyboardUITests/LaunchSmokeTests",
+              "nodeType" : "Test Suite",
+              "result" : "Passed"
+            },
+            {
+              "children" : [
+                {
+                  "duration" : "13 с",
+                  "durationInSeconds" : 13.184584021568298,
+                  "name" : "testCopiedToastDoesNotCoverButtons()",
+                  "nodeIdentifier" : "MyKeyUITests/testCopiedToastDoesNotCoverButtons()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/CipherKeyboard/CipherKeyboardUITests/MyKeyUITests/testCopiedToastDoesNotCoverButtons",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                },
+                {
+                  "duration" : "13 с",
+                  "durationInSeconds" : 13.19777798652649,
+                  "name" : "testCopiedToastDoesNotMoveContent()",
+                  "nodeIdentifier" : "MyKeyUITests/testCopiedToastDoesNotMoveContent()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/CipherKeyboard/CipherKeyboardUITests/MyKeyUITests/testCopiedToastDoesNotMoveContent",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                },
+                {
+                  "duration" : "10 с",
+                  "durationInSeconds" : 10.096698999404907,
+                  "name" : "testDoubleCopyShowsSingleToast()",
+                  "nodeIdentifier" : "MyKeyUITests/testDoubleCopyShowsSingleToast()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/CipherKeyboard/CipherKeyboardUITests/MyKeyUITests/testDoubleCopyShowsSingleToast",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                },
+                {
+                  "duration" : "5 с",
+                  "durationInSeconds" : 5.766350984573364,
+                  "name" : "testFingerprintAndPublicKeyHints()",
+                  "nodeIdentifier" : "MyKeyUITests/testFingerprintAndPublicKeyHints()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/CipherKeyboard/CipherKeyboardUITests/MyKeyUITests/testFingerprintAndPublicKeyHints",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                },
+                {
+                  "duration" : "10 с",
+                  "durationInSeconds" : 10.815914988517761,
+                  "name" : "testFingerprintSurvivesRelaunch()",
+                  "nodeIdentifier" : "MyKeyUITests/testFingerprintSurvivesRelaunch()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/CipherKeyboard/CipherKeyboardUITests/MyKeyUITests/testFingerprintSurvivesRelaunch",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                },
+                {
+                  "duration" : "13 с",
+                  "durationInSeconds" : 13.7376309633255,
+                  "name" : "testFirstLaunchShowsMyKey()",
+                  "nodeIdentifier" : "MyKeyUITests/testFirstLaunchShowsMyKey()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/CipherKeyboard/CipherKeyboardUITests/MyKeyUITests/testFirstLaunchShowsMyKey",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                },
+                {
+                  "duration" : "6 с",
+                  "durationInSeconds" : 6.965698003768921,
+                  "name" : "testKeystoreErrorShowsRetry()",
+                  "nodeIdentifier" : "MyKeyUITests/testKeystoreErrorShowsRetry()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/CipherKeyboard/CipherKeyboardUITests/MyKeyUITests/testKeystoreErrorShowsRetry",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                },
+                {
+                  "duration" : "10 с",
+                  "durationInSeconds" : 10.934908032417297,
+                  "name" : "testMemoryStoreStartsEmpty()",
+                  "nodeIdentifier" : "MyKeyUITests/testMemoryStoreStartsEmpty()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/CipherKeyboard/CipherKeyboardUITests/MyKeyUITests/testMemoryStoreStartsEmpty",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                },
+                {
+                  "duration" : "5 с",
+                  "durationInSeconds" : 5.85976505279541,
+                  "name" : "testQRCodeEncodesPublicKey()",
+                  "nodeIdentifier" : "MyKeyUITests/testQRCodeEncodesPublicKey()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/CipherKeyboard/CipherKeyboardUITests/MyKeyUITests/testQRCodeEncodesPublicKey",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                },
+                {
+                  "duration" : "5 с",
+                  "durationInSeconds" : 5.709680914878845,
+                  "name" : "testWholeScreenVisibleWithoutScrollOnLargePhones()",
+                  "nodeIdentifier" : "MyKeyUITests/testWholeScreenVisibleWithoutScrollOnLargePhones()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/CipherKeyboard/CipherKeyboardUITests/MyKeyUITests/testWholeScreenVisibleWithoutScrollOnLargePhones",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                }
+              ],
+              "name" : "MyKeyUITests",
+              "nodeIdentifierURL" : "test://com.apple.xcode/CipherKeyboard/CipherKeyboardUITests/MyKeyUITests",
+              "nodeType" : "Test Suite",
+              "result" : "Passed"
+            },
+            {
+              "children" : [
+                {
+                  "duration" : "20 с",
+                  "durationInSeconds" : 20.116531014442444,
+                  "name" : "testOpenSettingsFailure()",
+                  "nodeIdentifier" : "SetupUITests/testOpenSettingsFailure()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/CipherKeyboard/CipherKeyboardUITests/SetupUITests/testOpenSettingsFailure",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                },
+                {
+                  "duration" : "13 с",
+                  "durationInSeconds" : 13.462495923042297,
+                  "name" : "testRefreshOnForeground()",
+                  "nodeIdentifier" : "SetupUITests/testRefreshOnForeground()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/CipherKeyboard/CipherKeyboardUITests/SetupUITests/testRefreshOnForeground",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                },
+                {
+                  "duration" : "43 с",
+                  "durationInSeconds" : 43.83095598220825,
+                  "name" : "testStatesAndBanner()",
+                  "nodeIdentifier" : "SetupUITests/testStatesAndBanner()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/CipherKeyboard/CipherKeyboardUITests/SetupUITests/testStatesAndBanner",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                }
+              ],
+              "name" : "SetupUITests",
+              "nodeIdentifierURL" : "test://com.apple.xcode/CipherKeyboard/CipherKeyboardUITests/SetupUITests",
+              "nodeType" : "Test Suite",
+              "result" : "Passed"
+            }
+          ],
+          "name" : "CipherKeyboardUITests",
+          "nodeIdentifierURL" : "test://com.apple.xcode/CipherKeyboard/CipherKeyboardUITests",
+          "nodeType" : "UI test bundle",
+          "result" : "Passed"
+        }
+      ],
+      "name" : "CipherKeyboard",
+      "nodeType" : "Test Plan",
+      "result" : "Passed"
+    }
+  ],
+  "testPlanConfigurations" : [
+    {
+      "configurationId" : "1",
+      "configurationName" : "Test Scheme Action"
+    }
+  ]
+}

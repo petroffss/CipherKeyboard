@@ -7,8 +7,12 @@ struct CipherKeyboardApp: App {
 
     var body: some Scene {
         WindowGroup {
-            #if DEBUG
-                if ProcessInfo.processInfo.arguments.contains("-encrypt-self-open") {
+            #if DEBUG && targetEnvironment(simulator)
+                if !LaunchStorage.permitsSimulatorProbes {
+                    RootView(model: model).task { model.loadIfNeeded() }
+                } else if ProcessInfo.processInfo.arguments.contains("-decrypt-seed") {
+                    DecryptSeedProbeView()
+                } else if ProcessInfo.processInfo.arguments.contains("-encrypt-self-open") {
                     Text(
                         KeyboardEncryptProbe.openInserted(
                             ProcessInfo.processInfo.environment["CIPHER_INSERTED_SYNTHETIC_CIPHERTEXT"] ?? "")
@@ -16,8 +20,9 @@ struct CipherKeyboardApp: App {
                 } else if ProcessInfo.processInfo.arguments.contains("-encrypt-probe") {
                     EncryptProbeView()
                 } else if ProcessInfo.processInfo.arguments.contains("-encrypt-seed") {
-                    Text(EncryptSetupProbe.run()).accessibilityIdentifier("encrypt.seedResult").accessibilityValue(
-                        EncryptSetupProbe.publicKey)
+                    Text(EncryptSetupProbe.seedSharedSimulatorBook()).accessibilityIdentifier("encrypt.seedResult")
+                        .accessibilityValue(
+                            EncryptSetupProbe.publicKey)
                 } else if ProcessInfo.processInfo.arguments.contains("-typing-isolation") {
                     Text(KeyboardIsolationProbe.run()).accessibilityIdentifier("typing.isolationResult")
                 } else if ProcessInfo.processInfo.arguments.contains("-typing-identity-metadata") {
@@ -32,7 +37,16 @@ struct CipherKeyboardApp: App {
     }
 }
 
-#if DEBUG
+#if DEBUG && targetEnvironment(simulator)
+    private struct DecryptSeedProbeView: View {
+        @State private var output: DecryptSeedProbe.Output?
+        var body: some View {
+            Text(output?.text ?? "Проверяем…").accessibilityIdentifier("decrypt.seedResult")
+                .accessibilityValue(output?.contactName ?? "")
+                .task { if output == nil { output = DecryptSeedProbe.run() } }
+        }
+    }
+
     private struct EncryptProbeView: View {
         @State private var result = "Проверяем…"
         var body: some View {

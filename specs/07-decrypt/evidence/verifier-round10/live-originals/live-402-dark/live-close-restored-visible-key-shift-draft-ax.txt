@@ -1,0 +1,174 @@
+Attributes: Application, 0x106a3a080, pid: 67852, label: 'TypingHost'
+Element subtree:
+ →Application, 0x106a3a080, pid: 67852, label: 'TypingHost'
+    Window (Main), 0x106a3a300, {{0.0, 0.0}, {402.0, 874.0}}
+      Other, 0x106a3abc0, {{0.0, 0.0}, {402.0, 874.0}}
+        Other, 0x106a3a1c0, {{0.0, 0.0}, {402.0, 874.0}}
+          Other, 0x106a39540, {{0.0, 0.0}, {402.0, 874.0}}
+            Other, 0x10fe39a40, {{0.0, 0.0}, {16.5, 16.5}}
+            Other, 0x1069bfe80, {{16.0, 66.0}, {370.0, 99.0}}
+              StaticText, 0x1069bf700, {{16.0, 66.0}, {370.0, 20.3}}, label: 'Тестовый хозяин · только Debug'
+              Other, 0x1069bf840, {{16.0, 88.3}, {370.0, 32.0}}
+                Button, 0x1069bf480, {{16.0, 88.3}, {55.0, 32.0}}, label: 'Пустое'
+                  StaticText, 0x1069bf5c0, {{18.0, 95.3}, {51.0, 18.0}}, label: 'Пустое'
+                Button, 0x1069bf980, {{79.0, 88.3}, {55.0, 32.0}}, label: 'С выделением'
+                  StaticText, 0x1069bf340, {{81.0, 95.3}, {51.0, 18.0}}, label: 'С выделением'
+                Button, 0x1069bfac0, {{142.0, 88.3}, {55.0, 32.0}}, label: 'Скрыть'
+                  StaticText, 0x1069bfc00, {{142.7, 95.3}, {54.0, 18.0}}, label: 'Скрыть'
+                Button, 0x106aad900, {{205.0, 88.3}, {55.0, 32.0}}, label: 'Открыть'
+                  StaticText, 0x106aad7c0, {{209.7, 95.3}, {46.0, 18.0}}, label: 'Открыть'
+                Button, 0x10fdf6bc0, {{268.0, 88.3}, {55.0, 32.0}}, label: 'Курсор'
+                  StaticText, 0x10fe357c0, {{269.0, 95.3}, {53.0, 18.0}}, label: 'Курсор'
+                Button, 0x10fe375c0, {{331.0, 88.3}, {55.0, 32.0}}, label: 'Поле2'
+                  StaticText, 0x10fe37200, {{335.7, 95.3}, {46.0, 18.0}}, label: 'Поле2'
+              StaticText, 0x10fe3e6c0, {{16.0, 122.3}, {370.0, 28.7}}, identifier: 'host.diagnostics', label: 'Текст: До встречи!
+Выделение UTF-16: 3, 7'
+              Other, 0x10fe3ea80, {{16.0, 153.0}, {370.0, 12.0}}
+                StaticText, 0x10fe3fc00, {{16.0, 153.0}, {120.7, 12.0}}, identifier: 'host.focus', label: 'show=true; focused=true'
+                StaticText, 0x10fe3ee40, {{140.7, 153.0}, {120.7, 12.0}}, identifier: 'host.controlsGeometry', label: 'width=402.0;height=874.0;field=16.0,310.0,370.0,48.0;keyboardTop=362.0;Курсор=295.5,104.33333333333333;Открыть=232.5,104.33333333333333;Поле2=358.5,104.33333333333333;Пустое=43.5,104.33333333333333;С выделением=106.5,104.33333333333333;Скрыть=169.5,104.33333333333333'
+                StaticText, 0x10fe3c000, {{265.3, 153.0}, {120.7, 12.0}}, identifier: 'host.trace'
+            TextView, 0x10fe3d900, {{16.0, 310.0}, {370.0, 48.0}}, identifier: 'host.editor', value: До встречи!, Keyboard Focused
+              Other, 0x10fe3d2c0, {{16.0, 310.0}, {370.0, 48.0}}, identifier: '_UITextSelectionRangeAdjustmentContainerView'
+                Other, 0x10fe3ebc0, {{47.3, 317.0}, {16.5, 22.0}}, identifier: 'com.apple.text.grabber.leading'
+                  Other, 0x10fe3c280, {{40.1, 303.5}, {16.5, 16.5}}
+                  Other, 0x10fe3fe80, {{47.3, 317.0}, {2.0, 22.0}}
+                Other, 0x10fe3c780, {{110.3, 317.0}, {16.5, 22.0}}, identifier: 'com.apple.text.grabber.trailing'
+                  Other, 0x10fe3e940, {{110.3, 317.0}, {2.0, 22.0}}
+                  Other, 0x10fe3d180, {{103.1, 336.0}, {16.5, 16.5}}
+              Other, 0x102e93200, {{353.0, 310.0}, {30.0, 48.0}}, label: 'Vertical scroll bar, 1 page', value: 0 %
+                Other, 0x102e93d40, {{380.0, 271.0}, {3.0, 36.0}}
+              Other, 0x102e93c00, {{16.0, 331.0}, {370.0, 24.0}}, label: 'Horizontal scroll bar, 1 page', value: 0 %
+                Other, 0x102e93480, {{-26.0, 352.0}, {36.0, 3.0}}
+    Window, 0x102e93340, {{0.0, 0.0}, {402.0, 874.0}}
+      Other, 0x102e90c80, {{0.0, 0.0}, {402.0, 874.0}}
+        Other, 0x102e93ac0, {{0.0, 0.0}, {402.0, 874.0}}
+        Other, 0x102e93700, {{0.0, 379.0}, {402.0, 495.0}}
+          Other, 0x102e93980, {{0.0, 379.0}, {402.0, 495.0}}, identifier: 'inputView'
+    Window, 0x102e93840, {{0.0, 0.0}, {402.0, 874.0}}
+      Other, 0x10fe6a080, {{0.0, 0.0}, {402.0, 874.0}}
+        Other, 0x10fe6a1c0, {{0.0, 362.0}, {402.0, 512.0}}
+          Other, 0x10fe6a300, {{0.0, 362.0}, {402.0, 513.0}}
+            Other, 0x10fe6a440, {{0.0, 362.0}, {402.0, 513.0}}
+              Other, 0x10fe6a580, {{0.0, 362.0}, {402.0, 513.0}}
+          Other, 0x10fe6a800, {{0.0, 379.0}, {402.0, 420.0}}
+            Other, 0x10fe6bc00, {{0.0, 379.0}, {402.0, 420.0}}
+              Other, 0x10fe6be80, {{0.0, 0.0}, {134.0, 140.0}}
+                Other, 0x10fe6bd40, {{0.0, 379.0}, {402.0, 420.0}}
+                  Other, 0x10fe6bac0, {{0.0, 379.0}, {402.0, 420.0}}
+                    Other, 0x10fe6aa80, {{0.0, 379.0}, {402.0, 420.0}}
+                      Other, 0x10fe6b840, {{0.0, 379.0}, {402.0, 420.0}}
+                        Other, 0x10fe6b980, {{0.0, 379.0}, {402.0, 420.0}}
+                          Other, 0x10fe6b5c0, {{0.0, 379.0}, {402.0, 420.0}}, identifier: 'keyboard.panel'
+                            Other, 0x10fe6b700, {{0.0, 379.0}, {402.0, 420.0}}
+                              Button, 0x10fe6b340, {{6.0, 423.0}, {242.0, 44.0}}, identifier: 'keyboard.recipient', label: 'Кому: Анна07'
+                                StaticText, 0x10fe6b480, {{6.0, 436.0}, {122.0, 18.0}}, label: '  Кому: Анна07 ▾'
+                              Button, 0x10fe6b0c0, {{254.0, 423.0}, {142.0, 44.0}}, identifier: 'keyboard.encrypt', label: 'Зашифровать', Disabled
+                                StaticText, 0x10fe6b200, {{273.7, 436.0}, {103.0, 18.0}}, label: 'Зашифровать'
+                              StaticText, 0x10fe6ae40, {{10.0, 529.0}, {382.0, 32.0}}, identifier: 'keyboard.encrypt.status', label: 'Текст будет зашифрован только после нажатия'
+                            Button, 0x10fe6af80, {{6.0, 379.0}, {126.0, 44.0}}, identifier: 'keyboard.decrypt', label: 'Расшифровать'
+                              StaticText, 0x10fe6ad00, {{13.0, 392.0}, {112.0, 18.0}}, label: 'Расшифровать'
+                            StaticText, 0x10fe6a6c0, {{140.0, 386.5}, {252.0, 14.0}}, identifier: 'keyboard.identityStatus', label: 'Ваш ключ: 3D6A 7525 · Контактов: 26', value: build=1282833911;f...
+                            Button, 0x10fe6abc0, {{352.0, 379.0}, {44.0, 28.0}}, identifier: 'keyboard.debugFixtures', label: 'Debug fixtures;build=1282833911;fixture=hold-live-decrypt;', value: {"byteCount":0,"ca...
+                            StaticText, 0x10fe6a940, {{140.0, 401.5}, {252.0, 14.0}}, label: 'Только по нажатию'
+                            StaticText, 0x106acf340, {{6.0, 469.0}, {390.0, 48.0}}, identifier: 'keyboard.editor', label: 'Черновик'
+                              Other, 0x106acc140, {{6.0, 469.0}, {390.0, 37.0}}
+                              Other, 0x10fe2fe80, {{6.0, 469.0}, {390.0, 37.0}}
+                                Other, 0x10fe2ca00, {{6.0, 469.0}, {390.0, 37.0}}
+                              Other, 0x10fe2f0c0, {{16.0, 477.0}, {2.0, 22.0}}
+                              Other, 0x10fe2cdc0, {{363.0, 469.0}, {30.0, 48.0}}, label: 'Вертикальная полоса прокрутки, 1 страница', value: 0 %
+                                Other, 0x10fe2f840, {{390.0, 483.0}, {3.0, 31.0}}
+                              Other, 0x10fe2cf00, {{6.0, 490.0}, {390.0, 24.0}}, label: 'Горизонтальная полоса прокрутки, 1 страница', value: 0 %
+                                Other, 0x10fe2db80, {{9.0, 511.0}, {215.7, 3.0}}
+                              Other, 0x10fe2ebc0, {{363.0, 469.0}, {30.0, 48.0}}, label: 'Вертикальная полоса прокрутки, 1 страница', value: 0 %
+                                Other, 0x10fe2c500, {{390.0, 483.0}, {3.0, 31.0}}
+                              Other, 0x10fe2c8c0, {{6.0, 490.0}, {390.0, 24.0}}, label: 'Горизонтальная полоса прокрутки, 1 страница', value: 0 %
+                                Other, 0x10fe2f200, {{9.0, 511.0}, {215.7, 3.0}}
+                            StaticText, 0x10fe2fc00, {{10.0, 517.0}, {378.0, 12.0}}, label: 'Черновик · стирается при закрытии'
+                            Button, 0x10fe2de00, {{6.0, 608.0}, {32.7, 44.0}}, identifier: 'keyboard.key.й', label: 'Й'
+                              StaticText, 0x10fe2e080, {{14.7, 617.0}, {16.0, 26.0}}, label: 'Й'
+                            Button, 0x10fe2c000, {{41.7, 608.0}, {32.7, 44.0}}, identifier: 'keyboard.key.ц', label: 'Ц'
+                              StaticText, 0x10fe2fd40, {{50.4, 617.0}, {16.0, 26.0}}, label: 'Ц'
+                            Button, 0x10fe2e800, {{77.5, 608.0}, {32.7, 44.0}}, identifier: 'keyboard.key.у', label: 'У'
+                              StaticText, 0x10fe2f340, {{87.5, 617.0}, {13.0, 26.0}}, label: 'У'
+                            Button, 0x10fe2f5c0, {{113.2, 608.0}, {32.7, 44.0}}, identifier: 'keyboard.key.к', label: 'К'
+                              StaticText, 0x10fe2ee40, {{122.8, 617.0}, {14.0, 26.0}}, label: 'К'
+                            Button, 0x10fe2f480, {{148.9, 608.0}, {32.7, 44.0}}, identifier: 'keyboard.key.е', label: 'Е'
+                              StaticText, 0x10fe2d540, {{158.9, 617.0}, {13.0, 26.0}}, label: 'Е'
+                            Button, 0x10fe2cc80, {{184.6, 608.0}, {32.7, 44.0}}, identifier: 'keyboard.key.н', label: 'Н'
+                              StaticText, 0x10fe2c780, {{193.3, 617.0}, {16.0, 26.0}}, label: 'Н'
+                            Button, 0x10fe2ef80, {{220.4, 608.0}, {32.7, 44.0}}, identifier: 'keyboard.key.г', label: 'Г'
+                              StaticText, 0x10fe2dcc0, {{231.0, 617.0}, {12.0, 26.0}}, label: 'Г'
+                            Button, 0x10fe2c640, {{256.1, 608.0}, {32.7, 44.0}}, identifier: 'keyboard.key.ш', label: 'Ш'
+                              StaticText, 0x106a84000, {{262.8, 617.0}, {20.0, 26.0}}, label: 'Ш'
+                            Button, 0x106a84140, {{291.8, 608.0}, {32.7, 44.0}}, identifier: 'keyboard.key.щ', label: 'Щ'
+                              StaticText, 0x106a84280, {{297.8, 617.0}, {21.0, 26.0}}, label: 'Щ'
+                            Button, 0x106a843c0, {{327.5, 608.0}, {32.7, 44.0}}, identifier: 'keyboard.key.з', label: 'З'
+                              StaticText, 0x106a84500, {{337.5, 617.0}, {13.0, 26.0}}, label: 'З'
+                            Button, 0x106a84640, {{363.3, 608.0}, {32.7, 44.0}}, identifier: 'keyboard.key.х', label: 'Х'
+                              StaticText, 0x106a84780, {{372.9, 617.0}, {14.0, 26.0}}, label: 'Х'
+                            Button, 0x106a848c0, {{6.0, 655.0}, {32.7, 44.0}}, identifier: 'keyboard.key.ф', label: 'Ф'
+                              StaticText, 0x106a84a00, {{14.0, 664.0}, {17.0, 26.0}}, label: 'Ф'
+                            Button, 0x106a84b40, {{41.7, 655.0}, {32.7, 44.0}}, identifier: 'keyboard.key.ы', label: 'Ы'
+                              StaticText, 0x106a84c80, {{49.4, 664.0}, {18.0, 26.0}}, label: 'Ы'
+                            Button, 0x106a84dc0, {{77.5, 655.0}, {32.7, 44.0}}, identifier: 'keyboard.key.в', label: 'В'
+                              StaticText, 0x106a84f00, {{87.1, 664.0}, {14.0, 26.0}}, label: 'В'
+                            Button, 0x106a85040, {{113.2, 655.0}, {32.7, 44.0}}, identifier: 'keyboard.key.а', label: 'А'
+                              StaticText, 0x106a85180, {{122.8, 664.0}, {14.0, 26.0}}, label: 'А'
+                            Button, 0x106a852c0, {{148.9, 655.0}, {32.7, 44.0}}, identifier: 'keyboard.key.п', label: 'П'
+                              StaticText, 0x106a85400, {{157.9, 664.0}, {15.0, 26.0}}, label: 'П'
+                            Button, 0x106a85540, {{184.6, 655.0}, {32.7, 44.0}}, identifier: 'keyboard.key.р', label: 'Р'
+                              StaticText, 0x106a85680, {{194.6, 664.0}, {13.0, 26.0}}, label: 'Р'
+                            Button, 0x106a857c0, {{220.4, 655.0}, {32.7, 44.0}}, identifier: 'keyboard.key.о', label: 'О'
+                              StaticText, 0x106a85900, {{229.0, 664.0}, {16.0, 26.0}}, label: 'О'
+                            Button, 0x106a85a40, {{256.1, 655.0}, {32.7, 44.0}}, identifier: 'keyboard.key.л', label: 'Л'
+                              StaticText, 0x106a85b80, {{265.1, 664.0}, {15.0, 26.0}}, label: 'Л'
+                            Button, 0x106a85cc0, {{291.8, 655.0}, {32.7, 44.0}}, identifier: 'keyboard.key.д', label: 'Д'
+                              StaticText, 0x106a85e00, {{300.5, 664.0}, {16.0, 26.0}}, label: 'Д'
+                            Button, 0x106a85f40, {{327.5, 655.0}, {32.7, 44.0}}, identifier: 'keyboard.key.ж', label: 'Ж'
+                              StaticText, 0x106a86080, {{333.5, 664.0}, {21.0, 26.0}}, label: 'Ж'
+                            Button, 0x106a861c0, {{363.3, 655.0}, {32.7, 44.0}}, identifier: 'keyboard.key.э', label: 'Э'
+                              StaticText, 0x106a86300, {{372.3, 664.0}, {15.0, 26.0}}, label: 'Э'
+                            Button, 0x106a86440, {{6.0, 702.0}, {44.0, 44.0}}, identifier: 'keyboard.shift', label: 'Регистр', value: Заглавные
+                              StaticText, 0x106a86580, {{20.7, 715.0}, {15.0, 18.0}}, label: '⇧'
+                            Button, 0x106a866c0, {{53.0, 702.0}, {30.2, 44.0}}, identifier: 'keyboard.key.я', label: 'Я'
+                              StaticText, 0x106a86800, {{61.3, 711.0}, {14.0, 26.0}}, label: 'Я'
+                            Button, 0x106a86940, {{86.2, 702.0}, {30.2, 44.0}}, identifier: 'keyboard.key.ч', label: 'Ч'
+                              StaticText, 0x106a86a80, {{94.6, 711.0}, {14.0, 26.0}}, label: 'Ч'
+                            Button, 0x106a86bc0, {{119.4, 702.0}, {30.2, 44.0}}, identifier: 'keyboard.key.с', label: 'С'
+                              StaticText, 0x106a86d00, {{127.1, 711.0}, {15.0, 26.0}}, label: 'С'
+                            Button, 0x106a86e40, {{152.7, 702.0}, {30.2, 44.0}}, identifier: 'keyboard.key.м', label: 'М'
+                              StaticText, 0x106a86f80, {{159.0, 711.0}, {18.0, 26.0}}, label: 'М'
+                            Button, 0x106a870c0, {{185.9, 702.0}, {30.2, 44.0}}, identifier: 'keyboard.key.и', label: 'И'
+                              StaticText, 0x106a87200, {{193.2, 711.0}, {16.0, 26.0}}, label: 'И'
+                            Button, 0x106a87340, {{219.1, 702.0}, {30.2, 44.0}}, identifier: 'keyboard.key.т', label: 'Т'
+                              StaticText, 0x106a87480, {{227.8, 711.0}, {13.0, 26.0}}, label: 'Т'
+                            Button, 0x106a875c0, {{252.3, 702.0}, {30.2, 44.0}}, identifier: 'keyboard.key.ь', label: 'Ь'
+                              StaticText, 0x106a87700, {{261.0, 711.0}, {13.0, 26.0}}, label: 'Ь'
+                            Button, 0x106a87840, {{285.6, 702.0}, {30.2, 44.0}}, identifier: 'keyboard.key.б', label: 'Б'
+                              StaticText, 0x106a87980, {{294.2, 711.0}, {13.0, 26.0}}, label: 'Б'
+                            Button, 0x106a87ac0, {{318.8, 702.0}, {30.2, 44.0}}, identifier: 'keyboard.key.ю', label: 'Ю'
+                              StaticText, 0x106a87c00, {{323.4, 711.0}, {21.0, 26.0}}, label: 'Ю'
+                            Button, 0x106a87d40, {{352.0, 702.0}, {44.0, 44.0}}, identifier: 'keyboard.delete', label: 'Удалить'
+                              StaticText, 0x106a87e80, {{366.0, 715.0}, {16.0, 18.0}}, label: '⌫'
+                            Button, 0x106aa8000, {{6.0, 749.0}, {44.0, 44.0}}, identifier: 'keyboard.language', label: 'Сменить язык'
+                              StaticText, 0x106aa8140, {{13.7, 762.0}, {29.0, 18.0}}, label: 'РУС'
+                            Button, 0x106aa8280, {{53.0, 749.0}, {44.0, 44.0}}, identifier: 'keyboard.numbers', label: 'Цифры'
+                              StaticText, 0x106aa83c0, {{62.7, 762.0}, {25.0, 18.0}}, label: '123'
+                            Button, 0x106aa8500, {{100.0, 749.0}, {249.0, 44.0}}, identifier: 'keyboard.space', label: 'Пробел'
+                              StaticText, 0x106aa8640, {{198.0, 762.0}, {53.0, 18.0}}, label: 'пробел'
+                            Button, 0x106aa8780, {{352.0, 749.0}, {44.0, 44.0}}, identifier: 'keyboard.return', label: 'Новая строка'
+                              StaticText, 0x106aa88c0, {{369.0, 762.0}, {10.0, 18.0}}, label: '↵'
+          Other, 0x106aa8a00, {{0.0, 379.0}, {402.0, 495.0}}
+            Button, 0x106aa8b40, {{8.5, 805.7}, {68.1, 68.7}}, label: 'Next keyboard', value: Русская
+              StaticText, 0x106aa8c80, {{8.5, 805.7}, {0.0, 0.0}}
+            Button, 0x106aa8dc0, {{325.4, 805.4}, {68.1, 68.7}}, identifier: 'dictation', label: 'Dictate'
+              StaticText, 0x106aa8f00, {{325.4, 805.4}, {0.0, 0.0}}
+            Button, 0x106aa9040, {{325.4, 805.4}, {68.1, 68.7}}, identifier: 'dictation', label: 'Dictate'
+              StaticText, 0x106aa9180, {{325.4, 805.4}, {0.0, 0.0}}
+Path to element:
+ →Application, 0x106a3a080, pid: 67852, label: 'TypingHost'
+Query chain:
+ →Find: Application 'dev.cipherkeyboard.typinghost'
+  Output: {
+    Application, 0x106aa92c0, pid: 67852, label: 'TypingHost'
+  }

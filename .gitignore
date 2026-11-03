@@ -1,6 +1,7 @@
 # шаблон проекта
 .claude/.cache/
 .claude/settings.local.json
+__pycache__/
 specs/**/evidence/
 
 # секреты

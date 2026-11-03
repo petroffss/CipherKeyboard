@@ -1,0 +1,1217 @@
+<!doctype html><html lang="ru"><meta charset="utf-8"><title>07 R10 · Сравнение кадров</title><style>
+:root{--bg:#F2F2F7;--surface:#fff;--text:#000;--muted:#6C6C70;--separator:#C6C6C8;--accent:#2F5BEA;--danger:#D92D20}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:#e6e8ef;color:#172033;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:17px}.page-head,.page-footer{padding:28px;max-width:1200px}.page-head h1{font-size:32px;margin:0 0 12px}.page-head p{line-height:1.5}a{color:#264dc3}.nav{display:flex;gap:8px;flex-wrap:wrap}.nav a{padding:8px 12px;background:white;border-radius:10px;text-decoration:none;font-size:14px}.state{padding:20px 28px;border-top:1px solid #bac0d0;scroll-margin-top:12px}.state h2{font-size:22px;margin:0 0 16px}.samples{display:flex;gap:24px;flex-wrap:wrap;align-items:flex-start}figure{margin:0}figcaption{font-size:13px;margin:0 0 8px;color:#46516a}.phone{width:var(--w);height:var(--h);background:var(--bg);color:var(--text);display:flex;flex-direction:column;overflow:hidden;border:1px solid var(--separator);border-radius:24px;box-shadow:0 6px 24px #17203318;font-size:17px;line-height:1.25;isolation:isolate}.dark{--bg:#000;--surface:#1C1C1E;--text:#fff;--muted:#98989F;--separator:#38383A;--accent:#5B8CFF;--danger:#FF6961}.status{height:24px;flex:none;display:flex;justify-content:space-between;padding:4px 18px;font-size:12px;font-weight:600}.safe{height:20px;flex:none;display:flex;justify-content:center;align-items:center;background:var(--surface)}.safe span{width:115px;height:4px;border-radius:9px;background:var(--text)}.host{flex:1;min-height:0;padding:6px 16px;overflow:hidden}.host>strong{display:block;text-align:center;font-size:17px}.bubble{background:var(--surface);border-radius:12px;padding:8px 12px;margin:6px 0;display:table;font-size:15px}.cipher-bubble{color:var(--muted);font:12px ui-monospace,monospace;white-space:nowrap}.hostfield{height:44px;flex:none;display:flex;align-items:center;border-top:1px solid var(--separator);padding:0 14px;background:var(--surface);font-size:16px}.send{margin-left:auto;color:var(--accent);font-size:24px}.caret{display:inline-block;width:2px;height:19px;background:var(--accent);vertical-align:middle}.panel{height:420px;flex:none;border-top:1px solid var(--separator);background:var(--bg)}button{font:600 17px -apple-system,BlinkMacSystemFont,sans-serif;min-height:44px;min-width:44px;padding:9px 14px;border-radius:14px;cursor:default;line-height:1.25}.primary{color:white;background:var(--accent);border:0;min-height:50px}.secondary{background:transparent;color:var(--accent);border:1.5px solid var(--accent)}button:disabled{opacity:.4}.muted{color:var(--muted);font-size:13px;margin:8px 0}.danger{color:var(--danger)}.result{height:100%;display:flex;flex-direction:column;min-height:0;background:var(--surface)}.result header{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;min-height:48px;flex:none;border-bottom:1px solid var(--separator)}.result-main{display:flex;flex-direction:column;flex:1;min-height:0;padding:12px 16px;gap:12px;overflow:auto}.identity{flex:none;overflow-wrap:anywhere}.sender{display:block;font-size:17px;font-weight:600}.signature{color:var(--accent);font-size:15px;margin:6px 0 0}.warning{color:var(--danger);font-size:13px;margin:8px 0 0}.plaintext{white-space:pre-wrap;overflow:auto;overflow-wrap:anywhere;flex:1;min-height:40px;padding:10px;border-radius:10px;background:var(--bg);font-size:17px;line-height:1.4;user-select:none}.result footer{padding:8px 16px 10px;flex:none;border-top:1px solid var(--separator)}.result footer button{width:100%}.busy{flex:1;min-height:0;overflow:auto;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;text-align:center}.busy p{margin:8px 0}.spinner{width:25px;height:25px;border:3px solid var(--separator);border-top-color:var(--accent);border-radius:50%}.error-content{flex:1;min-height:0;overflow:auto;padding:20px 24px;text-align:center;display:flex;flex-direction:column;justify-content:center}.error-content p{margin:8px 0}.error-icon{color:var(--danger);font-weight:700;border:2px solid;border-radius:50%;width:36px;height:36px;line-height:32px;margin:0 auto}.compose{padding:6px;display:flex;flex-direction:column;gap:5px;height:100%}.actions{display:flex;gap:8px;align-items:center;flex:none}.actions .muted{font-size:12px}.actions button{font-size:15px;padding:6px 10px}.compose-recipient{height:44px;display:flex;align-items:center;gap:6px;font-size:14px}.compose-recipient>span{min-width:0;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.compact{background:var(--accent);color:white;border:0;font-size:14px;padding:8px}.draft{background:var(--surface);border-radius:10px;padding:8px 10px;min-height:56px;flex:1;overflow:auto}.notice{font-size:13px;line-height:16px;min-height:32px;flex:none;display:flex;align-items:center}.keys{height:191px;flex:none;display:flex;flex-direction:column;gap:5px}.keyrow{display:flex;gap:5px;flex:1}.key{border-radius:5px;background:var(--surface);box-shadow:0 1px 1px #0003;flex:1;min-width:0;display:flex;align-items:center;justify-content:center;font-size:17px}.keyrow:last-child .key{font-size:13px}.keyrow:last-child .key:nth-child(4){flex:3}.app-title{font-size:34px;font-weight:700;padding:12px 20px;flex:none}.app-main{padding:4px 20px 16px;flex:1;min-height:0;display:flex;flex-direction:column;overflow:auto}.app-main>.result{border-radius:16px;overflow:hidden;flex:1;min-height:200px}.input-form{display:flex;flex-direction:column;gap:12px}.input-form>p{margin:0;font-size:15px}.input{height:150px;min-height:90px;border:1px solid var(--separator);background:var(--surface);border-radius:10px;padding:12px;overflow:auto;overflow-wrap:anywhere;font:14px ui-monospace,monospace}.placeholder{color:var(--muted)}.errorbox{padding:12px;background:var(--surface);color:var(--danger);border-radius:10px;font-size:15px}.tabs{height:60px;flex:none;display:flex;align-items:center;justify-content:space-around;background:var(--surface);border-top:1px solid var(--separator);color:var(--muted)}.tabs span{text-align:center;font-size:22px;min-width:44px}.tabs small{display:block;font-size:10px;margin-top:4px}.tabs .active{color:var(--accent)}.land{border-radius:18px}.land .status{height:20px}.land .safe{height:14px}.land .host{padding:0 16px}.land .host>strong,.land .bubble{display:none}.land .hostfield{height:38px}.land .panel{height:240px}.land .result header{padding:8px 16px;min-height:40px}.land .result footer{padding:6px 16px}.land .result footer button{min-height:44px;padding:6px}.land .result-main{display:grid;grid-template-columns:minmax(180px,1fr) minmax(0,2fr);padding:8px 16px;gap:16px;overflow:hidden}.land .identity{overflow:auto}.land .plaintext{min-height:0;height:100%}.land .app-title{font-size:22px;padding:3px 20px}.land .app-main{padding:4px 20px 8px}.land .app-main>.result{min-height:0}.land .tabs{height:44px}.land .tabs span{font-size:16px}.land .tabs small{margin:0}.land .result-main .muted{margin:4px 0}.land .error-content{padding:8px 24px}.land .error-icon{display:none}@media(max-width:600px){.page-head,.page-footer{padding:20px}.state{padding:18px 8px}.samples{gap:18px}}
+
+.compose:has(.compose-meta){gap:4px}.compose:has(.compose-meta) .keys{height:185px}
+.compose .compose-meta{min-width:0;flex:1;display:flex;flex-direction:column;justify-content:center;gap:1px;color:var(--muted);font-size:11px;line-height:12px}
+.compose-meta>span{overflow-wrap:anywhere}
+.compose .draft-service{flex:none;color:var(--muted);font-size:10px;line-height:12px;padding-inline:4px}
+.message-date,.message-age{margin:2px 0;font-size:12px;overflow-wrap:anywhere}.message-date{color:var(--muted)}.message-age{color:var(--danger)}
+
+      article { margin: 24px; padding-bottom: 20px; border-bottom: 1px solid #888; }
+      .compare { display: flex; gap: 22px; align-items: start; overflow-x: auto; }
+      .compare figure { flex-shrink: 0; margin: 0; }
+      .compare img { display: block; max-width: none; }
+      .comparison-index { columns: 4; }
+      </style><body><h1>07 R10 · Сравнение кадров</h1><ul class="comparison-index"><li><a href="#app-busy-375-portrait-dark">app-busy-375-portrait-dark</a></li>
+<li><a href="#app-busy-375-portrait-light">app-busy-375-portrait-light</a></li>
+<li><a href="#app-changed-375-portrait-dark">app-changed-375-portrait-dark</a></li>
+<li><a href="#app-changed-375-portrait-light">app-changed-375-portrait-light</a></li>
+<li><a href="#app-contact-375-portrait-dark">app-contact-375-portrait-dark</a></li>
+<li><a href="#app-contact-375-portrait-light">app-contact-375-portrait-light</a></li>
+<li><a href="#app-contact-402-portrait-dark">app-contact-402-portrait-dark</a></li>
+<li><a href="#app-contact-402-portrait-light">app-contact-402-portrait-light</a></li>
+<li><a href="#app-contact-440-portrait-dark">app-contact-440-portrait-dark</a></li>
+<li><a href="#app-contact-440-portrait-light">app-contact-440-portrait-light</a></li>
+<li><a href="#app-contacts-warning-375-portrait-dark">app-contacts-warning-375-portrait-dark</a></li>
+<li><a href="#app-contacts-warning-375-portrait-light">app-contacts-warning-375-portrait-light</a></li>
+<li><a href="#app-corrupt-375-portrait-dark">app-corrupt-375-portrait-dark</a></li>
+<li><a href="#app-corrupt-375-portrait-light">app-corrupt-375-portrait-light</a></li>
+<li><a href="#app-empty-375-portrait-dark">app-empty-375-portrait-dark</a></li>
+<li><a href="#app-empty-375-portrait-light">app-empty-375-portrait-light</a></li>
+<li><a href="#app-foreign-375-portrait-dark">app-foreign-375-portrait-dark</a></li>
+<li><a href="#app-foreign-375-portrait-light">app-foreign-375-portrait-light</a></li>
+<li><a href="#app-generic-375-portrait-dark">app-generic-375-portrait-dark</a></li>
+<li><a href="#app-generic-375-portrait-light">app-generic-375-portrait-light</a></li>
+<li><a href="#app-input-375-portrait-dark">app-input-375-portrait-dark</a></li>
+<li><a href="#app-input-375-portrait-light">app-input-375-portrait-light</a></li>
+<li><a href="#app-key-error-375-portrait-dark">app-key-error-375-portrait-dark</a></li>
+<li><a href="#app-key-error-375-portrait-light">app-key-error-375-portrait-light</a></li>
+<li><a href="#app-long-375-landscape-dark">app-long-375-landscape-dark</a></li>
+<li><a href="#app-long-375-landscape-light">app-long-375-landscape-light</a></li>
+<li><a href="#app-long-375-portrait-dark">app-long-375-portrait-dark</a></li>
+<li><a href="#app-long-375-portrait-light">app-long-375-portrait-light</a></li>
+<li><a href="#app-long-402-landscape-dark">app-long-402-landscape-dark</a></li>
+<li><a href="#app-long-402-landscape-light">app-long-402-landscape-light</a></li>
+<li><a href="#app-long-402-portrait-dark">app-long-402-portrait-dark</a></li>
+<li><a href="#app-long-402-portrait-light">app-long-402-portrait-light</a></li>
+<li><a href="#app-long-440-landscape-dark">app-long-440-landscape-dark</a></li>
+<li><a href="#app-long-440-landscape-light">app-long-440-landscape-light</a></li>
+<li><a href="#app-long-440-portrait-dark">app-long-440-portrait-dark</a></li>
+<li><a href="#app-long-440-portrait-light">app-long-440-portrait-light</a></li>
+<li><a href="#app-no-message-375-portrait-dark">app-no-message-375-portrait-dark</a></li>
+<li><a href="#app-no-message-375-portrait-light">app-no-message-375-portrait-light</a></li>
+<li><a href="#app-oversize-375-portrait-dark">app-oversize-375-portrait-dark</a></li>
+<li><a href="#app-oversize-375-portrait-light">app-oversize-375-portrait-light</a></li>
+<li><a href="#app-paste-error-375-portrait-dark">app-paste-error-375-portrait-dark</a></li>
+<li><a href="#app-paste-error-375-portrait-light">app-paste-error-375-portrait-light</a></li>
+<li><a href="#app-self-375-portrait-dark">app-self-375-portrait-dark</a></li>
+<li><a href="#app-self-375-portrait-light">app-self-375-portrait-light</a></li>
+<li><a href="#app-unknown-375-portrait-dark">app-unknown-375-portrait-dark</a></li>
+<li><a href="#app-unknown-375-portrait-light">app-unknown-375-portrait-light</a></li>
+<li><a href="#app-version-375-portrait-dark">app-version-375-portrait-dark</a></li>
+<li><a href="#app-version-375-portrait-light">app-version-375-portrait-light</a></li>
+<li><a href="#keyboard-busy-375-portrait-dark">keyboard-busy-375-portrait-dark</a></li>
+<li><a href="#keyboard-busy-375-portrait-light">keyboard-busy-375-portrait-light</a></li>
+<li><a href="#keyboard-changed-375-portrait-dark">keyboard-changed-375-portrait-dark</a></li>
+<li><a href="#keyboard-changed-375-portrait-light">keyboard-changed-375-portrait-light</a></li>
+<li><a href="#keyboard-contact-375-portrait-dark">keyboard-contact-375-portrait-dark</a></li>
+<li><a href="#keyboard-contact-375-portrait-light">keyboard-contact-375-portrait-light</a></li>
+<li><a href="#keyboard-contact-402-portrait-dark">keyboard-contact-402-portrait-dark</a></li>
+<li><a href="#keyboard-contact-402-portrait-light">keyboard-contact-402-portrait-light</a></li>
+<li><a href="#keyboard-contact-440-portrait-dark">keyboard-contact-440-portrait-dark</a></li>
+<li><a href="#keyboard-contact-440-portrait-light">keyboard-contact-440-portrait-light</a></li>
+<li><a href="#keyboard-contacts-warning-375-portrait-dark">keyboard-contacts-warning-375-portrait-dark</a></li>
+<li><a href="#keyboard-contacts-warning-375-portrait-light">keyboard-contacts-warning-375-portrait-light</a></li>
+<li><a href="#keyboard-corrupt-375-portrait-dark">keyboard-corrupt-375-portrait-dark</a></li>
+<li><a href="#keyboard-corrupt-375-portrait-light">keyboard-corrupt-375-portrait-light</a></li>
+<li><a href="#keyboard-foreign-375-portrait-dark">keyboard-foreign-375-portrait-dark</a></li>
+<li><a href="#keyboard-foreign-375-portrait-light">keyboard-foreign-375-portrait-light</a></li>
+<li><a href="#keyboard-generic-375-portrait-dark">keyboard-generic-375-portrait-dark</a></li>
+<li><a href="#keyboard-generic-375-portrait-light">keyboard-generic-375-portrait-light</a></li>
+<li><a href="#keyboard-idle-375-portrait-dark">keyboard-idle-375-portrait-dark</a></li>
+<li><a href="#keyboard-idle-375-portrait-light">keyboard-idle-375-portrait-light</a></li>
+<li><a href="#keyboard-key-error-375-portrait-dark">keyboard-key-error-375-portrait-dark</a></li>
+<li><a href="#keyboard-key-error-375-portrait-light">keyboard-key-error-375-portrait-light</a></li>
+<li><a href="#keyboard-long-375-landscape-dark">keyboard-long-375-landscape-dark</a></li>
+<li><a href="#keyboard-long-375-landscape-light">keyboard-long-375-landscape-light</a></li>
+<li><a href="#keyboard-long-375-portrait-dark">keyboard-long-375-portrait-dark</a></li>
+<li><a href="#keyboard-long-375-portrait-light">keyboard-long-375-portrait-light</a></li>
+<li><a href="#keyboard-long-402-landscape-dark">keyboard-long-402-landscape-dark</a></li>
+<li><a href="#keyboard-long-402-landscape-light">keyboard-long-402-landscape-light</a></li>
+<li><a href="#keyboard-long-402-portrait-dark">keyboard-long-402-portrait-dark</a></li>
+<li><a href="#keyboard-long-402-portrait-light">keyboard-long-402-portrait-light</a></li>
+<li><a href="#keyboard-long-440-landscape-dark">keyboard-long-440-landscape-dark</a></li>
+<li><a href="#keyboard-long-440-landscape-light">keyboard-long-440-landscape-light</a></li>
+<li><a href="#keyboard-long-440-portrait-dark">keyboard-long-440-portrait-dark</a></li>
+<li><a href="#keyboard-long-440-portrait-light">keyboard-long-440-portrait-light</a></li>
+<li><a href="#keyboard-no-access-375-portrait-dark">keyboard-no-access-375-portrait-dark</a></li>
+<li><a href="#keyboard-no-access-375-portrait-light">keyboard-no-access-375-portrait-light</a></li>
+<li><a href="#keyboard-no-key-375-portrait-dark">keyboard-no-key-375-portrait-dark</a></li>
+<li><a href="#keyboard-no-key-375-portrait-light">keyboard-no-key-375-portrait-light</a></li>
+<li><a href="#keyboard-no-message-375-portrait-dark">keyboard-no-message-375-portrait-dark</a></li>
+<li><a href="#keyboard-no-message-375-portrait-light">keyboard-no-message-375-portrait-light</a></li>
+<li><a href="#keyboard-oversize-375-portrait-dark">keyboard-oversize-375-portrait-dark</a></li>
+<li><a href="#keyboard-oversize-375-portrait-light">keyboard-oversize-375-portrait-light</a></li>
+<li><a href="#keyboard-paste-error-375-portrait-dark">keyboard-paste-error-375-portrait-dark</a></li>
+<li><a href="#keyboard-paste-error-375-portrait-light">keyboard-paste-error-375-portrait-light</a></li>
+<li><a href="#keyboard-self-375-portrait-dark">keyboard-self-375-portrait-dark</a></li>
+<li><a href="#keyboard-self-375-portrait-light">keyboard-self-375-portrait-light</a></li>
+<li><a href="#keyboard-unknown-375-portrait-dark">keyboard-unknown-375-portrait-dark</a></li>
+<li><a href="#keyboard-unknown-375-portrait-light">keyboard-unknown-375-portrait-light</a></li>
+<li><a href="#keyboard-version-375-portrait-dark">keyboard-version-375-portrait-dark</a></li>
+<li><a href="#keyboard-version-375-portrait-light">keyboard-version-375-portrait-light</a></li></ul><article id="app-busy-375-portrait-dark"><h2>app-busy-375-portrait-dark</h2><p>state-app-busy · SHA256 3dfb4324c1639fb466b1c576bbdf84d263d16beb8b79d87e25955c769f24825a</p><div class="compare"><figure><figcaption>375 × 667 pt · Тёмная</figcaption><div class="phone app dark" style="--w:375px;--h:667px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="app-title">Расшифровать</div><div class="app-main"><div class="result"><header><strong>Расшифровка</strong></header><div class="busy"><span class="spinner"></span><p>Расшифровываем…</p><p class="muted">Сообщение ещё не показано</p></div><footer><button class="secondary">Закрыть</button></footer></div></div><div class="tabs"><span>⚿<small>Мой ключ</small></span><span>♙<small>Контакты</small></span><span class="active">♧<small>Расшифровать</small></span><span>⚙<small>Настройка</small></span></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="app-busy-375-portrait-dark.png" alt="app-busy-375-portrait-dark" width="375" height="667"></figure></div></article>
+<article id="app-busy-375-portrait-light"><h2>app-busy-375-portrait-light</h2><p>state-app-busy · SHA256 486caca3effab3b36d3dfa38304d460d3ca0b4d44b51278f5a451fd1282d8f8f</p><div class="compare"><figure><figcaption>375 × 667 pt · Светлая</figcaption><div class="phone app" style="--w:375px;--h:667px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="app-title">Расшифровать</div><div class="app-main"><div class="result"><header><strong>Расшифровка</strong></header><div class="busy"><span class="spinner"></span><p>Расшифровываем…</p><p class="muted">Сообщение ещё не показано</p></div><footer><button class="secondary">Закрыть</button></footer></div></div><div class="tabs"><span>⚿<small>Мой ключ</small></span><span>♙<small>Контакты</small></span><span class="active">♧<small>Расшифровать</small></span><span>⚙<small>Настройка</small></span></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="app-busy-375-portrait-light.png" alt="app-busy-375-portrait-light" width="375" height="667"></figure></div></article>
+<article id="app-changed-375-portrait-dark"><h2>app-changed-375-portrait-dark</h2><p>state-app-changed · SHA256 2530efc232098de24cfcbae69d73096909f3a2db10b896977df1888f168c149c</p><div class="compare"><figure><figcaption>375 × 667 pt · Тёмная</figcaption><div class="phone app dark" style="--w:375px;--h:667px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="app-title">Расшифровать</div><div class="app-main"><div class="input-form"><p>Вставьте зашифрованное сообщение</p><div class="input ">ckmsg2:AQIAIA7u9kV0Xc6Fm2qL8bP4n…</div><button class="secondary">Вставить</button><button class="primary">Расшифровать</button><div class="errorbox" role="status">Данные изменились — повторите расшифровку</div><p class="muted">Текст показывается только здесь.<br>При уходе с вкладки всё стирается.</p></div></div><div class="tabs"><span>⚿<small>Мой ключ</small></span><span>♙<small>Контакты</small></span><span class="active">♧<small>Расшифровать</small></span><span>⚙<small>Настройка</small></span></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="app-changed-375-portrait-dark.png" alt="app-changed-375-portrait-dark" width="375" height="667"></figure></div></article>
+<article id="app-changed-375-portrait-light"><h2>app-changed-375-portrait-light</h2><p>state-app-changed · SHA256 901c6a4f1fda658e3234e7987f275b0dcb46bc4b3385c361197332302e6b73a8</p><div class="compare"><figure><figcaption>375 × 667 pt · Светлая</figcaption><div class="phone app" style="--w:375px;--h:667px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="app-title">Расшифровать</div><div class="app-main"><div class="input-form"><p>Вставьте зашифрованное сообщение</p><div class="input ">ckmsg2:AQIAIA7u9kV0Xc6Fm2qL8bP4n…</div><button class="secondary">Вставить</button><button class="primary">Расшифровать</button><div class="errorbox" role="status">Данные изменились — повторите расшифровку</div><p class="muted">Текст показывается только здесь.<br>При уходе с вкладки всё стирается.</p></div></div><div class="tabs"><span>⚿<small>Мой ключ</small></span><span>♙<small>Контакты</small></span><span class="active">♧<small>Расшифровать</small></span><span>⚙<small>Настройка</small></span></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="app-changed-375-portrait-light.png" alt="app-changed-375-portrait-light" width="375" height="667"></figure></div></article>
+<article id="app-contact-375-portrait-dark"><h2>app-contact-375-portrait-dark</h2><p>state-app-contact · SHA256 0bbf8d756249c2186b4c2944bb4a96eb84ccd823b79c5aaeca63a1ba15f34eb4</p><div class="compare"><figure><figcaption>375 × 667 pt · Тёмная</figcaption><div class="phone app dark" style="--w:375px;--h:667px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="app-title">Расшифровать</div><div class="app-main"><div class="result"><header><strong>Расшифровано</strong><span aria-hidden="true">♧</span></header><div class="result-main"><div class="identity"><strong class="sender">От: Анна</strong><p class="signature">✓ Подпись верна</p><p class="message-date">Дата по часам отправителя: 03.11.2026, 09:41</p></div><div class="plaintext" tabindex="0">  Привет, Анна!
+Завтра в 19:30 👨‍👩‍👧‍👦  </div></div><footer><button class="primary">Закрыть</button></footer></div></div><div class="tabs"><span>⚿<small>Мой ключ</small></span><span>♙<small>Контакты</small></span><span class="active">♧<small>Расшифровать</small></span><span>⚙<small>Настройка</small></span></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="app-contact-375-portrait-dark.png" alt="app-contact-375-portrait-dark" width="375" height="667"></figure></div></article>
+<article id="app-contact-375-portrait-light"><h2>app-contact-375-portrait-light</h2><p>state-app-contact · SHA256 3a9144813a629dd24104c1f930f26d244443eeb92deca6f5e570671ecc08d63e</p><div class="compare"><figure><figcaption>375 × 667 pt · Светлая</figcaption><div class="phone app" style="--w:375px;--h:667px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="app-title">Расшифровать</div><div class="app-main"><div class="result"><header><strong>Расшифровано</strong><span aria-hidden="true">♧</span></header><div class="result-main"><div class="identity"><strong class="sender">От: Анна</strong><p class="signature">✓ Подпись верна</p><p class="message-date">Дата по часам отправителя: 03.11.2026, 09:41</p></div><div class="plaintext" tabindex="0">  Привет, Анна!
+Завтра в 19:30 👨‍👩‍👧‍👦  </div></div><footer><button class="primary">Закрыть</button></footer></div></div><div class="tabs"><span>⚿<small>Мой ключ</small></span><span>♙<small>Контакты</small></span><span class="active">♧<small>Расшифровать</small></span><span>⚙<small>Настройка</small></span></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="app-contact-375-portrait-light.png" alt="app-contact-375-portrait-light" width="375" height="667"></figure></div></article>
+<article id="app-contact-402-portrait-dark"><h2>app-contact-402-portrait-dark</h2><p>state-app-contact · SHA256 2b4dd8ee3ba29acca795d43fb3fb53745df435cb95e9ed17aceb6c90ffb702d0</p><div class="compare"><figure><figcaption>402 × 874 pt · Тёмная</figcaption><div class="phone app dark" style="--w:402px;--h:874px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="app-title">Расшифровать</div><div class="app-main"><div class="result"><header><strong>Расшифровано</strong><span aria-hidden="true">♧</span></header><div class="result-main"><div class="identity"><strong class="sender">От: Анна</strong><p class="signature">✓ Подпись верна</p><p class="message-date">Дата по часам отправителя: 03.11.2026, 09:41</p></div><div class="plaintext" tabindex="0">  Привет, Анна!
+Завтра в 19:30 👨‍👩‍👧‍👦  </div></div><footer><button class="primary">Закрыть</button></footer></div></div><div class="tabs"><span>⚿<small>Мой ключ</small></span><span>♙<small>Контакты</small></span><span class="active">♧<small>Расшифровать</small></span><span>⚙<small>Настройка</small></span></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="app-contact-402-portrait-dark.png" alt="app-contact-402-portrait-dark" width="402" height="874"></figure></div></article>
+<article id="app-contact-402-portrait-light"><h2>app-contact-402-portrait-light</h2><p>state-app-contact · SHA256 7c3ad895fa6b6003859176fb22584fa14ba633877415cc240f92335bb0f25b5c</p><div class="compare"><figure><figcaption>402 × 874 pt · Светлая</figcaption><div class="phone app" style="--w:402px;--h:874px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="app-title">Расшифровать</div><div class="app-main"><div class="result"><header><strong>Расшифровано</strong><span aria-hidden="true">♧</span></header><div class="result-main"><div class="identity"><strong class="sender">От: Анна</strong><p class="signature">✓ Подпись верна</p><p class="message-date">Дата по часам отправителя: 03.11.2026, 09:41</p></div><div class="plaintext" tabindex="0">  Привет, Анна!
+Завтра в 19:30 👨‍👩‍👧‍👦  </div></div><footer><button class="primary">Закрыть</button></footer></div></div><div class="tabs"><span>⚿<small>Мой ключ</small></span><span>♙<small>Контакты</small></span><span class="active">♧<small>Расшифровать</small></span><span>⚙<small>Настройка</small></span></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="app-contact-402-portrait-light.png" alt="app-contact-402-portrait-light" width="402" height="874"></figure></div></article>
+<article id="app-contact-440-portrait-dark"><h2>app-contact-440-portrait-dark</h2><p>state-app-contact · SHA256 5061337f43202f6f2ad0c0e0db50792d4596209a32bea9f94a176b8574919a09</p><div class="compare"><figure><figcaption>440 × 956 pt · Тёмная</figcaption><div class="phone app dark" style="--w:440px;--h:956px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="app-title">Расшифровать</div><div class="app-main"><div class="result"><header><strong>Расшифровано</strong><span aria-hidden="true">♧</span></header><div class="result-main"><div class="identity"><strong class="sender">От: Анна</strong><p class="signature">✓ Подпись верна</p><p class="message-date">Дата по часам отправителя: 03.11.2026, 09:41</p></div><div class="plaintext" tabindex="0">  Привет, Анна!
+Завтра в 19:30 👨‍👩‍👧‍👦  </div></div><footer><button class="primary">Закрыть</button></footer></div></div><div class="tabs"><span>⚿<small>Мой ключ</small></span><span>♙<small>Контакты</small></span><span class="active">♧<small>Расшифровать</small></span><span>⚙<small>Настройка</small></span></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="app-contact-440-portrait-dark.png" alt="app-contact-440-portrait-dark" width="440" height="956"></figure></div></article>
+<article id="app-contact-440-portrait-light"><h2>app-contact-440-portrait-light</h2><p>state-app-contact · SHA256 32fa69785655f997d403b262b72ff71a9e2d56ca58fb7fc844aa6372ed329d52</p><div class="compare"><figure><figcaption>440 × 956 pt · Светлая</figcaption><div class="phone app" style="--w:440px;--h:956px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="app-title">Расшифровать</div><div class="app-main"><div class="result"><header><strong>Расшифровано</strong><span aria-hidden="true">♧</span></header><div class="result-main"><div class="identity"><strong class="sender">От: Анна</strong><p class="signature">✓ Подпись верна</p><p class="message-date">Дата по часам отправителя: 03.11.2026, 09:41</p></div><div class="plaintext" tabindex="0">  Привет, Анна!
+Завтра в 19:30 👨‍👩‍👧‍👦  </div></div><footer><button class="primary">Закрыть</button></footer></div></div><div class="tabs"><span>⚿<small>Мой ключ</small></span><span>♙<small>Контакты</small></span><span class="active">♧<small>Расшифровать</small></span><span>⚙<small>Настройка</small></span></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="app-contact-440-portrait-light.png" alt="app-contact-440-portrait-light" width="440" height="956"></figure></div></article>
+<article id="app-contacts-warning-375-portrait-dark"><h2>app-contacts-warning-375-portrait-dark</h2><p>state-app-contacts-warning · SHA256 4bf97e59a0366a5f45352165b40221659798df44c35e454ee81e83e6f0901568</p><div class="compare"><figure><figcaption>375 × 667 pt · Тёмная</figcaption><div class="phone app dark" style="--w:375px;--h:667px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="app-title">Расшифровать</div><div class="app-main"><div class="result"><header><strong>Расшифровано</strong><span aria-hidden="true">♧</span></header><div class="result-main"><div class="identity"><strong class="sender">От неизвестного ключа A1B2 C3D4</strong><p class="signature">✓ Подпись верна</p><p class="message-date">Дата по часам отправителя: 03.11.2026, 09:41</p><p class="muted">Добавьте контакт в приложении, чтобы видеть имя</p><p class="warning">Не удалось прочитать контакты — имя отправителя не определено</p></div><div class="plaintext" tabindex="0">  Привет, Анна!
+Завтра в 19:30 👨‍👩‍👧‍👦  </div></div><footer><button class="primary">Закрыть</button></footer></div></div><div class="tabs"><span>⚿<small>Мой ключ</small></span><span>♙<small>Контакты</small></span><span class="active">♧<small>Расшифровать</small></span><span>⚙<small>Настройка</small></span></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="app-contacts-warning-375-portrait-dark.png" alt="app-contacts-warning-375-portrait-dark" width="375" height="667"></figure></div></article>
+<article id="app-contacts-warning-375-portrait-light"><h2>app-contacts-warning-375-portrait-light</h2><p>state-app-contacts-warning · SHA256 42dd8dcd671d97c6479530a980dc76402d0560b804d331e23ac69c9db79ee295</p><div class="compare"><figure><figcaption>375 × 667 pt · Светлая</figcaption><div class="phone app" style="--w:375px;--h:667px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="app-title">Расшифровать</div><div class="app-main"><div class="result"><header><strong>Расшифровано</strong><span aria-hidden="true">♧</span></header><div class="result-main"><div class="identity"><strong class="sender">От неизвестного ключа A1B2 C3D4</strong><p class="signature">✓ Подпись верна</p><p class="message-date">Дата по часам отправителя: 03.11.2026, 09:41</p><p class="muted">Добавьте контакт в приложении, чтобы видеть имя</p><p class="warning">Не удалось прочитать контакты — имя отправителя не определено</p></div><div class="plaintext" tabindex="0">  Привет, Анна!
+Завтра в 19:30 👨‍👩‍👧‍👦  </div></div><footer><button class="primary">Закрыть</button></footer></div></div><div class="tabs"><span>⚿<small>Мой ключ</small></span><span>♙<small>Контакты</small></span><span class="active">♧<small>Расшифровать</small></span><span>⚙<small>Настройка</small></span></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="app-contacts-warning-375-portrait-light.png" alt="app-contacts-warning-375-portrait-light" width="375" height="667"></figure></div></article>
+<article id="app-corrupt-375-portrait-dark"><h2>app-corrupt-375-portrait-dark</h2><p>state-app-corrupt · SHA256 c2e9ef83d0a43d73402eb7ac4178123d5327ae95c7e2962b45d929c428911b6f</p><div class="compare"><figure><figcaption>375 × 667 pt · Тёмная</figcaption><div class="phone app dark" style="--w:375px;--h:667px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="app-title">Расшифровать</div><div class="app-main"><div class="input-form"><p>Вставьте зашифрованное сообщение</p><div class="input ">ckmsg2:AQIAIA7u9kV0Xc6Fm2qL8bP4n…</div><button class="secondary">Вставить</button><button class="primary">Расшифровать</button><div class="errorbox" role="status">Сообщение повреждено или подделано</div><p class="muted">Текст показывается только здесь.<br>При уходе с вкладки всё стирается.</p></div></div><div class="tabs"><span>⚿<small>Мой ключ</small></span><span>♙<small>Контакты</small></span><span class="active">♧<small>Расшифровать</small></span><span>⚙<small>Настройка</small></span></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="app-corrupt-375-portrait-dark.png" alt="app-corrupt-375-portrait-dark" width="375" height="667"></figure></div></article>
+<article id="app-corrupt-375-portrait-light"><h2>app-corrupt-375-portrait-light</h2><p>state-app-corrupt · SHA256 688b7a36a84afbd8923e8efdc4192656777be854106e263119dca7adab61613f</p><div class="compare"><figure><figcaption>375 × 667 pt · Светлая</figcaption><div class="phone app" style="--w:375px;--h:667px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="app-title">Расшифровать</div><div class="app-main"><div class="input-form"><p>Вставьте зашифрованное сообщение</p><div class="input ">ckmsg2:AQIAIA7u9kV0Xc6Fm2qL8bP4n…</div><button class="secondary">Вставить</button><button class="primary">Расшифровать</button><div class="errorbox" role="status">Сообщение повреждено или подделано</div><p class="muted">Текст показывается только здесь.<br>При уходе с вкладки всё стирается.</p></div></div><div class="tabs"><span>⚿<small>Мой ключ</small></span><span>♙<small>Контакты</small></span><span class="active">♧<small>Расшифровать</small></span><span>⚙<small>Настройка</small></span></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="app-corrupt-375-portrait-light.png" alt="app-corrupt-375-portrait-light" width="375" height="667"></figure></div></article>
+<article id="app-empty-375-portrait-dark"><h2>app-empty-375-portrait-dark</h2><p>state-app-empty · SHA256 46551375186d012fe6ca4000ec859f016a387e6a5f3f70d998a2a09464dc263e</p><div class="compare"><figure><figcaption>375 × 667 pt · Тёмная</figcaption><div class="phone app dark" style="--w:375px;--h:667px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="app-title">Расшифровать</div><div class="app-main"><div class="input-form"><p>Вставьте зашифрованное сообщение</p><div class="input placeholder">ckmsg2:…</div><button class="secondary">Вставить</button><button class="primary" disabled>Расшифровать</button><p class="muted">Текст показывается только здесь.<br>При уходе с вкладки всё стирается.</p></div></div><div class="tabs"><span>⚿<small>Мой ключ</small></span><span>♙<small>Контакты</small></span><span class="active">♧<small>Расшифровать</small></span><span>⚙<small>Настройка</small></span></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="app-empty-375-portrait-dark.png" alt="app-empty-375-portrait-dark" width="375" height="667"></figure></div></article>
+<article id="app-empty-375-portrait-light"><h2>app-empty-375-portrait-light</h2><p>state-app-empty · SHA256 c27e9276b1dabc6fbfdbb40c40cfe0cd15be6859bd09249fad49d26058954e03</p><div class="compare"><figure><figcaption>375 × 667 pt · Светлая</figcaption><div class="phone app" style="--w:375px;--h:667px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="app-title">Расшифровать</div><div class="app-main"><div class="input-form"><p>Вставьте зашифрованное сообщение</p><div class="input placeholder">ckmsg2:…</div><button class="secondary">Вставить</button><button class="primary" disabled>Расшифровать</button><p class="muted">Текст показывается только здесь.<br>При уходе с вкладки всё стирается.</p></div></div><div class="tabs"><span>⚿<small>Мой ключ</small></span><span>♙<small>Контакты</small></span><span class="active">♧<small>Расшифровать</small></span><span>⚙<small>Настройка</small></span></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="app-empty-375-portrait-light.png" alt="app-empty-375-portrait-light" width="375" height="667"></figure></div></article>
+<article id="app-foreign-375-portrait-dark"><h2>app-foreign-375-portrait-dark</h2><p>state-app-foreign · SHA256 dbd4ceb7d2edd7b8c82f76f6bf8bfcf1b9f47e42a81cee19ae6179749c6f5473</p><div class="compare"><figure><figcaption>375 × 667 pt · Тёмная</figcaption><div class="phone app dark" style="--w:375px;--h:667px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="app-title">Расшифровать</div><div class="app-main"><div class="input-form"><p>Вставьте зашифрованное сообщение</p><div class="input ">ckmsg2:AQIAIA7u9kV0Xc6Fm2qL8bP4n…</div><button class="secondary">Вставить</button><button class="primary">Расшифровать</button><div class="errorbox" role="status">Сообщение зашифровано не для вас</div><p class="muted">Текст показывается только здесь.<br>При уходе с вкладки всё стирается.</p></div></div><div class="tabs"><span>⚿<small>Мой ключ</small></span><span>♙<small>Контакты</small></span><span class="active">♧<small>Расшифровать</small></span><span>⚙<small>Настройка</small></span></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="app-foreign-375-portrait-dark.png" alt="app-foreign-375-portrait-dark" width="375" height="667"></figure></div></article>
+<article id="app-foreign-375-portrait-light"><h2>app-foreign-375-portrait-light</h2><p>state-app-foreign · SHA256 0ad9f8e86b11b2f6cc783d41e0267091895853a8298a12aaf74af81c2b811670</p><div class="compare"><figure><figcaption>375 × 667 pt · Светлая</figcaption><div class="phone app" style="--w:375px;--h:667px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="app-title">Расшифровать</div><div class="app-main"><div class="input-form"><p>Вставьте зашифрованное сообщение</p><div class="input ">ckmsg2:AQIAIA7u9kV0Xc6Fm2qL8bP4n…</div><button class="secondary">Вставить</button><button class="primary">Расшифровать</button><div class="errorbox" role="status">Сообщение зашифровано не для вас</div><p class="muted">Текст показывается только здесь.<br>При уходе с вкладки всё стирается.</p></div></div><div class="tabs"><span>⚿<small>Мой ключ</small></span><span>♙<small>Контакты</small></span><span class="active">♧<small>Расшифровать</small></span><span>⚙<small>Настройка</small></span></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="app-foreign-375-portrait-light.png" alt="app-foreign-375-portrait-light" width="375" height="667"></figure></div></article>
+<article id="app-generic-375-portrait-dark"><h2>app-generic-375-portrait-dark</h2><p>state-app-corrupt · SHA256 2dab27909fea8aa1e2c6bcffb0d846a9c42e0183edfc4a7264e16df7a0dd9cfa</p><div class="compare"><figure><figcaption>375 × 667 pt · Тёмная</figcaption><div class="phone app dark" style="--w:375px;--h:667px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="app-title">Расшифровать</div><div class="app-main"><div class="input-form"><p>Вставьте зашифрованное сообщение</p><div class="input ">ckmsg2:AQIAIA7u9kV0Xc6Fm2qL8bP4n…</div><button class="secondary">Вставить</button><button class="primary">Расшифровать</button><div class="errorbox" role="status">Не удалось расшифровать сообщение. Повторите попытку</div><p class="muted">Текст показывается только здесь.<br>При уходе с вкладки всё стирается.</p></div></div><div class="tabs"><span>⚿<small>Мой ключ</small></span><span>♙<small>Контакты</small></span><span class="active">♧<small>Расшифровать</small></span><span>⚙<small>Настройка</small></span></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="app-generic-375-portrait-dark.png" alt="app-generic-375-portrait-dark" width="375" height="667"></figure></div></article>
+<article id="app-generic-375-portrait-light"><h2>app-generic-375-portrait-light</h2><p>state-app-corrupt · SHA256 775a647608bfceea0a11cd745d06231545e2cc3b5ed9861cbaa0a0eaf57ed86f</p><div class="compare"><figure><figcaption>375 × 667 pt · Светлая</figcaption><div class="phone app" style="--w:375px;--h:667px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="app-title">Расшифровать</div><div class="app-main"><div class="input-form"><p>Вставьте зашифрованное сообщение</p><div class="input ">ckmsg2:AQIAIA7u9kV0Xc6Fm2qL8bP4n…</div><button class="secondary">Вставить</button><button class="primary">Расшифровать</button><div class="errorbox" role="status">Не удалось расшифровать сообщение. Повторите попытку</div><p class="muted">Текст показывается только здесь.<br>При уходе с вкладки всё стирается.</p></div></div><div class="tabs"><span>⚿<small>Мой ключ</small></span><span>♙<small>Контакты</small></span><span class="active">♧<small>Расшифровать</small></span><span>⚙<small>Настройка</small></span></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="app-generic-375-portrait-light.png" alt="app-generic-375-portrait-light" width="375" height="667"></figure></div></article>
+<article id="app-input-375-portrait-dark"><h2>app-input-375-portrait-dark</h2><p>state-app-input · SHA256 de08bd68b6d1f72540007946705dc4d3e0af576405c86273bb402f6b18b21d73</p><div class="compare"><figure><figcaption>375 × 667 pt · Тёмная</figcaption><div class="phone app dark" style="--w:375px;--h:667px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="app-title">Расшифровать</div><div class="app-main"><div class="input-form"><p>Вставьте зашифрованное сообщение</p><div class="input ">ckmsg2:AQIAIA7u9kV0Xc6Fm2qL8bP4n…</div><button class="secondary">Вставить</button><button class="primary">Расшифровать</button><p class="muted">Текст показывается только здесь.<br>При уходе с вкладки всё стирается.</p></div></div><div class="tabs"><span>⚿<small>Мой ключ</small></span><span>♙<small>Контакты</small></span><span class="active">♧<small>Расшифровать</small></span><span>⚙<small>Настройка</small></span></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="app-input-375-portrait-dark.png" alt="app-input-375-portrait-dark" width="375" height="667"></figure></div></article>
+<article id="app-input-375-portrait-light"><h2>app-input-375-portrait-light</h2><p>state-app-input · SHA256 3aba26891e898f3d74ba7d4be6924053cc43d14b723bf3ff3a3016430b701735</p><div class="compare"><figure><figcaption>375 × 667 pt · Светлая</figcaption><div class="phone app" style="--w:375px;--h:667px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="app-title">Расшифровать</div><div class="app-main"><div class="input-form"><p>Вставьте зашифрованное сообщение</p><div class="input ">ckmsg2:AQIAIA7u9kV0Xc6Fm2qL8bP4n…</div><button class="secondary">Вставить</button><button class="primary">Расшифровать</button><p class="muted">Текст показывается только здесь.<br>При уходе с вкладки всё стирается.</p></div></div><div class="tabs"><span>⚿<small>Мой ключ</small></span><span>♙<small>Контакты</small></span><span class="active">♧<small>Расшифровать</small></span><span>⚙<small>Настройка</small></span></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="app-input-375-portrait-light.png" alt="app-input-375-portrait-light" width="375" height="667"></figure></div></article>
+<article id="app-key-error-375-portrait-dark"><h2>app-key-error-375-portrait-dark</h2><p>state-app-key-error · SHA256 17019559cfa97b1ba4d53757f75c81cade8c814952c7f1a90f5c76ef7108ce5d</p><div class="compare"><figure><figcaption>375 × 667 pt · Тёмная</figcaption><div class="phone app dark" style="--w:375px;--h:667px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="app-title">Расшифровать</div><div class="app-main"><div class="input-form"><p>Вставьте зашифрованное сообщение</p><div class="input ">ckmsg2:AQIAIA7u9kV0Xc6Fm2qL8bP4n…</div><button class="secondary">Вставить</button><button class="primary">Расшифровать</button><div class="errorbox" role="status">Ключ недоступен — повторите попытку</div><p class="muted">Текст показывается только здесь.<br>При уходе с вкладки всё стирается.</p></div></div><div class="tabs"><span>⚿<small>Мой ключ</small></span><span>♙<small>Контакты</small></span><span class="active">♧<small>Расшифровать</small></span><span>⚙<small>Настройка</small></span></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="app-key-error-375-portrait-dark.png" alt="app-key-error-375-portrait-dark" width="375" height="667"></figure></div></article>
+<article id="app-key-error-375-portrait-light"><h2>app-key-error-375-portrait-light</h2><p>state-app-key-error · SHA256 3c6ed61f65971583f30402226bf7a0383349763902a511c9e820d998b3aec30f</p><div class="compare"><figure><figcaption>375 × 667 pt · Светлая</figcaption><div class="phone app" style="--w:375px;--h:667px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="app-title">Расшифровать</div><div class="app-main"><div class="input-form"><p>Вставьте зашифрованное сообщение</p><div class="input ">ckmsg2:AQIAIA7u9kV0Xc6Fm2qL8bP4n…</div><button class="secondary">Вставить</button><button class="primary">Расшифровать</button><div class="errorbox" role="status">Ключ недоступен — повторите попытку</div><p class="muted">Текст показывается только здесь.<br>При уходе с вкладки всё стирается.</p></div></div><div class="tabs"><span>⚿<small>Мой ключ</small></span><span>♙<small>Контакты</small></span><span class="active">♧<small>Расшифровать</small></span><span>⚙<small>Настройка</small></span></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="app-key-error-375-portrait-light.png" alt="app-key-error-375-portrait-light" width="375" height="667"></figure></div></article>
+<article id="app-long-375-landscape-dark"><h2>app-long-375-landscape-dark</h2><p>state-app-long · SHA256 7da0c1f0a0818fe8d073316007ec88ce342b4afb0bbf2b240a698ed1461f15c1</p><div class="compare"><figure><figcaption>667 × 375 pt · Тёмная</figcaption><div class="phone app dark land" style="--w:667px;--h:375px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="app-title">Расшифровать</div><div class="app-main"><div class="result"><header><strong>Расшифровано</strong><span aria-hidden="true">♧</span></header><div class="result-main"><div class="identity"><strong class="sender">От: Александра Константинопольская — работа</strong><p class="signature">✓ Подпись верна</p><p class="message-date">Дата по часам отправителя: 03.11.2026, 09:41</p></div><div class="plaintext" tabindex="0">1. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+2. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+3. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+4. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+5. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+6. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+7. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+8. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+9. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+10. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+11. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+12. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+13. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+14. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+15. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+16. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+17. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+18. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+19. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+20. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+21. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+Последняя строка: до встречи!</div></div><footer><button class="primary">Закрыть</button></footer></div></div><div class="tabs"><span>⚿<small>Мой ключ</small></span><span>♙<small>Контакты</small></span><span class="active">♧<small>Расшифровать</small></span><span>⚙<small>Настройка</small></span></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="app-long-375-landscape-dark.png" alt="app-long-375-landscape-dark" width="667" height="375"></figure></div></article>
+<article id="app-long-375-landscape-light"><h2>app-long-375-landscape-light</h2><p>state-app-long · SHA256 3b13b99634c2935d938a8b5c9abdba9475e9df03522a73c4d5bb8c9df53648a8</p><div class="compare"><figure><figcaption>667 × 375 pt · Светлая</figcaption><div class="phone app land" style="--w:667px;--h:375px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="app-title">Расшифровать</div><div class="app-main"><div class="result"><header><strong>Расшифровано</strong><span aria-hidden="true">♧</span></header><div class="result-main"><div class="identity"><strong class="sender">От: Александра Константинопольская — работа</strong><p class="signature">✓ Подпись верна</p><p class="message-date">Дата по часам отправителя: 03.11.2026, 09:41</p></div><div class="plaintext" tabindex="0">1. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+2. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+3. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+4. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+5. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+6. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+7. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+8. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+9. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+10. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+11. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+12. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+13. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+14. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+15. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+16. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+17. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+18. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+19. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+20. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+21. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+Последняя строка: до встречи!</div></div><footer><button class="primary">Закрыть</button></footer></div></div><div class="tabs"><span>⚿<small>Мой ключ</small></span><span>♙<small>Контакты</small></span><span class="active">♧<small>Расшифровать</small></span><span>⚙<small>Настройка</small></span></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="app-long-375-landscape-light.png" alt="app-long-375-landscape-light" width="667" height="375"></figure></div></article>
+<article id="app-long-375-portrait-dark"><h2>app-long-375-portrait-dark</h2><p>state-app-long · SHA256 5461bf80a55e44c82b162254579262d0a62b6bdbf5d6faf07460518efa7a1142</p><div class="compare"><figure><figcaption>375 × 667 pt · Тёмная</figcaption><div class="phone app dark" style="--w:375px;--h:667px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="app-title">Расшифровать</div><div class="app-main"><div class="result"><header><strong>Расшифровано</strong><span aria-hidden="true">♧</span></header><div class="result-main"><div class="identity"><strong class="sender">От: Александра Константинопольская — работа</strong><p class="signature">✓ Подпись верна</p><p class="message-date">Дата по часам отправителя: 03.11.2026, 09:41</p></div><div class="plaintext" tabindex="0">1. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+2. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+3. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+4. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+5. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+6. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+7. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+8. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+9. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+10. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+11. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+12. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+13. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+14. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+15. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+16. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+17. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+18. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+19. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+20. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+21. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+Последняя строка: до встречи!</div></div><footer><button class="primary">Закрыть</button></footer></div></div><div class="tabs"><span>⚿<small>Мой ключ</small></span><span>♙<small>Контакты</small></span><span class="active">♧<small>Расшифровать</small></span><span>⚙<small>Настройка</small></span></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="app-long-375-portrait-dark.png" alt="app-long-375-portrait-dark" width="375" height="667"></figure></div></article>
+<article id="app-long-375-portrait-light"><h2>app-long-375-portrait-light</h2><p>state-app-long · SHA256 9ba0ab0795b522edc1658a53acf3610ee5935bc970695b4be9cbb52e5c10e857</p><div class="compare"><figure><figcaption>375 × 667 pt · Светлая</figcaption><div class="phone app" style="--w:375px;--h:667px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="app-title">Расшифровать</div><div class="app-main"><div class="result"><header><strong>Расшифровано</strong><span aria-hidden="true">♧</span></header><div class="result-main"><div class="identity"><strong class="sender">От: Александра Константинопольская — работа</strong><p class="signature">✓ Подпись верна</p><p class="message-date">Дата по часам отправителя: 03.11.2026, 09:41</p></div><div class="plaintext" tabindex="0">1. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+2. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+3. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+4. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+5. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+6. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+7. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+8. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+9. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+10. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+11. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+12. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+13. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+14. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+15. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+16. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+17. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+18. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+19. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+20. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+21. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+Последняя строка: до встречи!</div></div><footer><button class="primary">Закрыть</button></footer></div></div><div class="tabs"><span>⚿<small>Мой ключ</small></span><span>♙<small>Контакты</small></span><span class="active">♧<small>Расшифровать</small></span><span>⚙<small>Настройка</small></span></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="app-long-375-portrait-light.png" alt="app-long-375-portrait-light" width="375" height="667"></figure></div></article>
+<article id="app-long-402-landscape-dark"><h2>app-long-402-landscape-dark</h2><p>state-app-long · SHA256 6eaa383c0263f7dc84128b2f7d6d9241bbe0be29b334085064a1c20e97135f36</p><div class="compare"><figure><figcaption>874 × 402 pt · Тёмная</figcaption><div class="phone app dark land" style="--w:874px;--h:402px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="app-title">Расшифровать</div><div class="app-main"><div class="result"><header><strong>Расшифровано</strong><span aria-hidden="true">♧</span></header><div class="result-main"><div class="identity"><strong class="sender">От: Александра Константинопольская — работа</strong><p class="signature">✓ Подпись верна</p><p class="message-date">Дата по часам отправителя: 03.11.2026, 09:41</p></div><div class="plaintext" tabindex="0">1. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+2. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+3. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+4. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+5. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+6. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+7. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+8. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+9. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+10. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+11. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+12. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+13. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+14. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+15. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+16. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+17. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+18. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+19. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+20. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+21. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+Последняя строка: до встречи!</div></div><footer><button class="primary">Закрыть</button></footer></div></div><div class="tabs"><span>⚿<small>Мой ключ</small></span><span>♙<small>Контакты</small></span><span class="active">♧<small>Расшифровать</small></span><span>⚙<small>Настройка</small></span></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="app-long-402-landscape-dark.png" alt="app-long-402-landscape-dark" width="874" height="402"></figure></div></article>
+<article id="app-long-402-landscape-light"><h2>app-long-402-landscape-light</h2><p>state-app-long · SHA256 5bde3dc71d440f3e6f1129f1978fd7d6f8adeb0b3a1d631bff37824ba521b297</p><div class="compare"><figure><figcaption>874 × 402 pt · Светлая</figcaption><div class="phone app land" style="--w:874px;--h:402px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="app-title">Расшифровать</div><div class="app-main"><div class="result"><header><strong>Расшифровано</strong><span aria-hidden="true">♧</span></header><div class="result-main"><div class="identity"><strong class="sender">От: Александра Константинопольская — работа</strong><p class="signature">✓ Подпись верна</p><p class="message-date">Дата по часам отправителя: 03.11.2026, 09:41</p></div><div class="plaintext" tabindex="0">1. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+2. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+3. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+4. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+5. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+6. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+7. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+8. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+9. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+10. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+11. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+12. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+13. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+14. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+15. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+16. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+17. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+18. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+19. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+20. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+21. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+Последняя строка: до встречи!</div></div><footer><button class="primary">Закрыть</button></footer></div></div><div class="tabs"><span>⚿<small>Мой ключ</small></span><span>♙<small>Контакты</small></span><span class="active">♧<small>Расшифровать</small></span><span>⚙<small>Настройка</small></span></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="app-long-402-landscape-light.png" alt="app-long-402-landscape-light" width="874" height="402"></figure></div></article>
+<article id="app-long-402-portrait-dark"><h2>app-long-402-portrait-dark</h2><p>state-app-long · SHA256 943fbb6eb5f63276e35919610599e02c1930f64382823f951a003d75ab8b891f</p><div class="compare"><figure><figcaption>402 × 874 pt · Тёмная</figcaption><div class="phone app dark" style="--w:402px;--h:874px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="app-title">Расшифровать</div><div class="app-main"><div class="result"><header><strong>Расшифровано</strong><span aria-hidden="true">♧</span></header><div class="result-main"><div class="identity"><strong class="sender">От: Александра Константинопольская — работа</strong><p class="signature">✓ Подпись верна</p><p class="message-date">Дата по часам отправителя: 03.11.2026, 09:41</p></div><div class="plaintext" tabindex="0">1. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+2. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+3. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+4. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+5. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+6. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+7. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+8. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+9. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+10. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+11. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+12. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+13. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+14. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+15. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+16. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+17. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+18. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+19. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+20. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+21. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+Последняя строка: до встречи!</div></div><footer><button class="primary">Закрыть</button></footer></div></div><div class="tabs"><span>⚿<small>Мой ключ</small></span><span>♙<small>Контакты</small></span><span class="active">♧<small>Расшифровать</small></span><span>⚙<small>Настройка</small></span></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="app-long-402-portrait-dark.png" alt="app-long-402-portrait-dark" width="402" height="874"></figure></div></article>
+<article id="app-long-402-portrait-light"><h2>app-long-402-portrait-light</h2><p>state-app-long · SHA256 6b98c30f516604809d2014a92b5eebc8db7a82d50c7584133f32ba4ca8b91ceb</p><div class="compare"><figure><figcaption>402 × 874 pt · Светлая</figcaption><div class="phone app" style="--w:402px;--h:874px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="app-title">Расшифровать</div><div class="app-main"><div class="result"><header><strong>Расшифровано</strong><span aria-hidden="true">♧</span></header><div class="result-main"><div class="identity"><strong class="sender">От: Александра Константинопольская — работа</strong><p class="signature">✓ Подпись верна</p><p class="message-date">Дата по часам отправителя: 03.11.2026, 09:41</p></div><div class="plaintext" tabindex="0">1. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+2. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+3. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+4. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+5. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+6. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+7. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+8. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+9. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+10. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+11. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+12. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+13. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+14. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+15. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+16. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+17. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+18. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+19. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+20. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+21. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+Последняя строка: до встречи!</div></div><footer><button class="primary">Закрыть</button></footer></div></div><div class="tabs"><span>⚿<small>Мой ключ</small></span><span>♙<small>Контакты</small></span><span class="active">♧<small>Расшифровать</small></span><span>⚙<small>Настройка</small></span></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="app-long-402-portrait-light.png" alt="app-long-402-portrait-light" width="402" height="874"></figure></div></article>
+<article id="app-long-440-landscape-dark"><h2>app-long-440-landscape-dark</h2><p>state-app-long · SHA256 306508af2e615639f359dc8a8735179597d9b26ed86b45fdd4d926f83404820b</p><div class="compare"><figure><figcaption>956 × 440 pt · Тёмная</figcaption><div class="phone app dark land" style="--w:956px;--h:440px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="app-title">Расшифровать</div><div class="app-main"><div class="result"><header><strong>Расшифровано</strong><span aria-hidden="true">♧</span></header><div class="result-main"><div class="identity"><strong class="sender">От: Александра Константинопольская — работа</strong><p class="signature">✓ Подпись верна</p><p class="message-date">Дата по часам отправителя: 03.11.2026, 09:41</p></div><div class="plaintext" tabindex="0">1. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+2. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+3. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+4. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+5. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+6. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+7. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+8. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+9. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+10. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+11. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+12. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+13. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+14. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+15. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+16. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+17. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+18. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+19. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+20. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+21. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+Последняя строка: до встречи!</div></div><footer><button class="primary">Закрыть</button></footer></div></div><div class="tabs"><span>⚿<small>Мой ключ</small></span><span>♙<small>Контакты</small></span><span class="active">♧<small>Расшифровать</small></span><span>⚙<small>Настройка</small></span></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="app-long-440-landscape-dark.png" alt="app-long-440-landscape-dark" width="956" height="440"></figure></div></article>
+<article id="app-long-440-landscape-light"><h2>app-long-440-landscape-light</h2><p>state-app-long · SHA256 861442972f4252739f1c8065a54cb5f088ed9b2e411cc837786c5946e3374e99</p><div class="compare"><figure><figcaption>956 × 440 pt · Светлая</figcaption><div class="phone app land" style="--w:956px;--h:440px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="app-title">Расшифровать</div><div class="app-main"><div class="result"><header><strong>Расшифровано</strong><span aria-hidden="true">♧</span></header><div class="result-main"><div class="identity"><strong class="sender">От: Александра Константинопольская — работа</strong><p class="signature">✓ Подпись верна</p><p class="message-date">Дата по часам отправителя: 03.11.2026, 09:41</p></div><div class="plaintext" tabindex="0">1. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+2. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+3. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+4. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+5. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+6. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+7. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+8. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+9. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+10. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+11. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+12. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+13. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+14. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+15. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+16. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+17. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+18. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+19. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+20. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+21. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+Последняя строка: до встречи!</div></div><footer><button class="primary">Закрыть</button></footer></div></div><div class="tabs"><span>⚿<small>Мой ключ</small></span><span>♙<small>Контакты</small></span><span class="active">♧<small>Расшифровать</small></span><span>⚙<small>Настройка</small></span></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="app-long-440-landscape-light.png" alt="app-long-440-landscape-light" width="956" height="440"></figure></div></article>
+<article id="app-long-440-portrait-dark"><h2>app-long-440-portrait-dark</h2><p>state-app-long · SHA256 af20049ab4ba02a6a6b05cc8bc2074446c5788b94fd8ef9d0865a582d7b926f3</p><div class="compare"><figure><figcaption>440 × 956 pt · Тёмная</figcaption><div class="phone app dark" style="--w:440px;--h:956px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="app-title">Расшифровать</div><div class="app-main"><div class="result"><header><strong>Расшифровано</strong><span aria-hidden="true">♧</span></header><div class="result-main"><div class="identity"><strong class="sender">От: Александра Константинопольская — работа</strong><p class="signature">✓ Подпись верна</p><p class="message-date">Дата по часам отправителя: 03.11.2026, 09:41</p></div><div class="plaintext" tabindex="0">1. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+2. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+3. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+4. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+5. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+6. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+7. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+8. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+9. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+10. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+11. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+12. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+13. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+14. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+15. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+16. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+17. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+18. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+19. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+20. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+21. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+Последняя строка: до встречи!</div></div><footer><button class="primary">Закрыть</button></footer></div></div><div class="tabs"><span>⚿<small>Мой ключ</small></span><span>♙<small>Контакты</small></span><span class="active">♧<small>Расшифровать</small></span><span>⚙<small>Настройка</small></span></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="app-long-440-portrait-dark.png" alt="app-long-440-portrait-dark" width="440" height="956"></figure></div></article>
+<article id="app-long-440-portrait-light"><h2>app-long-440-portrait-light</h2><p>state-app-long · SHA256 5de8f03684834eebba8530318fbcfc5b8ec8bf7cbf2ee76e7ef59745ad97de09</p><div class="compare"><figure><figcaption>440 × 956 pt · Светлая</figcaption><div class="phone app" style="--w:440px;--h:956px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="app-title">Расшифровать</div><div class="app-main"><div class="result"><header><strong>Расшифровано</strong><span aria-hidden="true">♧</span></header><div class="result-main"><div class="identity"><strong class="sender">От: Александра Константинопольская — работа</strong><p class="signature">✓ Подпись верна</p><p class="message-date">Дата по часам отправителя: 03.11.2026, 09:41</p></div><div class="plaintext" tabindex="0">1. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+2. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+3. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+4. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+5. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+6. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+7. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+8. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+9. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+10. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+11. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+12. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+13. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+14. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+15. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+16. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+17. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+18. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+19. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+20. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+21. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+Последняя строка: до встречи!</div></div><footer><button class="primary">Закрыть</button></footer></div></div><div class="tabs"><span>⚿<small>Мой ключ</small></span><span>♙<small>Контакты</small></span><span class="active">♧<small>Расшифровать</small></span><span>⚙<small>Настройка</small></span></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="app-long-440-portrait-light.png" alt="app-long-440-portrait-light" width="440" height="956"></figure></div></article>
+<article id="app-no-message-375-portrait-dark"><h2>app-no-message-375-portrait-dark</h2><p>state-app-no-message · SHA256 0b11d8bfc2e05061c7474cbe542bf06000cfe849ca2fbb5a08459beaf135596b</p><div class="compare"><figure><figcaption>375 × 667 pt · Тёмная</figcaption><div class="phone app dark" style="--w:375px;--h:667px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="app-title">Расшифровать</div><div class="app-main"><div class="input-form"><p>Вставьте зашифрованное сообщение</p><div class="input ">ckmsg2:AQIAIA7u9kV0Xc6Fm2qL8bP4n…</div><button class="secondary">Вставить</button><button class="primary">Расшифровать</button><div class="errorbox" role="status">В тексте нет зашифрованного сообщения</div><p class="muted">Текст показывается только здесь.<br>При уходе с вкладки всё стирается.</p></div></div><div class="tabs"><span>⚿<small>Мой ключ</small></span><span>♙<small>Контакты</small></span><span class="active">♧<small>Расшифровать</small></span><span>⚙<small>Настройка</small></span></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="app-no-message-375-portrait-dark.png" alt="app-no-message-375-portrait-dark" width="375" height="667"></figure></div></article>
+<article id="app-no-message-375-portrait-light"><h2>app-no-message-375-portrait-light</h2><p>state-app-no-message · SHA256 30392f91c6c042e15241737768ccf636a4eafa3ce1a7d529998ea1782e12bc2a</p><div class="compare"><figure><figcaption>375 × 667 pt · Светлая</figcaption><div class="phone app" style="--w:375px;--h:667px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="app-title">Расшифровать</div><div class="app-main"><div class="input-form"><p>Вставьте зашифрованное сообщение</p><div class="input ">ckmsg2:AQIAIA7u9kV0Xc6Fm2qL8bP4n…</div><button class="secondary">Вставить</button><button class="primary">Расшифровать</button><div class="errorbox" role="status">В тексте нет зашифрованного сообщения</div><p class="muted">Текст показывается только здесь.<br>При уходе с вкладки всё стирается.</p></div></div><div class="tabs"><span>⚿<small>Мой ключ</small></span><span>♙<small>Контакты</small></span><span class="active">♧<small>Расшифровать</small></span><span>⚙<small>Настройка</small></span></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="app-no-message-375-portrait-light.png" alt="app-no-message-375-portrait-light" width="375" height="667"></figure></div></article>
+<article id="app-oversize-375-portrait-dark"><h2>app-oversize-375-portrait-dark</h2><p>state-app-oversize · SHA256 76a9f3adca578cc01a977c1d77b51ebcd64bdba491a927c54eeb92b04b2621f1</p><div class="compare"><figure><figcaption>375 × 667 pt · Тёмная</figcaption><div class="phone app dark" style="--w:375px;--h:667px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="app-title">Расшифровать</div><div class="app-main"><div class="input-form"><p>Вставьте зашифрованное сообщение</p><div class="input ">ckmsg2:AQIAIA7u9kV0Xc6Fm2qL8bP4n…</div><button class="secondary">Вставить</button><button class="primary">Расшифровать</button><div class="errorbox" role="status">Слишком большой текст для вставки: максимум 65536 байт</div><p class="muted">Текст показывается только здесь.<br>При уходе с вкладки всё стирается.</p></div></div><div class="tabs"><span>⚿<small>Мой ключ</small></span><span>♙<small>Контакты</small></span><span class="active">♧<small>Расшифровать</small></span><span>⚙<small>Настройка</small></span></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="app-oversize-375-portrait-dark.png" alt="app-oversize-375-portrait-dark" width="375" height="667"></figure></div></article>
+<article id="app-oversize-375-portrait-light"><h2>app-oversize-375-portrait-light</h2><p>state-app-oversize · SHA256 e7a445eea49039bb187842efd81a3c3c61663ca271d2575d2d334b468426011e</p><div class="compare"><figure><figcaption>375 × 667 pt · Светлая</figcaption><div class="phone app" style="--w:375px;--h:667px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="app-title">Расшифровать</div><div class="app-main"><div class="input-form"><p>Вставьте зашифрованное сообщение</p><div class="input ">ckmsg2:AQIAIA7u9kV0Xc6Fm2qL8bP4n…</div><button class="secondary">Вставить</button><button class="primary">Расшифровать</button><div class="errorbox" role="status">Слишком большой текст для вставки: максимум 65536 байт</div><p class="muted">Текст показывается только здесь.<br>При уходе с вкладки всё стирается.</p></div></div><div class="tabs"><span>⚿<small>Мой ключ</small></span><span>♙<small>Контакты</small></span><span class="active">♧<small>Расшифровать</small></span><span>⚙<small>Настройка</small></span></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="app-oversize-375-portrait-light.png" alt="app-oversize-375-portrait-light" width="375" height="667"></figure></div></article>
+<article id="app-paste-error-375-portrait-dark"><h2>app-paste-error-375-portrait-dark</h2><p>state-app-paste-error · SHA256 38d7619af16efdf3bc6f411d293b1d7953759f9dacd8964bb07fea30b1a024f4</p><div class="compare"><figure><figcaption>375 × 667 pt · Тёмная</figcaption><div class="phone app dark" style="--w:375px;--h:667px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="app-title">Расшифровать</div><div class="app-main"><div class="input-form"><p>Вставьте зашифрованное сообщение</p><div class="input ">ckmsg2:AQIAIA7u9kV0Xc6Fm2qL8bP4n…</div><button class="secondary">Вставить</button><button class="primary">Расшифровать</button><div class="errorbox" role="status">Нет доступа к буферу обмена</div><p class="muted">Текст показывается только здесь.<br>При уходе с вкладки всё стирается.</p></div></div><div class="tabs"><span>⚿<small>Мой ключ</small></span><span>♙<small>Контакты</small></span><span class="active">♧<small>Расшифровать</small></span><span>⚙<small>Настройка</small></span></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="app-paste-error-375-portrait-dark.png" alt="app-paste-error-375-portrait-dark" width="375" height="667"></figure></div></article>
+<article id="app-paste-error-375-portrait-light"><h2>app-paste-error-375-portrait-light</h2><p>state-app-paste-error · SHA256 59e07873e96e8bbf0d655aad3e8e8de1db105f57145f11b6234c2dfbe665a79f</p><div class="compare"><figure><figcaption>375 × 667 pt · Светлая</figcaption><div class="phone app" style="--w:375px;--h:667px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="app-title">Расшифровать</div><div class="app-main"><div class="input-form"><p>Вставьте зашифрованное сообщение</p><div class="input ">ckmsg2:AQIAIA7u9kV0Xc6Fm2qL8bP4n…</div><button class="secondary">Вставить</button><button class="primary">Расшифровать</button><div class="errorbox" role="status">Нет доступа к буферу обмена</div><p class="muted">Текст показывается только здесь.<br>При уходе с вкладки всё стирается.</p></div></div><div class="tabs"><span>⚿<small>Мой ключ</small></span><span>♙<small>Контакты</small></span><span class="active">♧<small>Расшифровать</small></span><span>⚙<small>Настройка</small></span></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="app-paste-error-375-portrait-light.png" alt="app-paste-error-375-portrait-light" width="375" height="667"></figure></div></article>
+<article id="app-self-375-portrait-dark"><h2>app-self-375-portrait-dark</h2><p>state-app-self · SHA256 f12ffe85992555830d4ecdcea7ac210d1ef53ecb112e0e10247f880eaa07a0c6</p><div class="compare"><figure><figcaption>375 × 667 pt · Тёмная</figcaption><div class="phone app dark" style="--w:375px;--h:667px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="app-title">Расшифровать</div><div class="app-main"><div class="result"><header><strong>Расшифровано</strong><span aria-hidden="true">♧</span></header><div class="result-main"><div class="identity"><strong class="sender">От: вы</strong><p class="signature">✓ Подпись верна</p><p class="message-date">Дата по часам отправителя: 03.11.2026, 09:41</p></div><div class="plaintext" tabindex="0">  Привет, Анна!
+Завтра в 19:30 👨‍👩‍👧‍👦  </div></div><footer><button class="primary">Закрыть</button></footer></div></div><div class="tabs"><span>⚿<small>Мой ключ</small></span><span>♙<small>Контакты</small></span><span class="active">♧<small>Расшифровать</small></span><span>⚙<small>Настройка</small></span></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="app-self-375-portrait-dark.png" alt="app-self-375-portrait-dark" width="375" height="667"></figure></div></article>
+<article id="app-self-375-portrait-light"><h2>app-self-375-portrait-light</h2><p>state-app-self · SHA256 605f1acf624dee713a90c3598625bd7e371ddbe5d7f15addd4afda2eae9952c5</p><div class="compare"><figure><figcaption>375 × 667 pt · Светлая</figcaption><div class="phone app" style="--w:375px;--h:667px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="app-title">Расшифровать</div><div class="app-main"><div class="result"><header><strong>Расшифровано</strong><span aria-hidden="true">♧</span></header><div class="result-main"><div class="identity"><strong class="sender">От: вы</strong><p class="signature">✓ Подпись верна</p><p class="message-date">Дата по часам отправителя: 03.11.2026, 09:41</p></div><div class="plaintext" tabindex="0">  Привет, Анна!
+Завтра в 19:30 👨‍👩‍👧‍👦  </div></div><footer><button class="primary">Закрыть</button></footer></div></div><div class="tabs"><span>⚿<small>Мой ключ</small></span><span>♙<small>Контакты</small></span><span class="active">♧<small>Расшифровать</small></span><span>⚙<small>Настройка</small></span></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="app-self-375-portrait-light.png" alt="app-self-375-portrait-light" width="375" height="667"></figure></div></article>
+<article id="app-unknown-375-portrait-dark"><h2>app-unknown-375-portrait-dark</h2><p>state-app-unknown · SHA256 2638381f67e67ab2445ce91707fba9fc9d0586bad6371afccecff609b15fb937</p><div class="compare"><figure><figcaption>375 × 667 pt · Тёмная</figcaption><div class="phone app dark" style="--w:375px;--h:667px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="app-title">Расшифровать</div><div class="app-main"><div class="result"><header><strong>Расшифровано</strong><span aria-hidden="true">♧</span></header><div class="result-main"><div class="identity"><strong class="sender">От неизвестного ключа A1B2 C3D4</strong><p class="signature">✓ Подпись верна</p><p class="message-date">Дата по часам отправителя: 03.11.2026, 09:41</p><p class="muted">Добавьте контакт в приложении, чтобы видеть имя</p></div><div class="plaintext" tabindex="0">  Привет, Анна!
+Завтра в 19:30 👨‍👩‍👧‍👦  </div></div><footer><button class="primary">Закрыть</button></footer></div></div><div class="tabs"><span>⚿<small>Мой ключ</small></span><span>♙<small>Контакты</small></span><span class="active">♧<small>Расшифровать</small></span><span>⚙<small>Настройка</small></span></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="app-unknown-375-portrait-dark.png" alt="app-unknown-375-portrait-dark" width="375" height="667"></figure></div></article>
+<article id="app-unknown-375-portrait-light"><h2>app-unknown-375-portrait-light</h2><p>state-app-unknown · SHA256 c323ca3a31c666d1f6287a3e38969aaf6d744a640d86d2ec187185a3ce6598b7</p><div class="compare"><figure><figcaption>375 × 667 pt · Светлая</figcaption><div class="phone app" style="--w:375px;--h:667px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="app-title">Расшифровать</div><div class="app-main"><div class="result"><header><strong>Расшифровано</strong><span aria-hidden="true">♧</span></header><div class="result-main"><div class="identity"><strong class="sender">От неизвестного ключа A1B2 C3D4</strong><p class="signature">✓ Подпись верна</p><p class="message-date">Дата по часам отправителя: 03.11.2026, 09:41</p><p class="muted">Добавьте контакт в приложении, чтобы видеть имя</p></div><div class="plaintext" tabindex="0">  Привет, Анна!
+Завтра в 19:30 👨‍👩‍👧‍👦  </div></div><footer><button class="primary">Закрыть</button></footer></div></div><div class="tabs"><span>⚿<small>Мой ключ</small></span><span>♙<small>Контакты</small></span><span class="active">♧<small>Расшифровать</small></span><span>⚙<small>Настройка</small></span></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="app-unknown-375-portrait-light.png" alt="app-unknown-375-portrait-light" width="375" height="667"></figure></div></article>
+<article id="app-version-375-portrait-dark"><h2>app-version-375-portrait-dark</h2><p>state-app-version · SHA256 70f906c73addbc062faa0f908fc32d443aba06efa5c4438ea3c7d76f52f65682</p><div class="compare"><figure><figcaption>375 × 667 pt · Тёмная</figcaption><div class="phone app dark" style="--w:375px;--h:667px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="app-title">Расшифровать</div><div class="app-main"><div class="input-form"><p>Вставьте зашифрованное сообщение</p><div class="input ">ckmsg2:AQIAIA7u9kV0Xc6Fm2qL8bP4n…</div><button class="secondary">Вставить</button><button class="primary">Расшифровать</button><div class="errorbox" role="status">Сообщение из более новой версии CipherKeyboard — обновите приложение</div><p class="muted">Текст показывается только здесь.<br>При уходе с вкладки всё стирается.</p></div></div><div class="tabs"><span>⚿<small>Мой ключ</small></span><span>♙<small>Контакты</small></span><span class="active">♧<small>Расшифровать</small></span><span>⚙<small>Настройка</small></span></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="app-version-375-portrait-dark.png" alt="app-version-375-portrait-dark" width="375" height="667"></figure></div></article>
+<article id="app-version-375-portrait-light"><h2>app-version-375-portrait-light</h2><p>state-app-version · SHA256 9599efa16cf7a66c2983f53b7acbdb630af07011eef850cd17a6e3c5ae994ec6</p><div class="compare"><figure><figcaption>375 × 667 pt · Светлая</figcaption><div class="phone app" style="--w:375px;--h:667px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="app-title">Расшифровать</div><div class="app-main"><div class="input-form"><p>Вставьте зашифрованное сообщение</p><div class="input ">ckmsg2:AQIAIA7u9kV0Xc6Fm2qL8bP4n…</div><button class="secondary">Вставить</button><button class="primary">Расшифровать</button><div class="errorbox" role="status">Сообщение из более новой версии CipherKeyboard — обновите приложение</div><p class="muted">Текст показывается только здесь.<br>При уходе с вкладки всё стирается.</p></div></div><div class="tabs"><span>⚿<small>Мой ключ</small></span><span>♙<small>Контакты</small></span><span class="active">♧<small>Расшифровать</small></span><span>⚙<small>Настройка</small></span></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="app-version-375-portrait-light.png" alt="app-version-375-portrait-light" width="375" height="667"></figure></div></article>
+<article id="keyboard-busy-375-portrait-dark"><h2>keyboard-busy-375-portrait-dark</h2><p>state-keyboard-busy · SHA256 7a627a5f473cc6d8cb04cb013d58447cfd5b4d56111fd22327ca8a87224d38fd</p><div class="compare"><figure><figcaption>375 × 667 pt · Тёмная</figcaption><div class="phone keyboard dark" style="--w:375px;--h:667px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="host"><strong>Анна</strong><div class="bubble">Договорились, до завтра!</div><div class="cipher-bubble">ckmsg2:AQIAIA7u9kV0…</div></div><div class="hostfield">До <span class="caret"></span>встречи!<span class="send">↑</span></div><div class="panel"><div class="result"><header><strong>Расшифровка</strong></header><div class="busy"><span class="spinner"></span><p>Расшифровываем…</p><p class="muted">Сообщение ещё не показано</p></div><footer><button class="secondary">Закрыть</button></footer></div></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="keyboard-busy-375-portrait-dark.png" alt="keyboard-busy-375-portrait-dark" width="375" height="667"></figure></div></article>
+<article id="keyboard-busy-375-portrait-light"><h2>keyboard-busy-375-portrait-light</h2><p>state-keyboard-busy · SHA256 b8712bb3516316c7f0e5ef5c9ce863edb9f5c877b099746d94f112fe16723944</p><div class="compare"><figure><figcaption>375 × 667 pt · Светлая</figcaption><div class="phone keyboard" style="--w:375px;--h:667px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="host"><strong>Анна</strong><div class="bubble">Договорились, до завтра!</div><div class="cipher-bubble">ckmsg2:AQIAIA7u9kV0…</div></div><div class="hostfield">До <span class="caret"></span>встречи!<span class="send">↑</span></div><div class="panel"><div class="result"><header><strong>Расшифровка</strong></header><div class="busy"><span class="spinner"></span><p>Расшифровываем…</p><p class="muted">Сообщение ещё не показано</p></div><footer><button class="secondary">Закрыть</button></footer></div></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="keyboard-busy-375-portrait-light.png" alt="keyboard-busy-375-portrait-light" width="375" height="667"></figure></div></article>
+<article id="keyboard-changed-375-portrait-dark"><h2>keyboard-changed-375-portrait-dark</h2><p>state-keyboard-changed · SHA256 2877f4b56e2c67e8e749d5f7455b00d416d7645e7f056ef8567c2d7ecf2bc943</p><div class="compare"><figure><figcaption>375 × 667 pt · Тёмная</figcaption><div class="phone keyboard dark" style="--w:375px;--h:667px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="host"><strong>Анна</strong><div class="bubble">Договорились, до завтра!</div><div class="cipher-bubble">ckmsg2:AQIAIA7u9kV0…</div></div><div class="hostfield">До <span class="caret"></span>встречи!<span class="send">↑</span></div><div class="panel"><div class="result"><header><strong>Расшифровка</strong></header><div class="error-content"><span class="error-icon">!</span><p class="danger">Данные изменились — повторите расшифровку</p><p class="muted">Закройте панель и повторите попытку.</p></div><footer><button class="secondary">Закрыть</button></footer></div></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="keyboard-changed-375-portrait-dark.png" alt="keyboard-changed-375-portrait-dark" width="375" height="667"></figure></div></article>
+<article id="keyboard-changed-375-portrait-light"><h2>keyboard-changed-375-portrait-light</h2><p>state-keyboard-changed · SHA256 63ca210b46251b3c8641e8031702d02d3dae0bcb6d28a349a1e0e8352f8a0237</p><div class="compare"><figure><figcaption>375 × 667 pt · Светлая</figcaption><div class="phone keyboard" style="--w:375px;--h:667px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="host"><strong>Анна</strong><div class="bubble">Договорились, до завтра!</div><div class="cipher-bubble">ckmsg2:AQIAIA7u9kV0…</div></div><div class="hostfield">До <span class="caret"></span>встречи!<span class="send">↑</span></div><div class="panel"><div class="result"><header><strong>Расшифровка</strong></header><div class="error-content"><span class="error-icon">!</span><p class="danger">Данные изменились — повторите расшифровку</p><p class="muted">Закройте панель и повторите попытку.</p></div><footer><button class="secondary">Закрыть</button></footer></div></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="keyboard-changed-375-portrait-light.png" alt="keyboard-changed-375-portrait-light" width="375" height="667"></figure></div></article>
+<article id="keyboard-contact-375-portrait-dark"><h2>keyboard-contact-375-portrait-dark</h2><p>state-keyboard-contact · SHA256 ad01ce9f9b3d54293ab6b702136df8bd23e72f293227095a8ff2974a2d5936b5</p><div class="compare"><figure><figcaption>375 × 667 pt · Тёмная</figcaption><div class="phone keyboard dark" style="--w:375px;--h:667px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="host"><strong>Анна</strong><div class="bubble">Договорились, до завтра!</div><div class="cipher-bubble">ckmsg2:AQIAIA7u9kV0…</div></div><div class="hostfield">До <span class="caret"></span>встречи!<span class="send">↑</span></div><div class="panel"><div class="result"><header><strong>Расшифровано</strong><span aria-hidden="true">♧</span></header><div class="result-main"><div class="identity"><strong class="sender">От: Анна</strong><p class="signature">✓ Подпись верна</p><p class="message-date">Дата по часам отправителя: 03.11.2026, 09:41</p></div><div class="plaintext" tabindex="0">  Привет, Анна!
+Завтра в 19:30 👨‍👩‍👧‍👦  </div></div><footer><button class="primary">Закрыть</button></footer></div></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="keyboard-contact-375-portrait-dark.png" alt="keyboard-contact-375-portrait-dark" width="375" height="667"></figure></div></article>
+<article id="keyboard-contact-375-portrait-light"><h2>keyboard-contact-375-portrait-light</h2><p>state-keyboard-contact · SHA256 2e038f33f6d6702dc69591ff7c59c75dc3f0ef8b2f412a3f7d96728db6de0255</p><div class="compare"><figure><figcaption>375 × 667 pt · Светлая</figcaption><div class="phone keyboard" style="--w:375px;--h:667px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="host"><strong>Анна</strong><div class="bubble">Договорились, до завтра!</div><div class="cipher-bubble">ckmsg2:AQIAIA7u9kV0…</div></div><div class="hostfield">До <span class="caret"></span>встречи!<span class="send">↑</span></div><div class="panel"><div class="result"><header><strong>Расшифровано</strong><span aria-hidden="true">♧</span></header><div class="result-main"><div class="identity"><strong class="sender">От: Анна</strong><p class="signature">✓ Подпись верна</p><p class="message-date">Дата по часам отправителя: 03.11.2026, 09:41</p></div><div class="plaintext" tabindex="0">  Привет, Анна!
+Завтра в 19:30 👨‍👩‍👧‍👦  </div></div><footer><button class="primary">Закрыть</button></footer></div></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="keyboard-contact-375-portrait-light.png" alt="keyboard-contact-375-portrait-light" width="375" height="667"></figure></div></article>
+<article id="keyboard-contact-402-portrait-dark"><h2>keyboard-contact-402-portrait-dark</h2><p>state-keyboard-contact · SHA256 e311d802dfed076997df63098279cbf1e91a11cf307b218dbdf251ff47125f45</p><div class="compare"><figure><figcaption>402 × 874 pt · Тёмная</figcaption><div class="phone keyboard dark" style="--w:402px;--h:874px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="host"><strong>Анна</strong><div class="bubble">Договорились, до завтра!</div><div class="cipher-bubble">ckmsg2:AQIAIA7u9kV0…</div></div><div class="hostfield">До <span class="caret"></span>встречи!<span class="send">↑</span></div><div class="panel"><div class="result"><header><strong>Расшифровано</strong><span aria-hidden="true">♧</span></header><div class="result-main"><div class="identity"><strong class="sender">От: Анна</strong><p class="signature">✓ Подпись верна</p><p class="message-date">Дата по часам отправителя: 03.11.2026, 09:41</p></div><div class="plaintext" tabindex="0">  Привет, Анна!
+Завтра в 19:30 👨‍👩‍👧‍👦  </div></div><footer><button class="primary">Закрыть</button></footer></div></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="keyboard-contact-402-portrait-dark.png" alt="keyboard-contact-402-portrait-dark" width="402" height="874"></figure></div></article>
+<article id="keyboard-contact-402-portrait-light"><h2>keyboard-contact-402-portrait-light</h2><p>state-keyboard-contact · SHA256 575aae6c3d038fdade99161c79b9ea965ce8eab20f6044448dbaf0a4ae50accf</p><div class="compare"><figure><figcaption>402 × 874 pt · Светлая</figcaption><div class="phone keyboard" style="--w:402px;--h:874px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="host"><strong>Анна</strong><div class="bubble">Договорились, до завтра!</div><div class="cipher-bubble">ckmsg2:AQIAIA7u9kV0…</div></div><div class="hostfield">До <span class="caret"></span>встречи!<span class="send">↑</span></div><div class="panel"><div class="result"><header><strong>Расшифровано</strong><span aria-hidden="true">♧</span></header><div class="result-main"><div class="identity"><strong class="sender">От: Анна</strong><p class="signature">✓ Подпись верна</p><p class="message-date">Дата по часам отправителя: 03.11.2026, 09:41</p></div><div class="plaintext" tabindex="0">  Привет, Анна!
+Завтра в 19:30 👨‍👩‍👧‍👦  </div></div><footer><button class="primary">Закрыть</button></footer></div></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="keyboard-contact-402-portrait-light.png" alt="keyboard-contact-402-portrait-light" width="402" height="874"></figure></div></article>
+<article id="keyboard-contact-440-portrait-dark"><h2>keyboard-contact-440-portrait-dark</h2><p>state-keyboard-contact · SHA256 bcb061ddd4c21e1d3df547e106360e52c838911deaf4e1d5b54fde9af22ae8c9</p><div class="compare"><figure><figcaption>440 × 956 pt · Тёмная</figcaption><div class="phone keyboard dark" style="--w:440px;--h:956px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="host"><strong>Анна</strong><div class="bubble">Договорились, до завтра!</div><div class="cipher-bubble">ckmsg2:AQIAIA7u9kV0…</div></div><div class="hostfield">До <span class="caret"></span>встречи!<span class="send">↑</span></div><div class="panel"><div class="result"><header><strong>Расшифровано</strong><span aria-hidden="true">♧</span></header><div class="result-main"><div class="identity"><strong class="sender">От: Анна</strong><p class="signature">✓ Подпись верна</p><p class="message-date">Дата по часам отправителя: 03.11.2026, 09:41</p></div><div class="plaintext" tabindex="0">  Привет, Анна!
+Завтра в 19:30 👨‍👩‍👧‍👦  </div></div><footer><button class="primary">Закрыть</button></footer></div></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="keyboard-contact-440-portrait-dark.png" alt="keyboard-contact-440-portrait-dark" width="440" height="956"></figure></div></article>
+<article id="keyboard-contact-440-portrait-light"><h2>keyboard-contact-440-portrait-light</h2><p>state-keyboard-contact · SHA256 9cd31cc0612deed8dda9f4611697cc22373b1b42fbff34263e7b7fa0f1ec62ca</p><div class="compare"><figure><figcaption>440 × 956 pt · Светлая</figcaption><div class="phone keyboard" style="--w:440px;--h:956px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="host"><strong>Анна</strong><div class="bubble">Договорились, до завтра!</div><div class="cipher-bubble">ckmsg2:AQIAIA7u9kV0…</div></div><div class="hostfield">До <span class="caret"></span>встречи!<span class="send">↑</span></div><div class="panel"><div class="result"><header><strong>Расшифровано</strong><span aria-hidden="true">♧</span></header><div class="result-main"><div class="identity"><strong class="sender">От: Анна</strong><p class="signature">✓ Подпись верна</p><p class="message-date">Дата по часам отправителя: 03.11.2026, 09:41</p></div><div class="plaintext" tabindex="0">  Привет, Анна!
+Завтра в 19:30 👨‍👩‍👧‍👦  </div></div><footer><button class="primary">Закрыть</button></footer></div></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="keyboard-contact-440-portrait-light.png" alt="keyboard-contact-440-portrait-light" width="440" height="956"></figure></div></article>
+<article id="keyboard-contacts-warning-375-portrait-dark"><h2>keyboard-contacts-warning-375-portrait-dark</h2><p>state-keyboard-contacts-warning · SHA256 91c8e0174969a03e99774d10a138e58735e93e04bee0df25e74dd72fe82602ad</p><div class="compare"><figure><figcaption>375 × 667 pt · Тёмная</figcaption><div class="phone keyboard dark" style="--w:375px;--h:667px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="host"><strong>Анна</strong><div class="bubble">Договорились, до завтра!</div><div class="cipher-bubble">ckmsg2:AQIAIA7u9kV0…</div></div><div class="hostfield">До <span class="caret"></span>встречи!<span class="send">↑</span></div><div class="panel"><div class="result"><header><strong>Расшифровано</strong><span aria-hidden="true">♧</span></header><div class="result-main"><div class="identity"><strong class="sender">От неизвестного ключа A1B2 C3D4</strong><p class="signature">✓ Подпись верна</p><p class="message-date">Дата по часам отправителя: 03.11.2026, 09:41</p><p class="muted">Добавьте контакт в приложении, чтобы видеть имя</p><p class="warning">Не удалось прочитать контакты — имя отправителя не определено</p></div><div class="plaintext" tabindex="0">  Привет, Анна!
+Завтра в 19:30 👨‍👩‍👧‍👦  </div></div><footer><button class="primary">Закрыть</button></footer></div></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="keyboard-contacts-warning-375-portrait-dark.png" alt="keyboard-contacts-warning-375-portrait-dark" width="375" height="667"></figure></div></article>
+<article id="keyboard-contacts-warning-375-portrait-light"><h2>keyboard-contacts-warning-375-portrait-light</h2><p>state-keyboard-contacts-warning · SHA256 3a506c6210e9866a271cbb25516351f431b37905779acbc933bd50a71e6722ae</p><div class="compare"><figure><figcaption>375 × 667 pt · Светлая</figcaption><div class="phone keyboard" style="--w:375px;--h:667px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="host"><strong>Анна</strong><div class="bubble">Договорились, до завтра!</div><div class="cipher-bubble">ckmsg2:AQIAIA7u9kV0…</div></div><div class="hostfield">До <span class="caret"></span>встречи!<span class="send">↑</span></div><div class="panel"><div class="result"><header><strong>Расшифровано</strong><span aria-hidden="true">♧</span></header><div class="result-main"><div class="identity"><strong class="sender">От неизвестного ключа A1B2 C3D4</strong><p class="signature">✓ Подпись верна</p><p class="message-date">Дата по часам отправителя: 03.11.2026, 09:41</p><p class="muted">Добавьте контакт в приложении, чтобы видеть имя</p><p class="warning">Не удалось прочитать контакты — имя отправителя не определено</p></div><div class="plaintext" tabindex="0">  Привет, Анна!
+Завтра в 19:30 👨‍👩‍👧‍👦  </div></div><footer><button class="primary">Закрыть</button></footer></div></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="keyboard-contacts-warning-375-portrait-light.png" alt="keyboard-contacts-warning-375-portrait-light" width="375" height="667"></figure></div></article>
+<article id="keyboard-corrupt-375-portrait-dark"><h2>keyboard-corrupt-375-portrait-dark</h2><p>state-keyboard-corrupt · SHA256 36d910d1ca0648e7612d09246badd3ae75d18d615bf7c481ce4807f61e08d1f2</p><div class="compare"><figure><figcaption>375 × 667 pt · Тёмная</figcaption><div class="phone keyboard dark" style="--w:375px;--h:667px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="host"><strong>Анна</strong><div class="bubble">Договорились, до завтра!</div><div class="cipher-bubble">ckmsg2:AQIAIA7u9kV0…</div></div><div class="hostfield">До <span class="caret"></span>встречи!<span class="send">↑</span></div><div class="panel"><div class="result"><header><strong>Расшифровка</strong></header><div class="error-content"><span class="error-icon">!</span><p class="danger">Сообщение повреждено или подделано</p><p class="muted">Закройте панель и повторите попытку.</p></div><footer><button class="secondary">Закрыть</button></footer></div></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="keyboard-corrupt-375-portrait-dark.png" alt="keyboard-corrupt-375-portrait-dark" width="375" height="667"></figure></div></article>
+<article id="keyboard-corrupt-375-portrait-light"><h2>keyboard-corrupt-375-portrait-light</h2><p>state-keyboard-corrupt · SHA256 3a2c12c34fff5216004b8f2b88e3ecdbab4b61906fcfbbc81c33e485f51b39e5</p><div class="compare"><figure><figcaption>375 × 667 pt · Светлая</figcaption><div class="phone keyboard" style="--w:375px;--h:667px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="host"><strong>Анна</strong><div class="bubble">Договорились, до завтра!</div><div class="cipher-bubble">ckmsg2:AQIAIA7u9kV0…</div></div><div class="hostfield">До <span class="caret"></span>встречи!<span class="send">↑</span></div><div class="panel"><div class="result"><header><strong>Расшифровка</strong></header><div class="error-content"><span class="error-icon">!</span><p class="danger">Сообщение повреждено или подделано</p><p class="muted">Закройте панель и повторите попытку.</p></div><footer><button class="secondary">Закрыть</button></footer></div></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="keyboard-corrupt-375-portrait-light.png" alt="keyboard-corrupt-375-portrait-light" width="375" height="667"></figure></div></article>
+<article id="keyboard-foreign-375-portrait-dark"><h2>keyboard-foreign-375-portrait-dark</h2><p>state-keyboard-foreign · SHA256 f572fef82b9c9cfb93691d29d30bddce88a0f4ce273002ea94432591631c5e66</p><div class="compare"><figure><figcaption>375 × 667 pt · Тёмная</figcaption><div class="phone keyboard dark" style="--w:375px;--h:667px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="host"><strong>Анна</strong><div class="bubble">Договорились, до завтра!</div><div class="cipher-bubble">ckmsg2:AQIAIA7u9kV0…</div></div><div class="hostfield">До <span class="caret"></span>встречи!<span class="send">↑</span></div><div class="panel"><div class="result"><header><strong>Расшифровка</strong></header><div class="error-content"><span class="error-icon">!</span><p class="danger">Сообщение зашифровано не для вас</p><p class="muted">Закройте панель и повторите попытку.</p></div><footer><button class="secondary">Закрыть</button></footer></div></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="keyboard-foreign-375-portrait-dark.png" alt="keyboard-foreign-375-portrait-dark" width="375" height="667"></figure></div></article>
+<article id="keyboard-foreign-375-portrait-light"><h2>keyboard-foreign-375-portrait-light</h2><p>state-keyboard-foreign · SHA256 477966d37db1053930fad4e31975d675db411fa42db9c59a24fda6303c3769d1</p><div class="compare"><figure><figcaption>375 × 667 pt · Светлая</figcaption><div class="phone keyboard" style="--w:375px;--h:667px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="host"><strong>Анна</strong><div class="bubble">Договорились, до завтра!</div><div class="cipher-bubble">ckmsg2:AQIAIA7u9kV0…</div></div><div class="hostfield">До <span class="caret"></span>встречи!<span class="send">↑</span></div><div class="panel"><div class="result"><header><strong>Расшифровка</strong></header><div class="error-content"><span class="error-icon">!</span><p class="danger">Сообщение зашифровано не для вас</p><p class="muted">Закройте панель и повторите попытку.</p></div><footer><button class="secondary">Закрыть</button></footer></div></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="keyboard-foreign-375-portrait-light.png" alt="keyboard-foreign-375-portrait-light" width="375" height="667"></figure></div></article>
+<article id="keyboard-generic-375-portrait-dark"><h2>keyboard-generic-375-portrait-dark</h2><p>state-keyboard-corrupt · SHA256 d15e14852b5a3a2d95dd1a1c42be3fd76e2753377e96b31cea4ec709eab9a40e</p><div class="compare"><figure><figcaption>375 × 667 pt · Тёмная</figcaption><div class="phone keyboard dark" style="--w:375px;--h:667px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="host"><strong>Анна</strong><div class="bubble">Договорились, до завтра!</div><div class="cipher-bubble">ckmsg2:AQIAIA7u9kV0…</div></div><div class="hostfield">До <span class="caret"></span>встречи!<span class="send">↑</span></div><div class="panel"><div class="result"><header><strong>Расшифровка</strong></header><div class="error-content"><span class="error-icon">!</span><p class="danger">Не удалось расшифровать сообщение. Повторите попытку</p><p class="muted">Закройте панель и повторите попытку.</p></div><footer><button class="secondary">Закрыть</button></footer></div></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="keyboard-generic-375-portrait-dark.png" alt="keyboard-generic-375-portrait-dark" width="375" height="667"></figure></div></article>
+<article id="keyboard-generic-375-portrait-light"><h2>keyboard-generic-375-portrait-light</h2><p>state-keyboard-corrupt · SHA256 2af40273dab5d458125710cbece79515ee1d6a7d2e7c1a1989df22d1431102b7</p><div class="compare"><figure><figcaption>375 × 667 pt · Светлая</figcaption><div class="phone keyboard" style="--w:375px;--h:667px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="host"><strong>Анна</strong><div class="bubble">Договорились, до завтра!</div><div class="cipher-bubble">ckmsg2:AQIAIA7u9kV0…</div></div><div class="hostfield">До <span class="caret"></span>встречи!<span class="send">↑</span></div><div class="panel"><div class="result"><header><strong>Расшифровка</strong></header><div class="error-content"><span class="error-icon">!</span><p class="danger">Не удалось расшифровать сообщение. Повторите попытку</p><p class="muted">Закройте панель и повторите попытку.</p></div><footer><button class="secondary">Закрыть</button></footer></div></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="keyboard-generic-375-portrait-light.png" alt="keyboard-generic-375-portrait-light" width="375" height="667"></figure></div></article>
+<article id="keyboard-idle-375-portrait-dark"><h2>keyboard-idle-375-portrait-dark</h2><p>state-keyboard-idle · SHA256 687e9986377d1d32f52ab94d1e57b6f099c3916c816e85f3bd0a34ac0fa86770</p><div class="compare"><figure><figcaption>375 × 667 pt · Тёмная</figcaption><div class="phone keyboard dark" style="--w:375px;--h:667px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="host"><strong>Анна</strong><div class="bubble">Договорились, до завтра!</div><div class="cipher-bubble">ckmsg2:AQIAIA7u9kV0…</div></div><div class="hostfield">До <span class="caret"></span>встречи!<span class="send">↑</span></div><div class="panel"><div class="compose"><div class="actions"><button class="secondary">Расшифровать</button><div class="compose-meta"><span>Ваш ключ: A1B2 C3D4 · Контактов: 20</span><span>Только по нажатию</span></div></div><div class="compose-recipient"><span>Кому: Анна ▾</span><button class="compact">Зашифровать</button></div><div class="draft">До встр<span class="caret"></span>ечи!<br>Возьми документы.</div><div class="draft-service">Черновик · стирается при закрытии</div><div class="notice">Готово к шифрованию</div><div class="keys"><div class="keyrow"><span class="key">й</span><span class="key">ц</span><span class="key">у</span><span class="key">к</span><span class="key">е</span><span class="key">н</span><span class="key">г</span><span class="key">ш</span><span class="key">щ</span><span class="key">з</span><span class="key">х</span></div><div class="keyrow"><span class="key">ф</span><span class="key">ы</span><span class="key">в</span><span class="key">а</span><span class="key">п</span><span class="key">р</span><span class="key">о</span><span class="key">л</span><span class="key">д</span><span class="key">ж</span><span class="key">э</span></div><div class="keyrow"><span class="key">⇧</span><span class="key">я</span><span class="key">ч</span><span class="key">с</span><span class="key">м</span><span class="key">и</span><span class="key">т</span><span class="key">ь</span><span class="key">б</span><span class="key">ю</span><span class="key">⌫</span></div><div class="keyrow"><span class="key">РУС</span><span class="key">123</span><span class="key">🌐</span><span class="key">пробел</span><span class="key">↵</span></div></div></div></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="keyboard-idle-375-portrait-dark.png" alt="keyboard-idle-375-portrait-dark" width="375" height="667"></figure></div></article>
+<article id="keyboard-idle-375-portrait-light"><h2>keyboard-idle-375-portrait-light</h2><p>state-keyboard-idle · SHA256 923fc26fcc7faaaeaaa175ab312a490e986e22fdaf74ed4d11bb017da15f2741</p><div class="compare"><figure><figcaption>375 × 667 pt · Светлая</figcaption><div class="phone keyboard" style="--w:375px;--h:667px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="host"><strong>Анна</strong><div class="bubble">Договорились, до завтра!</div><div class="cipher-bubble">ckmsg2:AQIAIA7u9kV0…</div></div><div class="hostfield">До <span class="caret"></span>встречи!<span class="send">↑</span></div><div class="panel"><div class="compose"><div class="actions"><button class="secondary">Расшифровать</button><div class="compose-meta"><span>Ваш ключ: A1B2 C3D4 · Контактов: 20</span><span>Только по нажатию</span></div></div><div class="compose-recipient"><span>Кому: Анна ▾</span><button class="compact">Зашифровать</button></div><div class="draft">До встр<span class="caret"></span>ечи!<br>Возьми документы.</div><div class="draft-service">Черновик · стирается при закрытии</div><div class="notice">Готово к шифрованию</div><div class="keys"><div class="keyrow"><span class="key">й</span><span class="key">ц</span><span class="key">у</span><span class="key">к</span><span class="key">е</span><span class="key">н</span><span class="key">г</span><span class="key">ш</span><span class="key">щ</span><span class="key">з</span><span class="key">х</span></div><div class="keyrow"><span class="key">ф</span><span class="key">ы</span><span class="key">в</span><span class="key">а</span><span class="key">п</span><span class="key">р</span><span class="key">о</span><span class="key">л</span><span class="key">д</span><span class="key">ж</span><span class="key">э</span></div><div class="keyrow"><span class="key">⇧</span><span class="key">я</span><span class="key">ч</span><span class="key">с</span><span class="key">м</span><span class="key">и</span><span class="key">т</span><span class="key">ь</span><span class="key">б</span><span class="key">ю</span><span class="key">⌫</span></div><div class="keyrow"><span class="key">РУС</span><span class="key">123</span><span class="key">🌐</span><span class="key">пробел</span><span class="key">↵</span></div></div></div></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="keyboard-idle-375-portrait-light.png" alt="keyboard-idle-375-portrait-light" width="375" height="667"></figure></div></article>
+<article id="keyboard-key-error-375-portrait-dark"><h2>keyboard-key-error-375-portrait-dark</h2><p>state-keyboard-key-error · SHA256 102c735cc68cf373926430e82f98543ae3952ba64f21706c8b4484ba913dd21a</p><div class="compare"><figure><figcaption>375 × 667 pt · Тёмная</figcaption><div class="phone keyboard dark" style="--w:375px;--h:667px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="host"><strong>Анна</strong><div class="bubble">Договорились, до завтра!</div><div class="cipher-bubble">ckmsg2:AQIAIA7u9kV0…</div></div><div class="hostfield">До <span class="caret"></span>встречи!<span class="send">↑</span></div><div class="panel"><div class="compose"><div class="actions"><button class="secondary" disabled>Расшифровать</button><div class="compose-meta"><span>Не удалось открыть хранилище ключей</span><span>Ключ недоступен — откройте приложение CipherKeyboard</span></div></div><div class="compose-recipient"><span>Кому: Анна ▾</span><button class="compact" disabled>Зашифровать</button></div><div class="draft">До встр<span class="caret"></span>ечи!<br>Возьми документы.</div><div class="draft-service">Черновик · стирается при закрытии</div><div class="notice danger">Ключ недоступен — откройте приложение CipherKeyboard</div><div class="keys"><div class="keyrow"><span class="key">й</span><span class="key">ц</span><span class="key">у</span><span class="key">к</span><span class="key">е</span><span class="key">н</span><span class="key">г</span><span class="key">ш</span><span class="key">щ</span><span class="key">з</span><span class="key">х</span></div><div class="keyrow"><span class="key">ф</span><span class="key">ы</span><span class="key">в</span><span class="key">а</span><span class="key">п</span><span class="key">р</span><span class="key">о</span><span class="key">л</span><span class="key">д</span><span class="key">ж</span><span class="key">э</span></div><div class="keyrow"><span class="key">⇧</span><span class="key">я</span><span class="key">ч</span><span class="key">с</span><span class="key">м</span><span class="key">и</span><span class="key">т</span><span class="key">ь</span><span class="key">б</span><span class="key">ю</span><span class="key">⌫</span></div><div class="keyrow"><span class="key">РУС</span><span class="key">123</span><span class="key">🌐</span><span class="key">пробел</span><span class="key">↵</span></div></div></div></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="keyboard-key-error-375-portrait-dark.png" alt="keyboard-key-error-375-portrait-dark" width="375" height="667"></figure></div></article>
+<article id="keyboard-key-error-375-portrait-light"><h2>keyboard-key-error-375-portrait-light</h2><p>state-keyboard-key-error · SHA256 ddef5b04f4e855e7a38118594ada5ee49d4df51a5605df6cbc02b17cb0d12969</p><div class="compare"><figure><figcaption>375 × 667 pt · Светлая</figcaption><div class="phone keyboard" style="--w:375px;--h:667px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="host"><strong>Анна</strong><div class="bubble">Договорились, до завтра!</div><div class="cipher-bubble">ckmsg2:AQIAIA7u9kV0…</div></div><div class="hostfield">До <span class="caret"></span>встречи!<span class="send">↑</span></div><div class="panel"><div class="compose"><div class="actions"><button class="secondary" disabled>Расшифровать</button><div class="compose-meta"><span>Не удалось открыть хранилище ключей</span><span>Ключ недоступен — откройте приложение CipherKeyboard</span></div></div><div class="compose-recipient"><span>Кому: Анна ▾</span><button class="compact" disabled>Зашифровать</button></div><div class="draft">До встр<span class="caret"></span>ечи!<br>Возьми документы.</div><div class="draft-service">Черновик · стирается при закрытии</div><div class="notice danger">Ключ недоступен — откройте приложение CipherKeyboard</div><div class="keys"><div class="keyrow"><span class="key">й</span><span class="key">ц</span><span class="key">у</span><span class="key">к</span><span class="key">е</span><span class="key">н</span><span class="key">г</span><span class="key">ш</span><span class="key">щ</span><span class="key">з</span><span class="key">х</span></div><div class="keyrow"><span class="key">ф</span><span class="key">ы</span><span class="key">в</span><span class="key">а</span><span class="key">п</span><span class="key">р</span><span class="key">о</span><span class="key">л</span><span class="key">д</span><span class="key">ж</span><span class="key">э</span></div><div class="keyrow"><span class="key">⇧</span><span class="key">я</span><span class="key">ч</span><span class="key">с</span><span class="key">м</span><span class="key">и</span><span class="key">т</span><span class="key">ь</span><span class="key">б</span><span class="key">ю</span><span class="key">⌫</span></div><div class="keyrow"><span class="key">РУС</span><span class="key">123</span><span class="key">🌐</span><span class="key">пробел</span><span class="key">↵</span></div></div></div></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="keyboard-key-error-375-portrait-light.png" alt="keyboard-key-error-375-portrait-light" width="375" height="667"></figure></div></article>
+<article id="keyboard-long-375-landscape-dark"><h2>keyboard-long-375-landscape-dark</h2><p>state-keyboard-long · SHA256 851b78582bc0fe5b2664b48b37d403f418d942f91f20afe8c4e7fd70d267bb04</p><div class="compare"><figure><figcaption>667 × 375 pt · Тёмная</figcaption><div class="phone keyboard dark land" style="--w:667px;--h:375px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="host"><strong>Анна</strong><div class="bubble">Договорились, до завтра!</div><div class="cipher-bubble">ckmsg2:AQIAIA7u9kV0…</div></div><div class="hostfield">До <span class="caret"></span>встречи!<span class="send">↑</span></div><div class="panel"><div class="result"><header><strong>Расшифровано</strong><span aria-hidden="true">♧</span></header><div class="result-main"><div class="identity"><strong class="sender">От: Александра Константинопольская — работа</strong><p class="signature">✓ Подпись верна</p><p class="message-date">Дата по часам отправителя: 03.11.2026, 09:41</p></div><div class="plaintext" tabindex="0">1. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+2. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+3. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+4. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+5. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+6. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+7. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+8. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+9. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+10. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+11. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+12. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+13. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+14. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+15. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+16. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+17. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+18. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+19. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+20. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+21. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+Последняя строка: до встречи!</div></div><footer><button class="primary">Закрыть</button></footer></div></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="keyboard-long-375-landscape-dark.png" alt="keyboard-long-375-landscape-dark" width="667" height="375"></figure></div></article>
+<article id="keyboard-long-375-landscape-light"><h2>keyboard-long-375-landscape-light</h2><p>state-keyboard-long · SHA256 ecefaf84722a47b0655433b9843479177ad3d4ecb8bd340312c07d3e8e2ad1a2</p><div class="compare"><figure><figcaption>667 × 375 pt · Светлая</figcaption><div class="phone keyboard land" style="--w:667px;--h:375px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="host"><strong>Анна</strong><div class="bubble">Договорились, до завтра!</div><div class="cipher-bubble">ckmsg2:AQIAIA7u9kV0…</div></div><div class="hostfield">До <span class="caret"></span>встречи!<span class="send">↑</span></div><div class="panel"><div class="result"><header><strong>Расшифровано</strong><span aria-hidden="true">♧</span></header><div class="result-main"><div class="identity"><strong class="sender">От: Александра Константинопольская — работа</strong><p class="signature">✓ Подпись верна</p><p class="message-date">Дата по часам отправителя: 03.11.2026, 09:41</p></div><div class="plaintext" tabindex="0">1. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+2. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+3. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+4. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+5. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+6. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+7. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+8. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+9. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+10. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+11. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+12. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+13. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+14. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+15. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+16. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+17. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+18. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+19. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+20. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+21. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+Последняя строка: до встречи!</div></div><footer><button class="primary">Закрыть</button></footer></div></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="keyboard-long-375-landscape-light.png" alt="keyboard-long-375-landscape-light" width="667" height="375"></figure></div></article>
+<article id="keyboard-long-375-portrait-dark"><h2>keyboard-long-375-portrait-dark</h2><p>state-keyboard-long · SHA256 56b8153f4b50ad14733f3fd981143a1c5b53713ca60a6149cf9e7c99c63bdf45</p><div class="compare"><figure><figcaption>375 × 667 pt · Тёмная</figcaption><div class="phone keyboard dark" style="--w:375px;--h:667px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="host"><strong>Анна</strong><div class="bubble">Договорились, до завтра!</div><div class="cipher-bubble">ckmsg2:AQIAIA7u9kV0…</div></div><div class="hostfield">До <span class="caret"></span>встречи!<span class="send">↑</span></div><div class="panel"><div class="result"><header><strong>Расшифровано</strong><span aria-hidden="true">♧</span></header><div class="result-main"><div class="identity"><strong class="sender">От: Александра Константинопольская — работа</strong><p class="signature">✓ Подпись верна</p><p class="message-date">Дата по часам отправителя: 03.11.2026, 09:41</p></div><div class="plaintext" tabindex="0">1. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+2. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+3. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+4. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+5. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+6. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+7. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+8. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+9. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+10. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+11. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+12. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+13. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+14. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+15. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+16. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+17. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+18. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+19. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+20. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+21. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+Последняя строка: до встречи!</div></div><footer><button class="primary">Закрыть</button></footer></div></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="keyboard-long-375-portrait-dark.png" alt="keyboard-long-375-portrait-dark" width="375" height="667"></figure></div></article>
+<article id="keyboard-long-375-portrait-light"><h2>keyboard-long-375-portrait-light</h2><p>state-keyboard-long · SHA256 9dfbb070f69f367cc397aee0bc1fa67770daaf3131e09f17f6e98cd8d1970943</p><div class="compare"><figure><figcaption>375 × 667 pt · Светлая</figcaption><div class="phone keyboard" style="--w:375px;--h:667px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="host"><strong>Анна</strong><div class="bubble">Договорились, до завтра!</div><div class="cipher-bubble">ckmsg2:AQIAIA7u9kV0…</div></div><div class="hostfield">До <span class="caret"></span>встречи!<span class="send">↑</span></div><div class="panel"><div class="result"><header><strong>Расшифровано</strong><span aria-hidden="true">♧</span></header><div class="result-main"><div class="identity"><strong class="sender">От: Александра Константинопольская — работа</strong><p class="signature">✓ Подпись верна</p><p class="message-date">Дата по часам отправителя: 03.11.2026, 09:41</p></div><div class="plaintext" tabindex="0">1. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+2. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+3. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+4. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+5. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+6. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+7. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+8. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+9. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+10. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+11. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+12. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+13. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+14. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+15. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+16. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+17. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+18. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+19. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+20. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+21. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+Последняя строка: до встречи!</div></div><footer><button class="primary">Закрыть</button></footer></div></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="keyboard-long-375-portrait-light.png" alt="keyboard-long-375-portrait-light" width="375" height="667"></figure></div></article>
+<article id="keyboard-long-402-landscape-dark"><h2>keyboard-long-402-landscape-dark</h2><p>state-keyboard-long · SHA256 0dd43ae0d14af1138fd3d6e7098e6e620fcaccc54c509143c77d8c3b1a86cff6</p><div class="compare"><figure><figcaption>874 × 402 pt · Тёмная</figcaption><div class="phone keyboard dark land" style="--w:874px;--h:402px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="host"><strong>Анна</strong><div class="bubble">Договорились, до завтра!</div><div class="cipher-bubble">ckmsg2:AQIAIA7u9kV0…</div></div><div class="hostfield">До <span class="caret"></span>встречи!<span class="send">↑</span></div><div class="panel"><div class="result"><header><strong>Расшифровано</strong><span aria-hidden="true">♧</span></header><div class="result-main"><div class="identity"><strong class="sender">От: Александра Константинопольская — работа</strong><p class="signature">✓ Подпись верна</p><p class="message-date">Дата по часам отправителя: 03.11.2026, 09:41</p></div><div class="plaintext" tabindex="0">1. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+2. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+3. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+4. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+5. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+6. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+7. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+8. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+9. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+10. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+11. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+12. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+13. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+14. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+15. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+16. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+17. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+18. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+19. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+20. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+21. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+Последняя строка: до встречи!</div></div><footer><button class="primary">Закрыть</button></footer></div></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="keyboard-long-402-landscape-dark.png" alt="keyboard-long-402-landscape-dark" width="874" height="402"></figure></div></article>
+<article id="keyboard-long-402-landscape-light"><h2>keyboard-long-402-landscape-light</h2><p>state-keyboard-long · SHA256 f0a872b8da5318607f97132f083d6faf3c1b5d534025528da2736d527632ae0f</p><div class="compare"><figure><figcaption>874 × 402 pt · Светлая</figcaption><div class="phone keyboard land" style="--w:874px;--h:402px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="host"><strong>Анна</strong><div class="bubble">Договорились, до завтра!</div><div class="cipher-bubble">ckmsg2:AQIAIA7u9kV0…</div></div><div class="hostfield">До <span class="caret"></span>встречи!<span class="send">↑</span></div><div class="panel"><div class="result"><header><strong>Расшифровано</strong><span aria-hidden="true">♧</span></header><div class="result-main"><div class="identity"><strong class="sender">От: Александра Константинопольская — работа</strong><p class="signature">✓ Подпись верна</p><p class="message-date">Дата по часам отправителя: 03.11.2026, 09:41</p></div><div class="plaintext" tabindex="0">1. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+2. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+3. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+4. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+5. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+6. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+7. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+8. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+9. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+10. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+11. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+12. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+13. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+14. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+15. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+16. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+17. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+18. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+19. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+20. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+21. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+Последняя строка: до встречи!</div></div><footer><button class="primary">Закрыть</button></footer></div></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="keyboard-long-402-landscape-light.png" alt="keyboard-long-402-landscape-light" width="874" height="402"></figure></div></article>
+<article id="keyboard-long-402-portrait-dark"><h2>keyboard-long-402-portrait-dark</h2><p>state-keyboard-long · SHA256 d8d23ed93a7e56e33fd546b87ae97aaf6446b4d714ff99318ef3ced905cdc3b1</p><div class="compare"><figure><figcaption>402 × 874 pt · Тёмная</figcaption><div class="phone keyboard dark" style="--w:402px;--h:874px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="host"><strong>Анна</strong><div class="bubble">Договорились, до завтра!</div><div class="cipher-bubble">ckmsg2:AQIAIA7u9kV0…</div></div><div class="hostfield">До <span class="caret"></span>встречи!<span class="send">↑</span></div><div class="panel"><div class="result"><header><strong>Расшифровано</strong><span aria-hidden="true">♧</span></header><div class="result-main"><div class="identity"><strong class="sender">От: Александра Константинопольская — работа</strong><p class="signature">✓ Подпись верна</p><p class="message-date">Дата по часам отправителя: 03.11.2026, 09:41</p></div><div class="plaintext" tabindex="0">1. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+2. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+3. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+4. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+5. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+6. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+7. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+8. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+9. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+10. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+11. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+12. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+13. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+14. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+15. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+16. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+17. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+18. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+19. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+20. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+21. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+Последняя строка: до встречи!</div></div><footer><button class="primary">Закрыть</button></footer></div></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="keyboard-long-402-portrait-dark.png" alt="keyboard-long-402-portrait-dark" width="402" height="874"></figure></div></article>
+<article id="keyboard-long-402-portrait-light"><h2>keyboard-long-402-portrait-light</h2><p>state-keyboard-long · SHA256 db2bba9660e5e174a63783d9dbe7abfeca69bb8ce8db48321eaa6f75fc271ba4</p><div class="compare"><figure><figcaption>402 × 874 pt · Светлая</figcaption><div class="phone keyboard" style="--w:402px;--h:874px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="host"><strong>Анна</strong><div class="bubble">Договорились, до завтра!</div><div class="cipher-bubble">ckmsg2:AQIAIA7u9kV0…</div></div><div class="hostfield">До <span class="caret"></span>встречи!<span class="send">↑</span></div><div class="panel"><div class="result"><header><strong>Расшифровано</strong><span aria-hidden="true">♧</span></header><div class="result-main"><div class="identity"><strong class="sender">От: Александра Константинопольская — работа</strong><p class="signature">✓ Подпись верна</p><p class="message-date">Дата по часам отправителя: 03.11.2026, 09:41</p></div><div class="plaintext" tabindex="0">1. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+2. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+3. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+4. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+5. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+6. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+7. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+8. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+9. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+10. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+11. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+12. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+13. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+14. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+15. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+16. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+17. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+18. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+19. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+20. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+21. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+Последняя строка: до встречи!</div></div><footer><button class="primary">Закрыть</button></footer></div></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="keyboard-long-402-portrait-light.png" alt="keyboard-long-402-portrait-light" width="402" height="874"></figure></div></article>
+<article id="keyboard-long-440-landscape-dark"><h2>keyboard-long-440-landscape-dark</h2><p>state-keyboard-long · SHA256 fd1a691e110e11abe7fa7cc9dac708614a1f17d87df0621b8f72f0450599e32a</p><div class="compare"><figure><figcaption>956 × 440 pt · Тёмная</figcaption><div class="phone keyboard dark land" style="--w:956px;--h:440px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="host"><strong>Анна</strong><div class="bubble">Договорились, до завтра!</div><div class="cipher-bubble">ckmsg2:AQIAIA7u9kV0…</div></div><div class="hostfield">До <span class="caret"></span>встречи!<span class="send">↑</span></div><div class="panel"><div class="result"><header><strong>Расшифровано</strong><span aria-hidden="true">♧</span></header><div class="result-main"><div class="identity"><strong class="sender">От: Александра Константинопольская — работа</strong><p class="signature">✓ Подпись верна</p><p class="message-date">Дата по часам отправителя: 03.11.2026, 09:41</p></div><div class="plaintext" tabindex="0">1. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+2. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+3. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+4. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+5. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+6. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+7. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+8. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+9. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+10. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+11. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+12. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+13. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+14. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+15. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+16. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+17. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+18. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+19. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+20. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+21. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+Последняя строка: до встречи!</div></div><footer><button class="primary">Закрыть</button></footer></div></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="keyboard-long-440-landscape-dark.png" alt="keyboard-long-440-landscape-dark" width="956" height="440"></figure></div></article>
+<article id="keyboard-long-440-landscape-light"><h2>keyboard-long-440-landscape-light</h2><p>state-keyboard-long · SHA256 f97e0cc7eb184a41767753cd430349813b64e9e554fba974ce608fb0706c88b9</p><div class="compare"><figure><figcaption>956 × 440 pt · Светлая</figcaption><div class="phone keyboard land" style="--w:956px;--h:440px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="host"><strong>Анна</strong><div class="bubble">Договорились, до завтра!</div><div class="cipher-bubble">ckmsg2:AQIAIA7u9kV0…</div></div><div class="hostfield">До <span class="caret"></span>встречи!<span class="send">↑</span></div><div class="panel"><div class="result"><header><strong>Расшифровано</strong><span aria-hidden="true">♧</span></header><div class="result-main"><div class="identity"><strong class="sender">От: Александра Константинопольская — работа</strong><p class="signature">✓ Подпись верна</p><p class="message-date">Дата по часам отправителя: 03.11.2026, 09:41</p></div><div class="plaintext" tabindex="0">1. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+2. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+3. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+4. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+5. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+6. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+7. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+8. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+9. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+10. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+11. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+12. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+13. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+14. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+15. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+16. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+17. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+18. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+19. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+20. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+21. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+Последняя строка: до встречи!</div></div><footer><button class="primary">Закрыть</button></footer></div></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="keyboard-long-440-landscape-light.png" alt="keyboard-long-440-landscape-light" width="956" height="440"></figure></div></article>
+<article id="keyboard-long-440-portrait-dark"><h2>keyboard-long-440-portrait-dark</h2><p>state-keyboard-long · SHA256 fe383697d654b8ea8359a65d362b26781b0b5e271b6987375977749fbbfa6161</p><div class="compare"><figure><figcaption>440 × 956 pt · Тёмная</figcaption><div class="phone keyboard dark" style="--w:440px;--h:956px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="host"><strong>Анна</strong><div class="bubble">Договорились, до завтра!</div><div class="cipher-bubble">ckmsg2:AQIAIA7u9kV0…</div></div><div class="hostfield">До <span class="caret"></span>встречи!<span class="send">↑</span></div><div class="panel"><div class="result"><header><strong>Расшифровано</strong><span aria-hidden="true">♧</span></header><div class="result-main"><div class="identity"><strong class="sender">От: Александра Константинопольская — работа</strong><p class="signature">✓ Подпись верна</p><p class="message-date">Дата по часам отправителя: 03.11.2026, 09:41</p></div><div class="plaintext" tabindex="0">1. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+2. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+3. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+4. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+5. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+6. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+7. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+8. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+9. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+10. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+11. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+12. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+13. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+14. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+15. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+16. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+17. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+18. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+19. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+20. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+21. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+Последняя строка: до встречи!</div></div><footer><button class="primary">Закрыть</button></footer></div></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="keyboard-long-440-portrait-dark.png" alt="keyboard-long-440-portrait-dark" width="440" height="956"></figure></div></article>
+<article id="keyboard-long-440-portrait-light"><h2>keyboard-long-440-portrait-light</h2><p>state-keyboard-long · SHA256 1f4b019efe186b2745bc7a704e17f6ffdf21719ccb9134a8b4c4ed10ac982b68</p><div class="compare"><figure><figcaption>440 × 956 pt · Светлая</figcaption><div class="phone keyboard" style="--w:440px;--h:956px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="host"><strong>Анна</strong><div class="bubble">Договорились, до завтра!</div><div class="cipher-bubble">ckmsg2:AQIAIA7u9kV0…</div></div><div class="hostfield">До <span class="caret"></span>встречи!<span class="send">↑</span></div><div class="panel"><div class="result"><header><strong>Расшифровано</strong><span aria-hidden="true">♧</span></header><div class="result-main"><div class="identity"><strong class="sender">От: Александра Константинопольская — работа</strong><p class="signature">✓ Подпись верна</p><p class="message-date">Дата по часам отправителя: 03.11.2026, 09:41</p></div><div class="plaintext" tabindex="0">1. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+2. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+3. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+4. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+5. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+6. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+7. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+8. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+9. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+10. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+11. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+12. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+13. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+14. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+15. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+16. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+17. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+18. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+19. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+20. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+
+21. Встречаемся завтра у метро. Возьми документы, обсудим детали на месте.
+Последняя строка: до встречи!</div></div><footer><button class="primary">Закрыть</button></footer></div></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="keyboard-long-440-portrait-light.png" alt="keyboard-long-440-portrait-light" width="440" height="956"></figure></div></article>
+<article id="keyboard-no-access-375-portrait-dark"><h2>keyboard-no-access-375-portrait-dark</h2><p>state-keyboard-no-access · SHA256 fde0086004d4c39e4e2e03cb38542d05e95e83a921333cbbe20dae087b698443</p><div class="compare"><figure><figcaption>375 × 667 pt · Тёмная</figcaption><div class="phone keyboard dark" style="--w:375px;--h:667px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="host"><strong>Анна</strong><div class="bubble">Договорились, до завтра!</div><div class="cipher-bubble">ckmsg2:AQIAIA7u9kV0…</div></div><div class="hostfield">До <span class="caret"></span>встречи!<span class="send">↑</span></div><div class="panel"><div class="compose"><div class="actions"><button class="secondary" disabled>Расшифровать</button><div class="compose-meta"><span>Общие данные недоступны</span><span>Включите «Полный доступ» в Настройках, чтобы расшифровывать</span></div></div><div class="compose-recipient"><span>Кому: выберите контакт ▾</span><button class="compact" disabled>Зашифровать</button></div><div class="draft">До встр<span class="caret"></span>ечи!<br>Возьми документы.</div><div class="draft-service">Черновик · стирается при закрытии</div><div class="notice">Включите «Полный доступ» в Настройках, чтобы шифровать</div><div class="keys"><div class="keyrow"><span class="key">й</span><span class="key">ц</span><span class="key">у</span><span class="key">к</span><span class="key">е</span><span class="key">н</span><span class="key">г</span><span class="key">ш</span><span class="key">щ</span><span class="key">з</span><span class="key">х</span></div><div class="keyrow"><span class="key">ф</span><span class="key">ы</span><span class="key">в</span><span class="key">а</span><span class="key">п</span><span class="key">р</span><span class="key">о</span><span class="key">л</span><span class="key">д</span><span class="key">ж</span><span class="key">э</span></div><div class="keyrow"><span class="key">⇧</span><span class="key">я</span><span class="key">ч</span><span class="key">с</span><span class="key">м</span><span class="key">и</span><span class="key">т</span><span class="key">ь</span><span class="key">б</span><span class="key">ю</span><span class="key">⌫</span></div><div class="keyrow"><span class="key">РУС</span><span class="key">123</span><span class="key">🌐</span><span class="key">пробел</span><span class="key">↵</span></div></div></div></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="keyboard-no-access-375-portrait-dark.png" alt="keyboard-no-access-375-portrait-dark" width="375" height="667"></figure></div></article>
+<article id="keyboard-no-access-375-portrait-light"><h2>keyboard-no-access-375-portrait-light</h2><p>state-keyboard-no-access · SHA256 cbc36c5ca15da477b8f3ecef74740d318f5b10e34308c0fe25ab4e3ec3d11ed4</p><div class="compare"><figure><figcaption>375 × 667 pt · Светлая</figcaption><div class="phone keyboard" style="--w:375px;--h:667px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="host"><strong>Анна</strong><div class="bubble">Договорились, до завтра!</div><div class="cipher-bubble">ckmsg2:AQIAIA7u9kV0…</div></div><div class="hostfield">До <span class="caret"></span>встречи!<span class="send">↑</span></div><div class="panel"><div class="compose"><div class="actions"><button class="secondary" disabled>Расшифровать</button><div class="compose-meta"><span>Общие данные недоступны</span><span>Включите «Полный доступ» в Настройках, чтобы расшифровывать</span></div></div><div class="compose-recipient"><span>Кому: выберите контакт ▾</span><button class="compact" disabled>Зашифровать</button></div><div class="draft">До встр<span class="caret"></span>ечи!<br>Возьми документы.</div><div class="draft-service">Черновик · стирается при закрытии</div><div class="notice">Включите «Полный доступ» в Настройках, чтобы шифровать</div><div class="keys"><div class="keyrow"><span class="key">й</span><span class="key">ц</span><span class="key">у</span><span class="key">к</span><span class="key">е</span><span class="key">н</span><span class="key">г</span><span class="key">ш</span><span class="key">щ</span><span class="key">з</span><span class="key">х</span></div><div class="keyrow"><span class="key">ф</span><span class="key">ы</span><span class="key">в</span><span class="key">а</span><span class="key">п</span><span class="key">р</span><span class="key">о</span><span class="key">л</span><span class="key">д</span><span class="key">ж</span><span class="key">э</span></div><div class="keyrow"><span class="key">⇧</span><span class="key">я</span><span class="key">ч</span><span class="key">с</span><span class="key">м</span><span class="key">и</span><span class="key">т</span><span class="key">ь</span><span class="key">б</span><span class="key">ю</span><span class="key">⌫</span></div><div class="keyrow"><span class="key">РУС</span><span class="key">123</span><span class="key">🌐</span><span class="key">пробел</span><span class="key">↵</span></div></div></div></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="keyboard-no-access-375-portrait-light.png" alt="keyboard-no-access-375-portrait-light" width="375" height="667"></figure></div></article>
+<article id="keyboard-no-key-375-portrait-dark"><h2>keyboard-no-key-375-portrait-dark</h2><p>state-keyboard-no-key · SHA256 00673700b9510ecb03a8b0f5709e3607a5cf56d019bb9a12e83298a4a8640ea1</p><div class="compare"><figure><figcaption>375 × 667 pt · Тёмная</figcaption><div class="phone keyboard dark" style="--w:375px;--h:667px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="host"><strong>Анна</strong><div class="bubble">Договорились, до завтра!</div><div class="cipher-bubble">ckmsg2:AQIAIA7u9kV0…</div></div><div class="hostfield">До <span class="caret"></span>встречи!<span class="send">↑</span></div><div class="panel"><div class="compose"><div class="actions"><button class="secondary" disabled>Расшифровать</button><div class="compose-meta"><span>Личный ключ ещё не создан</span><span>Откройте приложение CipherKeyboard, чтобы создать ключ</span></div></div><div class="compose-recipient"><span>Кому: Анна ▾</span><button class="compact" disabled>Зашифровать</button></div><div class="draft">До встр<span class="caret"></span>ечи!<br>Возьми документы.</div><div class="draft-service">Черновик · стирается при закрытии</div><div class="notice">Откройте приложение CipherKeyboard, чтобы создать ключ</div><div class="keys"><div class="keyrow"><span class="key">й</span><span class="key">ц</span><span class="key">у</span><span class="key">к</span><span class="key">е</span><span class="key">н</span><span class="key">г</span><span class="key">ш</span><span class="key">щ</span><span class="key">з</span><span class="key">х</span></div><div class="keyrow"><span class="key">ф</span><span class="key">ы</span><span class="key">в</span><span class="key">а</span><span class="key">п</span><span class="key">р</span><span class="key">о</span><span class="key">л</span><span class="key">д</span><span class="key">ж</span><span class="key">э</span></div><div class="keyrow"><span class="key">⇧</span><span class="key">я</span><span class="key">ч</span><span class="key">с</span><span class="key">м</span><span class="key">и</span><span class="key">т</span><span class="key">ь</span><span class="key">б</span><span class="key">ю</span><span class="key">⌫</span></div><div class="keyrow"><span class="key">РУС</span><span class="key">123</span><span class="key">🌐</span><span class="key">пробел</span><span class="key">↵</span></div></div></div></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="keyboard-no-key-375-portrait-dark.png" alt="keyboard-no-key-375-portrait-dark" width="375" height="667"></figure></div></article>
+<article id="keyboard-no-key-375-portrait-light"><h2>keyboard-no-key-375-portrait-light</h2><p>state-keyboard-no-key · SHA256 df559645110c1ed83932d4652000bff6180863cca12edb57a2d6c3653eb9af49</p><div class="compare"><figure><figcaption>375 × 667 pt · Светлая</figcaption><div class="phone keyboard" style="--w:375px;--h:667px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="host"><strong>Анна</strong><div class="bubble">Договорились, до завтра!</div><div class="cipher-bubble">ckmsg2:AQIAIA7u9kV0…</div></div><div class="hostfield">До <span class="caret"></span>встречи!<span class="send">↑</span></div><div class="panel"><div class="compose"><div class="actions"><button class="secondary" disabled>Расшифровать</button><div class="compose-meta"><span>Личный ключ ещё не создан</span><span>Откройте приложение CipherKeyboard, чтобы создать ключ</span></div></div><div class="compose-recipient"><span>Кому: Анна ▾</span><button class="compact" disabled>Зашифровать</button></div><div class="draft">До встр<span class="caret"></span>ечи!<br>Возьми документы.</div><div class="draft-service">Черновик · стирается при закрытии</div><div class="notice">Откройте приложение CipherKeyboard, чтобы создать ключ</div><div class="keys"><div class="keyrow"><span class="key">й</span><span class="key">ц</span><span class="key">у</span><span class="key">к</span><span class="key">е</span><span class="key">н</span><span class="key">г</span><span class="key">ш</span><span class="key">щ</span><span class="key">з</span><span class="key">х</span></div><div class="keyrow"><span class="key">ф</span><span class="key">ы</span><span class="key">в</span><span class="key">а</span><span class="key">п</span><span class="key">р</span><span class="key">о</span><span class="key">л</span><span class="key">д</span><span class="key">ж</span><span class="key">э</span></div><div class="keyrow"><span class="key">⇧</span><span class="key">я</span><span class="key">ч</span><span class="key">с</span><span class="key">м</span><span class="key">и</span><span class="key">т</span><span class="key">ь</span><span class="key">б</span><span class="key">ю</span><span class="key">⌫</span></div><div class="keyrow"><span class="key">РУС</span><span class="key">123</span><span class="key">🌐</span><span class="key">пробел</span><span class="key">↵</span></div></div></div></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="keyboard-no-key-375-portrait-light.png" alt="keyboard-no-key-375-portrait-light" width="375" height="667"></figure></div></article>
+<article id="keyboard-no-message-375-portrait-dark"><h2>keyboard-no-message-375-portrait-dark</h2><p>state-keyboard-no-message · SHA256 0ef7bb6e821d11d16241de2b8c5a9ab734f14bbdac4d1558dd9b5ce53414a9a2</p><div class="compare"><figure><figcaption>375 × 667 pt · Тёмная</figcaption><div class="phone keyboard dark" style="--w:375px;--h:667px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="host"><strong>Анна</strong><div class="bubble">Договорились, до завтра!</div><div class="cipher-bubble">ckmsg2:AQIAIA7u9kV0…</div></div><div class="hostfield">До <span class="caret"></span>встречи!<span class="send">↑</span></div><div class="panel"><div class="result"><header><strong>Расшифровка</strong></header><div class="error-content"><span class="error-icon">!</span><p class="danger">В буфере нет зашифрованного сообщения. Скопируйте его в чате</p><p class="muted">Закройте панель и повторите попытку.</p></div><footer><button class="secondary">Закрыть</button></footer></div></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="keyboard-no-message-375-portrait-dark.png" alt="keyboard-no-message-375-portrait-dark" width="375" height="667"></figure></div></article>
+<article id="keyboard-no-message-375-portrait-light"><h2>keyboard-no-message-375-portrait-light</h2><p>state-keyboard-no-message · SHA256 5b2a55160bc08a2042cd7d98ef975ea2cafefd1526bab095acda4ea3f7706d7b</p><div class="compare"><figure><figcaption>375 × 667 pt · Светлая</figcaption><div class="phone keyboard" style="--w:375px;--h:667px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="host"><strong>Анна</strong><div class="bubble">Договорились, до завтра!</div><div class="cipher-bubble">ckmsg2:AQIAIA7u9kV0…</div></div><div class="hostfield">До <span class="caret"></span>встречи!<span class="send">↑</span></div><div class="panel"><div class="result"><header><strong>Расшифровка</strong></header><div class="error-content"><span class="error-icon">!</span><p class="danger">В буфере нет зашифрованного сообщения. Скопируйте его в чате</p><p class="muted">Закройте панель и повторите попытку.</p></div><footer><button class="secondary">Закрыть</button></footer></div></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="keyboard-no-message-375-portrait-light.png" alt="keyboard-no-message-375-portrait-light" width="375" height="667"></figure></div></article>
+<article id="keyboard-oversize-375-portrait-dark"><h2>keyboard-oversize-375-portrait-dark</h2><p>state-keyboard-oversize · SHA256 44541250c037560603b19e16148db07039e95c3c36460698f04dfa7a80f53ccc</p><div class="compare"><figure><figcaption>375 × 667 pt · Тёмная</figcaption><div class="phone keyboard dark" style="--w:375px;--h:667px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="host"><strong>Анна</strong><div class="bubble">Договорились, до завтра!</div><div class="cipher-bubble">ckmsg2:AQIAIA7u9kV0…</div></div><div class="hostfield">До <span class="caret"></span>встречи!<span class="send">↑</span></div><div class="panel"><div class="result"><header><strong>Расшифровка</strong></header><div class="error-content"><span class="error-icon">!</span><p class="danger">Слишком большой текст для вставки: максимум 65536 байт</p><p class="muted">Закройте панель и повторите попытку.</p></div><footer><button class="secondary">Закрыть</button></footer></div></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="keyboard-oversize-375-portrait-dark.png" alt="keyboard-oversize-375-portrait-dark" width="375" height="667"></figure></div></article>
+<article id="keyboard-oversize-375-portrait-light"><h2>keyboard-oversize-375-portrait-light</h2><p>state-keyboard-oversize · SHA256 eae2c32c3cb2876876e242af88ad5af532694a3ab4d3a58075ba2feddf92ac21</p><div class="compare"><figure><figcaption>375 × 667 pt · Светлая</figcaption><div class="phone keyboard" style="--w:375px;--h:667px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="host"><strong>Анна</strong><div class="bubble">Договорились, до завтра!</div><div class="cipher-bubble">ckmsg2:AQIAIA7u9kV0…</div></div><div class="hostfield">До <span class="caret"></span>встречи!<span class="send">↑</span></div><div class="panel"><div class="result"><header><strong>Расшифровка</strong></header><div class="error-content"><span class="error-icon">!</span><p class="danger">Слишком большой текст для вставки: максимум 65536 байт</p><p class="muted">Закройте панель и повторите попытку.</p></div><footer><button class="secondary">Закрыть</button></footer></div></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="keyboard-oversize-375-portrait-light.png" alt="keyboard-oversize-375-portrait-light" width="375" height="667"></figure></div></article>
+<article id="keyboard-paste-error-375-portrait-dark"><h2>keyboard-paste-error-375-portrait-dark</h2><p>state-keyboard-paste-error · SHA256 af317ce614513be1fbd5e92bb099eb7cf57e881a124db84d8818509ba82848f6</p><div class="compare"><figure><figcaption>375 × 667 pt · Тёмная</figcaption><div class="phone keyboard dark" style="--w:375px;--h:667px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="host"><strong>Анна</strong><div class="bubble">Договорились, до завтра!</div><div class="cipher-bubble">ckmsg2:AQIAIA7u9kV0…</div></div><div class="hostfield">До <span class="caret"></span>встречи!<span class="send">↑</span></div><div class="panel"><div class="result"><header><strong>Расшифровка</strong></header><div class="error-content"><span class="error-icon">!</span><p class="danger">Нет доступа к буферу обмена</p><p class="muted">Настройки → Приложения → CipherKeyboard → Вставка из других приложений → Разрешить. Чтение — только по нажатию.</p></div><footer><button class="secondary">Закрыть</button></footer></div></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="keyboard-paste-error-375-portrait-dark.png" alt="keyboard-paste-error-375-portrait-dark" width="375" height="667"></figure></div></article>
+<article id="keyboard-paste-error-375-portrait-light"><h2>keyboard-paste-error-375-portrait-light</h2><p>state-keyboard-paste-error · SHA256 c224012d7f5b74156837bbbe46096febeb877d80f2a1a67e8cb12ca76b0f3cf4</p><div class="compare"><figure><figcaption>375 × 667 pt · Светлая</figcaption><div class="phone keyboard" style="--w:375px;--h:667px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="host"><strong>Анна</strong><div class="bubble">Договорились, до завтра!</div><div class="cipher-bubble">ckmsg2:AQIAIA7u9kV0…</div></div><div class="hostfield">До <span class="caret"></span>встречи!<span class="send">↑</span></div><div class="panel"><div class="result"><header><strong>Расшифровка</strong></header><div class="error-content"><span class="error-icon">!</span><p class="danger">Нет доступа к буферу обмена</p><p class="muted">Настройки → Приложения → CipherKeyboard → Вставка из других приложений → Разрешить. Чтение — только по нажатию.</p></div><footer><button class="secondary">Закрыть</button></footer></div></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="keyboard-paste-error-375-portrait-light.png" alt="keyboard-paste-error-375-portrait-light" width="375" height="667"></figure></div></article>
+<article id="keyboard-self-375-portrait-dark"><h2>keyboard-self-375-portrait-dark</h2><p>state-keyboard-self · SHA256 547f6ceddf64ab388a71083eb8b1e96159d2dd0c5d42a5e83d7e4b49e0f6d1b7</p><div class="compare"><figure><figcaption>375 × 667 pt · Тёмная</figcaption><div class="phone keyboard dark" style="--w:375px;--h:667px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="host"><strong>Анна</strong><div class="bubble">Договорились, до завтра!</div><div class="cipher-bubble">ckmsg2:AQIAIA7u9kV0…</div></div><div class="hostfield">До <span class="caret"></span>встречи!<span class="send">↑</span></div><div class="panel"><div class="result"><header><strong>Расшифровано</strong><span aria-hidden="true">♧</span></header><div class="result-main"><div class="identity"><strong class="sender">От: вы</strong><p class="signature">✓ Подпись верна</p><p class="message-date">Дата по часам отправителя: 03.11.2026, 09:41</p></div><div class="plaintext" tabindex="0">  Привет, Анна!
+Завтра в 19:30 👨‍👩‍👧‍👦  </div></div><footer><button class="primary">Закрыть</button></footer></div></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="keyboard-self-375-portrait-dark.png" alt="keyboard-self-375-portrait-dark" width="375" height="667"></figure></div></article>
+<article id="keyboard-self-375-portrait-light"><h2>keyboard-self-375-portrait-light</h2><p>state-keyboard-self · SHA256 7e8040d6718cb63adf3b21366331eca366696d58146c94abe85d8cafd5aa0909</p><div class="compare"><figure><figcaption>375 × 667 pt · Светлая</figcaption><div class="phone keyboard" style="--w:375px;--h:667px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="host"><strong>Анна</strong><div class="bubble">Договорились, до завтра!</div><div class="cipher-bubble">ckmsg2:AQIAIA7u9kV0…</div></div><div class="hostfield">До <span class="caret"></span>встречи!<span class="send">↑</span></div><div class="panel"><div class="result"><header><strong>Расшифровано</strong><span aria-hidden="true">♧</span></header><div class="result-main"><div class="identity"><strong class="sender">От: вы</strong><p class="signature">✓ Подпись верна</p><p class="message-date">Дата по часам отправителя: 03.11.2026, 09:41</p></div><div class="plaintext" tabindex="0">  Привет, Анна!
+Завтра в 19:30 👨‍👩‍👧‍👦  </div></div><footer><button class="primary">Закрыть</button></footer></div></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="keyboard-self-375-portrait-light.png" alt="keyboard-self-375-portrait-light" width="375" height="667"></figure></div></article>
+<article id="keyboard-unknown-375-portrait-dark"><h2>keyboard-unknown-375-portrait-dark</h2><p>state-keyboard-unknown · SHA256 2c40a8481359b9c9d7a1676202d78cf5ed290da4fa735f5ef091e4d8ec70d6b6</p><div class="compare"><figure><figcaption>375 × 667 pt · Тёмная</figcaption><div class="phone keyboard dark" style="--w:375px;--h:667px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="host"><strong>Анна</strong><div class="bubble">Договорились, до завтра!</div><div class="cipher-bubble">ckmsg2:AQIAIA7u9kV0…</div></div><div class="hostfield">До <span class="caret"></span>встречи!<span class="send">↑</span></div><div class="panel"><div class="result"><header><strong>Расшифровано</strong><span aria-hidden="true">♧</span></header><div class="result-main"><div class="identity"><strong class="sender">От неизвестного ключа A1B2 C3D4</strong><p class="signature">✓ Подпись верна</p><p class="message-date">Дата по часам отправителя: 03.11.2026, 09:41</p><p class="muted">Добавьте контакт в приложении, чтобы видеть имя</p></div><div class="plaintext" tabindex="0">  Привет, Анна!
+Завтра в 19:30 👨‍👩‍👧‍👦  </div></div><footer><button class="primary">Закрыть</button></footer></div></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="keyboard-unknown-375-portrait-dark.png" alt="keyboard-unknown-375-portrait-dark" width="375" height="667"></figure></div></article>
+<article id="keyboard-unknown-375-portrait-light"><h2>keyboard-unknown-375-portrait-light</h2><p>state-keyboard-unknown · SHA256 852ee1178e359e3c17adc5a19ba8cf5445c6e8caffff1dd367672163700e0204</p><div class="compare"><figure><figcaption>375 × 667 pt · Светлая</figcaption><div class="phone keyboard" style="--w:375px;--h:667px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="host"><strong>Анна</strong><div class="bubble">Договорились, до завтра!</div><div class="cipher-bubble">ckmsg2:AQIAIA7u9kV0…</div></div><div class="hostfield">До <span class="caret"></span>встречи!<span class="send">↑</span></div><div class="panel"><div class="result"><header><strong>Расшифровано</strong><span aria-hidden="true">♧</span></header><div class="result-main"><div class="identity"><strong class="sender">От неизвестного ключа A1B2 C3D4</strong><p class="signature">✓ Подпись верна</p><p class="message-date">Дата по часам отправителя: 03.11.2026, 09:41</p><p class="muted">Добавьте контакт в приложении, чтобы видеть имя</p></div><div class="plaintext" tabindex="0">  Привет, Анна!
+Завтра в 19:30 👨‍👩‍👧‍👦  </div></div><footer><button class="primary">Закрыть</button></footer></div></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="keyboard-unknown-375-portrait-light.png" alt="keyboard-unknown-375-portrait-light" width="375" height="667"></figure></div></article>
+<article id="keyboard-version-375-portrait-dark"><h2>keyboard-version-375-portrait-dark</h2><p>state-keyboard-version · SHA256 dd5bd2c2083612403e0553e5e2fd1e1bf52a36e5a7c73cd04170f8bcfb62d765</p><div class="compare"><figure><figcaption>375 × 667 pt · Тёмная</figcaption><div class="phone keyboard dark" style="--w:375px;--h:667px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="host"><strong>Анна</strong><div class="bubble">Договорились, до завтра!</div><div class="cipher-bubble">ckmsg2:AQIAIA7u9kV0…</div></div><div class="hostfield">До <span class="caret"></span>встречи!<span class="send">↑</span></div><div class="panel"><div class="result"><header><strong>Расшифровка</strong></header><div class="error-content"><span class="error-icon">!</span><p class="danger">Сообщение из более новой версии CipherKeyboard — обновите приложение</p><p class="muted">Закройте панель и повторите попытку.</p></div><footer><button class="secondary">Закрыть</button></footer></div></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="keyboard-version-375-portrait-dark.png" alt="keyboard-version-375-portrait-dark" width="375" height="667"></figure></div></article>
+<article id="keyboard-version-375-portrait-light"><h2>keyboard-version-375-portrait-light</h2><p>state-keyboard-version · SHA256 8af515d80b366e2a6e307eddb8192a899a47408af06c4acd8362f6dce2aacae6</p><div class="compare"><figure><figcaption>375 × 667 pt · Светлая</figcaption><div class="phone keyboard" style="--w:375px;--h:667px"><div class="status"><span>9:41</span><span>●●● ▰</span></div><div class="host"><strong>Анна</strong><div class="bubble">Договорились, до завтра!</div><div class="cipher-bubble">ckmsg2:AQIAIA7u9kV0…</div></div><div class="hostfield">До <span class="caret"></span>встречи!<span class="send">↑</span></div><div class="panel"><div class="result"><header><strong>Расшифровка</strong></header><div class="error-content"><span class="error-icon">!</span><p class="danger">Сообщение из более новой версии CipherKeyboard — обновите приложение</p><p class="muted">Закройте панель и повторите попытку.</p></div><footer><button class="secondary">Закрыть</button></footer></div></div><div class="safe"><span></span></div></div></figure><figure><figcaption>Оригинал из Simulator</figcaption><img loading="lazy" src="keyboard-version-375-portrait-light.png" alt="keyboard-version-375-portrait-light" width="375" height="667"></figure></div></article></body></html>

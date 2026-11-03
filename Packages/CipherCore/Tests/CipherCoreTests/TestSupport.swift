@@ -43,9 +43,9 @@ func decodeBase64url(_ text: Substring) -> [UInt8]? {
     return Data(base64Encoded: standard).map { Array($0) }
 }
 
-/// Тело сообщения `ckmsg1:…` в байтах.
+/// Тело сообщения `ckmsg1` или `ckmsg2` в байтах.
 func decodedMessage(_ message: String) -> [UInt8]? {
-    guard message.hasPrefix("ckmsg1:") else { return nil }
+    guard message.hasPrefix("ckmsg1:") || message.hasPrefix("ckmsg2:") else { return nil }
     return decodeBase64url(message.dropFirst(7))
 }
 
@@ -148,7 +148,7 @@ enum Forge {
         commitment: [UInt8], textMessageKey: [UInt8], plain: [UInt8]
     ) throws -> Envelope {
         var envelope = Envelope(
-            senderKey: try #require(rawKey(sender.publicKey)),
+            version: .legacy, senderKey: try #require(rawKey(sender.publicKey)),
             ephemeralKey: Array(ephemeral.publicKey.rawRepresentation),
             entries: entries, commitment: commitment, nonce: Array(ChaChaPoly.Nonce()),
             ciphertext: [UInt8](repeating: 0, count: plain.count + 16), signature: [])

@@ -1,0 +1,84 @@
+Attributes: Application, 0x10ae04b40, pid: 79144, label: 'CipherKeyboard'
+Element subtree:
+ →Application, 0x10ae04b40, pid: 79144, label: 'CipherKeyboard'
+    Window (Main), 0x10ae05680, {{0.0, 0.0}, {402.0, 874.0}}
+      Other, 0x10ae07340, {{0.0, 0.0}, {402.0, 874.0}}
+      Other, 0x10ae06800, {{0.0, 0.0}, {402.0, 874.0}}
+        Other, 0x10ae06a80, {{0.0, 0.0}, {402.0, 874.0}}
+          Other, 0x10ae05a40, {{0.0, 0.0}, {402.0, 874.0}}
+            Other, 0x10ae06f80, {{0.0, 0.0}, {402.0, 874.0}}
+              Other, 0x10ae066c0, {{0.0, 0.0}, {402.0, 874.0}}
+                Other, 0x10ae057c0, {{0.0, 0.0}, {402.0, 874.0}}
+                  Other, 0x10ae06080, {{0.0, 0.0}, {402.0, 874.0}}
+                    Other, 0x10ae061c0, {{0.0, 0.0}, {402.0, 874.0}}
+                      Other, 0x10ae04280, {{0.0, 0.0}, {402.0, 874.0}}
+                        Other, 0x10ae04c80, {{0.0, 0.0}, {402.0, 874.0}}
+                          StaticText, 0x10ae043c0, {{381.0, 61.8}, {1.0, 1.3}}, identifier: 'decrypt.debugLifetime', label: 'coordinators=2;operations=0'
+                          StaticText, 0x10ae04dc0, {{20.0, 70.0}, {250.0, 40.7}}, label: 'Расшифровать'
+                          Other, 0x10ae06bc0, {{20.0, 126.7}, {362.0, 664.3}}, identifier: 'decrypt.panel'
+                            StaticText, 0x10ae07700, {{34.0, 138.7}, {303.0, 20.3}}, identifier: 'decrypt.title', label: 'Расшифровано'
+                            Image, 0x10ae05b80, {{344.0, 138.7}, {22.0, 20.7}}, identifier: 'lock.open', label: 'разблокировать'
+                            Other, 0x10ae07840, {{20.0, 164.7}, {362.0, 0.3}}
+                            Other, 0x10ae075c0, {{34.0, 171.0}, {334.0, 548.0}}
+                              Other, 0x10ae04640, {{34.0, 171.0}, {334.0, 548.0}}
+                                ScrollView, 0x10ae07c00, {{34.0, 171.0}, {334.0, 68.3}}
+                                  Other, 0x10ae04780, {{34.0, 171.0}, {334.0, 68.3}}
+                                    StaticText, 0x10ae07ac0, {{34.0, 171.0}, {334.0, 20.3}}, identifier: 'decrypt.sender', label: 'От: Анна'
+                                    StaticText, 0x10ae04140, {{34.0, 197.3}, {334.0, 18.0}}, identifier: 'decrypt.signature', label: '✓ Подпись верна'
+                                    StaticText, 0x10ae04a00, {{34.0, 221.3}, {334.0, 18.0}}, identifier: 'decrypt.date', label: 'Дата по часам отправителя: 03.11.2026, 20:58'
+                                  Other, 0x10ae05040, {{335.0, 171.0}, {30.0, 68.3}}, label: 'Вертикальная полоса прокрутки, 1 страница', value: 0 %
+                                    Other, 0x10ae06580, {{362.0, 132.0}, {3.0, 36.0}}
+                                  Other, 0x10ae04f00, {{335.0, 171.0}, {30.0, 68.3}}, label: 'Вертикальная полоса прокрутки, 1 страница', value: 0 %
+                                    Other, 0x10ae048c0, {{362.0, 132.0}, {3.0, 36.0}}
+                                ScrollView, 0x10ae05e00, {{34.0, 251.3}, {334.0, 467.7}}
+                                  Other, 0x10ae05400, {{34.0, 251.3}, {334.0, 467.7}}
+                                    StaticText, 0x10ae05f40, {{44.0, 261.3}, {314.0, 42.3}}, identifier: 'decrypt.text', label: '  Привет, Анна!
+Завтра в 19:30 👨‍👩‍👧‍👦  '
+                                  Other, 0x10ae04500, {{335.0, 251.3}, {30.0, 467.7}}, label: 'Вертикальная полоса прокрутки, 1 страница', value: 0 %
+                                    Other, 0x10ae05180, {{362.0, 212.3}, {3.0, 36.0}}
+                                  Other, 0x10ae052c0, {{335.0, 251.3}, {30.0, 467.7}}, label: 'Вертикальная полоса прокрутки, 1 страница', value: 0 %
+                                    Other, 0x10ae05540, {{362.0, 212.3}, {3.0, 36.0}}
+                            Other, 0x10ae06300, {{20.0, 724.7}, {362.0, 0.3}}
+                            Button, 0x10a6fb0c0, {{34.0, 731.0}, {334.0, 48.0}}, identifier: 'decrypt.close', label: 'Закрыть'
+                              StaticText, 0x10a6fb700, {{165.7, 744.7}, {71.0, 21.0}}, label: 'Закрыть'
+                Other, 0x10a6fabc0, {{0.0, 0.0}, {402.0, 874.0}}
+                  Other, 0x10a6fb200, {{0.0, 791.0}, {402.0, 83.0}}
+                    Other, 0x10a6fa1c0, {{0.0, 0.0}, {402.0, 874.0}}
+                      TabBar, 0x10a6fae40, {{0.0, 791.0}, {402.0, 83.0}}, label: 'Панель вкладок'
+                        Other, 0x10a6fa440, {{21.0, 791.0}, {360.0, 62.0}}
+                          Other, 0x10a6fb840, {{21.0, 791.0}, {125.0, 54.0}}
+                          Other, 0x10a6fad00, {{21.0, 791.0}, {360.0, 62.0}}
+                            Button, 0x10a6fbc00, {{25.0, 795.0}, {94.5, 54.0}}, identifier: 'tab.myKey', label: 'Мой ключ'
+                              Image, 0x10a6fa080, {{62.0, 798.7}, {20.7, 32.3}}, identifier: 'key.fill', label: 'пароли'
+                            Button, 0x10ade5900, {{99.5, 795.0}, {92.5, 54.0}}, identifier: 'tab.contacts', label: 'Контакты'
+                              Image, 0x10ade6440, {{127.1, 802.7}, {37.0, 26.0}}, identifier: 'person.2.fill', label: 'Два человека, с заливкой'
+                            Button, 0x10ade7200, {{172.0, 795.0}, {125.0, 54.0}}, identifier: 'tab.decrypt', label: 'Расшифровать', Selected
+                              Image, 0x10ade5040, {{219.6, 801.3}, {29.7, 26.7}}, identifier: 'lock.open.fill', label: 'разблокировать'
+                            Button, 0x10ade4dc0, {{277.0, 795.0}, {100.0, 54.0}}, identifier: 'tab.setup', label: 'Настройка'
+                              Image, 0x10ade5180, {{313.0, 801.0}, {28.0, 28.0}}, identifier: 'gearshape.fill', label: 'Форма шестеренки, с заливкой'
+                          Other, 0x10ade7e80, {{21.0, 791.0}, {360.0, 62.0}}
+                          Other, 0x10ade5540, {{172.0, 795.0}, {125.0, 54.0}}
+                            Other, 0x10ade52c0, {{172.0, 795.0}, {124.7, 54.0}}
+                              Other, 0x10ade6d00, {{172.0, 795.0}, {124.7, 54.0}}
+                              Other, 0x10ade6940, {{172.0, 795.0}, {124.7, 54.0}}
+                                Other, 0x10ade6f80, {{172.0, 795.0}, {124.7, 54.0}}
+                                  Other, 0x10ade57c0, {{172.0, 795.0}, {124.7, 54.0}}
+                                    Other, 0x10ade5b80, {{172.0, 795.0}, {124.7, 54.0}}
+                                  Other, 0x10ae61b80, {{172.0, 795.0}, {124.7, 54.0}}
+                                Other, 0x10ae61cc0, {{172.0, 795.0}, {124.7, 54.0}}
+                    Other, 0x10ae61e00, {{0.0, 791.0}, {402.0, 83.0}}
+                      Other, 0x10ae61f40, {{0.0, 791.0}, {402.0, 83.0}}
+                        Other, 0x10ae62080, {{0.0, 791.0}, {402.0, 83.0}}
+                          Other, 0x10ae63c00, {{0.0, 791.0}, {402.0, 83.0}}
+                            Other, 0x10ae63d40, {{0.0, 791.0}, {402.0, 83.0}}
+                              Other, 0x10ae63e80, {{0.0, 791.0}, {402.0, 83.0}}
+                          Other, 0x10ae62300, {{0.0, 791.0}, {402.0, 83.0}}
+                            Other, 0x10ae63700, {{0.0, 791.0}, {402.0, 83.0}}
+              Other, 0x10ae63ac0, {{0.0, 62.0}, {402.0, 778.0}}
+Path to element:
+ →Application, 0x10ae04b40, pid: 79144, label: 'CipherKeyboard'
+Query chain:
+ →Find: Target Application 'dev.cipherkeyboard.app'
+  Output: {
+    Application, 0x10ae63980, pid: 79144, label: 'CipherKeyboard'
+  }

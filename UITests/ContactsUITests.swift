@@ -47,7 +47,7 @@ final class ContactsUITests: XCTestCase {
         XCTAssertTrue(app.buttons["addcontact.save"].isEnabled)
 
         // 6) Сохранить → лист закрыт, одна строка, «+» вместо «Добавить контакт».
-        app.buttons["addcontact.save"].tap()
+        savePoint("addcontact.save", in: app).tap()
         XCTAssertTrue(title.waitForNonExistence(timeout: 5))
         let expectedLabel = "Тест Анна, \(TestKeys.k1.shortFingerprint)"
         let rows = contactRows(app)
@@ -153,7 +153,7 @@ final class ContactsUITests: XCTestCase {
         XCTAssertTrue(save.isEnabled)
 
         // 7) Две строки: «Анна», «Аня».
-        save.tap()
+        savePoint("addcontact.save", in: app).tap()
         XCTAssertTrue(app.staticTexts["addcontact.title"].waitForNonExistence(timeout: 5))
         let rows = contactRows(app)
         XCTAssertTrue(waitForCount(rows, 2))
@@ -200,7 +200,7 @@ final class ContactsUITests: XCTestCase {
         // 5) «  Анна  » сохраняется без пробелов по краям.
         enterName("  Анна  ", in: app)
         XCTAssertTrue(save.isEnabled)
-        save.tap()
+        savePoint("addcontact.save", in: app).tap()
         let rows = contactRows(app)
         XCTAssertTrue(rows.firstMatch.waitForExistence(timeout: 5))
         XCTAssertTrue(rows.firstMatch.label.hasPrefix("Анна,"), rows.firstMatch.label)
@@ -217,12 +217,9 @@ final class ContactsUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["addcontact.fingerprint"].waitForExistence(timeout: 5))
         enterName("Анна", in: app)
 
-        let save = app.buttons["addcontact.save"]
-        XCTAssertTrue(save.isEnabled)
         // Точка в координатах окна, вычисленная заранее: второе нажатие идёт туда же, даже если кнопка исчезает.
-        let frame = save.frame
-        let point = app.coordinate(withNormalizedOffset: .zero).withOffset(CGVector(dx: frame.midX, dy: frame.midY))
-        save.tap()
+        let point = savePoint("addcontact.save", in: app)
+        point.tap()
         point.tap()
         // Если лист уже закрылся, второе нажатие попадает в таб-бар под кнопкой — вернуться к списку.
         let contactsTab = app.navigationTab("tab.contacts")
@@ -265,7 +262,7 @@ final class ContactsUITests: XCTestCase {
         XCTAssertTrue(renameField.waitForExistence(timeout: 5))
         XCTAssertEqual(renameField.value as? String, "Яна")
         replaceText(in: renameField, with: "Анна", app: app)
-        app.buttons["rename.save"].tap()
+        savePoint("rename.save", in: app).tap()
         XCTAssertTrue(renameField.waitForNonExistence(timeout: 5))
         XCTAssertTrue(waitForLabel(title, "Анна"))
         XCTAssertEqual(title.label, "Анна")
@@ -365,7 +362,7 @@ final class ContactsUITests: XCTestCase {
         XCTAssertEqual(fingerprint.label, TestKeys.k1.fingerprint)
         XCTAssertFalse(app.buttons["addcontact.save"].isEnabled)
         enterName("Анна", in: app)
-        app.buttons["addcontact.save"].tap()
+        savePoint("addcontact.save", in: app).tap()
         XCTAssertTrue(app.staticTexts["addcontact.title"].waitForNonExistence(timeout: 5))
         XCTAssertTrue(contactRows(app).firstMatch.waitForExistence(timeout: 5))
         XCTAssertEqual(rowNames(app), ["Анна"])
@@ -534,7 +531,7 @@ final class ContactsUITests: XCTestCase {
         let field = app.textFields["rename.name"]
         XCTAssertTrue(field.waitForExistence(timeout: 5))
         replaceText(in: field, with: "Анна", app: app)
-        app.buttons["rename.save"].tap()
+        savePoint("rename.save", in: app).tap()
         XCTAssertTrue(app.staticTexts["rename.readError"].waitForExistence(timeout: 5))
         XCTAssertEqual(field.value as? String, "Анна")
         XCTAssertFalse(app.buttons["rename.save"].isEnabled)
@@ -542,7 +539,7 @@ final class ContactsUITests: XCTestCase {
         app.buttons["rename.retry"].tap()
         XCTAssertTrue(app.staticTexts["rename.readError"].waitForNonExistence(timeout: 5))
         XCTAssertEqual(field.value as? String, "Анна")
-        app.buttons["rename.save"].tap()
+        savePoint("rename.save", in: app).tap()
         XCTAssertTrue(field.waitForNonExistence(timeout: 5))
         XCTAssertEqual(app.staticTexts["contact.title"].label, "Анна")
     }
@@ -609,11 +606,31 @@ final class ContactsUITests: XCTestCase {
         enterKey(key, in: app)
         XCTAssertTrue(app.staticTexts["addcontact.fingerprint"].waitForExistence(timeout: 5))
         enterName(name, in: app)
-        let save = app.buttons["addcontact.save"]
-        XCTAssertTrue(save.isEnabled)
-        save.tap()
+        savePoint("addcontact.save", in: app).tap()
         XCTAssertTrue(app.staticTexts["addcontact.title"].waitForNonExistence(timeout: 5))
         XCTAssertTrue(contactRows(app).firstMatch.waitForExistence(timeout: 5))
+    }
+
+    @MainActor
+    private func savePoint(_ identifier: String, in app: XCUIApplication) -> XCUICoordinate {
+        let save = app.buttons[identifier]
+        let keyboard = app.keyboards.firstMatch
+        var offset = CGVector.zero
+        let ready = XCTNSPredicateExpectation(
+            predicate: NSPredicate { _, _ in
+                let window = app.frame
+                let button = save.frame
+                let keys = keyboard.exists ? keyboard.frame : .null
+                guard save.exists && save.isEnabled && save.isHittable,
+                    !button.isEmpty && window.contains(button) && !button.intersects(keys)
+                else { return false }
+
+                offset = CGVector(dx: button.midX - window.minX, dy: button.midY - window.minY)
+                return true
+            }, object: nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [ready], timeout: 5), .completed, app.debugDescription)
+        // Use the center from the qualified sample. Another AX read can lose the keyboard layout.
+        return app.coordinate(withNormalizedOffset: .zero).withOffset(offset)
     }
 
     @MainActor
@@ -651,29 +668,51 @@ final class ContactsUITests: XCTestCase {
         replaceText(in: field, with: text, app: app)
     }
 
-    /// Стирает текст поля целиком и вводит новый. Курсор ставится в конец нажатием у правого нижнего края текста.
+    /// Стирает через настоящее выделение/удаление, включая меню подсказок для одного слова.
     @MainActor
     private func replaceText(in field: XCUIElement, with text: String, app: XCUIApplication) {
         func currentText() -> String {
             let value = (field.value as? String) ?? ""
             return value == (field.placeholderValue ?? "") ? "" : value
         }
-        // Сначала XCTest раскрывает само поле и ставит фокус. На 375 pt прежняя экранная координата
-        // могла лежать на клавиатуре и менять ключ вместо имени. После фокуса берём обновлённую рамку.
+        func waitForText(_ expected: String) {
+            let arrived = XCTNSPredicateExpectation(
+                predicate: NSPredicate { _, _ in currentText() == expected }, object: nil)
+            XCTAssertEqual(
+                XCTWaiter.wait(for: [arrived], timeout: 5), .completed,
+                "ожидали точный текст «\(expected)», получили «\(currentText())»")
+        }
         field.tap()
-        // Нажатие в правый нижний угол текста (внутри отступа 12 pt) ставит курсор в конец последней строки.
-        let frame = field.frame
-        let end = app.coordinate(withNormalizedOffset: .zero)
-            .withOffset(CGVector(dx: frame.maxX - 14, dy: frame.maxY - 14))
-        end.tap()
-        var attempts = 0
-        while !currentText().isEmpty && attempts < 3 {
-            attempts += 1
-            field.typeText(String(repeating: XCUIKeyboardKey.delete.rawValue, count: currentText().count + 2))
-            if !currentText().isEmpty { end.tap() }
+        let selectAll = app.descendants(matching: .any).matching(
+            NSPredicate(
+                format: "label IN %@", ["Select All", "Выбрать всё", "Выделить всё", "Выбрать все", "Выделить все"]
+            )
+        ).firstMatch
+        if currentText().contains(where: { $0.isWhitespace }) || currentText().hasPrefix("ckpub") {
+            field.press(forDuration: 1.1)
+            if selectAll.waitForExistence(timeout: 1) {
+                selectAll.tap()
+                field.typeText(XCUIKeyboardKey.delete.rawValue)
+                waitForText("")
+            }
+        }
+        let maximumAttempts = currentText().utf16.count + 1
+        for _ in 0..<maximumAttempts where !currentText().isEmpty {
+            let before = currentText()
+            field.doubleTap()
+            // A one-word value is already selected by double tap. iOS may offer only spelling
+            // suggestions in that case; Select All is optional, but real empty/exact checks aren't.
+            if selectAll.waitForExistence(timeout: 1) { selectAll.tap() }
+            field.typeText(XCUIKeyboardKey.delete.rawValue)
+            let removed = XCTNSPredicateExpectation(
+                predicate: NSPredicate { _, _ in currentText() != before }, object: nil)
+            XCTAssertEqual(
+                XCTWaiter.wait(for: [removed], timeout: 5), .completed,
+                "удаление не изменило поле: \(app.debugDescription)")
         }
         XCTAssertEqual(currentText(), "", "поле не очистилось")
         if !text.isEmpty { field.typeText(text) }
+        waitForText(text)
     }
 
     @MainActor

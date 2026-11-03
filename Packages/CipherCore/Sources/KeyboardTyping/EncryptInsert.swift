@@ -65,8 +65,9 @@ import Foundation
         }
     }
     public var onChange: (() -> Void)?
+    public var externallyBlocked: () -> Bool = { false }
     private let access: () -> Bool
-    private let identityReader: () -> IdentityReadResult
+    private let identityAccess: KeyboardIdentityAccess
     private let contactsReader: () -> ContactsReadResult
     private let preference: any RecipientPreference
     private weak var host: (any CiphertextHost)?
@@ -81,9 +82,10 @@ import Foundation
     private var successTimer: UUID?
     public var sessionActive: Bool { active }
     public var permitted: Bool { access() }
-    public var canSelect: Bool { active && access() && !busy }
+    public var canSelect: Bool { active && access() && !busy && !externallyBlocked() }
     public var canEncrypt: Bool {
-        active && access() && !busy && identityKey != nil && selected != nil && !contactsUnreadable
+        active && access() && !busy && !externallyBlocked() && identityKey != nil && selected != nil
+            && !contactsUnreadable
             && !adapter.input.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
             && adapter.input.byteCount <= CipherMessage.maxPlaintextBytes
     }
@@ -101,7 +103,8 @@ import Foundation
     public init(
         adapter: KeyboardInputAdapter, host: any CiphertextHost, preference: any RecipientPreference,
         access: @escaping () -> Bool,
-        identity: @escaping () -> IdentityReadResult = { IdentityReader.keychain.read() },
+        identity: (() -> IdentityReadResult)? = nil,
+        identityMetadata: (() -> IdentityMetadataReadResult)? = nil,
         contacts: @escaping () -> ContactsReadResult = { ContactsReader.appGroup.read() },
         clock: any KeyboardClock = SystemKeyboardClock(),
         seal: @escaping Sealer = { text, identity, recipient in
@@ -109,14 +112,15 @@ import Foundation
         }
     ) {
         self.adapter = adapter; self.host = host; self.preference = preference; self.access = access
-        identityReader = identity; contactsReader = contacts; self.clock = clock; self.seal = seal
+        identityAccess = KeyboardIdentityAccess(identity: identity, metadata: identityMetadata)
+        contactsReader = contacts; self.clock = clock; self.seal = seal
     }
     public func open() {
         if active { refresh(); return }
         active = true; session = UUID(); error = nil; success = nil
         guard gate() else { return }
         let remembered = preference.recipientID
-        _ = readIdentity()
+        _ = readIdentityMetadata()
         if readContacts(), let remembered {
             selected = contacts.first { $0.id == remembered }
             if selected == nil { preference.recipientID = nil }
@@ -126,7 +130,7 @@ import Foundation
     public func refresh() {
         guard active, !busy, gate() else { return }
         error = nil
-        _ = readIdentity()
+        _ = readIdentityMetadata()
         _ = readContacts()
         onChange?()
     }
@@ -142,7 +146,7 @@ import Foundation
             onChange?(); return
         }
         selected = contact; preference.recipientID = id; pickerOpen = false
-        error = nil; success = nil; _ = readIdentity(); onChange?()
+        error = nil; success = nil; _ = readIdentityMetadata(); onChange?()
     }
     public func hide() {
         active = false; session = UUID(); operation = nil; task?.cancel(); task = nil
@@ -156,13 +160,13 @@ import Foundation
         begin(text: adapter.input.text)
     }
     private func begin(text: String) {
-        guard active, !busy, gate(), let host else { return }
+        guard active, !busy, !externallyBlocked(), gate(), let host else { return }
         error = nil; success = nil
         guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { onChange?(); return }
         guard text.utf8.count <= CipherMessage.maxPlaintextBytes else {
             error = "Слишком длинное сообщение: \(text.utf8.count) из 4096 байт"; onChange?(); return
         }
-        guard let sender = readIdentity() else { onChange?(); return }
+        guard let sender = readIdentityMetadata() else { onChange?(); return }
         guard readContacts(), let recipient = selected else { onChange?(); return }
         guard !host.hasSelection else { error = Self.selectionMessage; onChange?(); return }
         let document = host.documentIdentifier
@@ -170,35 +174,75 @@ import Foundation
         operation = token; busy = true; adapter.cancelGesture(); adapter.interactionEnabled = false
         onChange?()
         let sealer = seal
+        let readSecret = identityAccess.readSecret
         task = Task { [weak self] in
+            defer {
+                self?.finish(session: activeSession, token: token)
+            }
+            guard self?.canUseKey(session: activeSession, token: token, document: document) == true else { return }
             do {
-                let ciphertext = try await sealer(text, sender, recipient.publicKey)
+                let ciphertext: String
+                do {
+                    guard let loaded = await readSecret() else { return }
+                    guard self?.canUseKey(session: activeSession, token: token, document: document) == true,
+                        let identity = self?.validateSecret(loaded, expected: sender)
+                    else { return }
+                    ciphertext = try await sealer(text, identity, recipient.publicKey)
+                }
                 guard let self, self.active, self.session == activeSession, self.operation == token else { return }
-                self.commit(ciphertext, sender: sender.publicKey, recipient: recipient, document: document)
+                self.commit(
+                    ciphertext, sender: sender, recipient: recipient, document: document,
+                    session: activeSession, token: token)
             } catch {
                 guard let self, self.active, self.session == activeSession, self.operation == token else { return }
                 if self.gate() { self.error = Self.failureMessage }
             }
-            guard let self, self.session == activeSession, self.operation == token else { return }
-            self.operation = nil; self.task = nil; self.busy = false; self.adapter.interactionEnabled = true
-            self.onChange?()
         }
     }
-    private func commit(_ ciphertext: String, sender: PublicKey, recipient: Contact, document: UUID) {
+    private func canUseKey(session: UUID, token: UUID, document: UUID) -> Bool {
+        guard active, self.session == session, operation == token, gate(), let host else { return false }
+        guard host.documentIdentifier == document else { error = Self.documentMessage; return false }
+        guard !host.hasSelection else { error = Self.selectionMessage; return false }
+        return true
+    }
+    private func validateSecret(_ loaded: IdentityReadResult, expected: PublicKey) -> Identity? {
+        if case .identity(let identity) = loaded, identity.publicKey == expected { return identity }
+        switch loaded {
+        case .identity:
+            invalidateRecipient()
+        case .unavailable(.invalidPublicMetadata):
+            setIdentityUnavailable(.unavailable, message: Self.keyErrorMessage)
+            invalidateRecipient()
+        case .unavailable:
+            setIdentityUnavailable(.unavailable, message: Self.keyErrorMessage)
+        case .missing:
+            setIdentityUnavailable(.missing, message: Self.missingMessage)
+        }
+        return nil
+    }
+    private func finish(session: UUID, token: UUID) {
+        guard self.session == session, operation == token else { return }
+        operation = nil; task = nil; busy = false; adapter.interactionEnabled = true
+        onChange?()
+    }
+    private func commit(
+        _ ciphertext: String, sender: PublicKey, recipient: Contact, document: UUID, session: UUID, token: UUID
+    ) {
         guard gate(), let host else { return }
         guard host.documentIdentifier == document else { error = Self.documentMessage; return }
         guard !host.hasSelection else { error = Self.selectionMessage; return }
-        guard let currentIdentity = readIdentity() else { return }
-        guard currentIdentity.publicKey == sender else { invalidateRecipient(); return }
+        guard let currentIdentity = readIdentityMetadata() else { return }
+        guard currentIdentity == sender else { invalidateRecipient(); return }
         guard readContacts(), let current = selected,
             current.id == recipient.id, current.publicKey == recipient.publicKey
         else { return }
         // Defend the narrow host boundary even when an injected sealer misbehaves.
-        guard ciphertext.hasPrefix("ckmsg1:"), ciphertext.count > 7,
+        guard ciphertext.hasPrefix(CipherMessage.outputPrefix), ciphertext.count > CipherMessage.outputPrefix.count,
             !ciphertext.contains(where: { $0.isWhitespace }), !ciphertext.contains("…")
         else { error = Self.failureMessage; return }
         // No await and no user callbacks between the final gates and the one host mutation.
-        guard access(), active, host.documentIdentifier == document, !host.hasSelection else {
+        guard active, self.session == session, operation == token else { return }
+        guard access(), host.documentIdentifier == document, !host.hasSelection else {
             error = access() ? Self.documentMessage : Self.accessMessage; return
         }
         host.insertCiphertext(ciphertext)
@@ -219,21 +263,24 @@ import Foundation
         }
         return true
     }
-    private func readIdentity() -> Identity? {
+    private func readIdentityMetadata() -> PublicKey? {
         guard gate() else { return nil }
-        switch identityReader() {
-        case .identity(let identity):
+        switch identityAccess.readMetadata() {
+        case .publicKey(let key):
             let previous = lastValidatedIdentityKey
-            identityKey = identity.publicKey; lastValidatedIdentityKey = identity.publicKey
+            identityKey = key; lastValidatedIdentityKey = key
             identityAvailability = .available
-            if let previous, previous != identity.publicKey {
+            if let previous, previous != key {
                 invalidateRecipient(); return nil
             }
-            return identity
-        case .missing: identityKey = nil; identityAvailability = .missing; error = Self.missingMessage
-        case .unavailable: identityKey = nil; identityAvailability = .unavailable; error = Self.keyErrorMessage
+            return key
+        case .missing: setIdentityUnavailable(.missing, message: Self.missingMessage)
+        case .unavailable: setIdentityUnavailable(.unavailable, message: Self.keyErrorMessage)
         }
         return nil
+    }
+    private func setIdentityUnavailable(_ availability: IdentityAvailability, message: String) {
+        identityKey = nil; identityAvailability = availability; error = message
     }
     @discardableResult private func readContacts() -> Bool {
         guard gate() else { return false }

@@ -68,9 +68,11 @@ final class MyKeyUITests: XCTestCase {
             }
         }
 
-        // «Контакты» — экран фичи 03; заглушка следующих фич — на «Расшифровать».
+        // Реализованная вкладка расшифровки открывается пустой, без прежней заглушки.
         tabs[2].tap()
-        XCTAssertTrue(app.staticTexts["Появится в следующей версии"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.textViews["decrypt.input"].waitForExistence(timeout: 5))
+        XCTAssertEqual(app.textViews["decrypt.input"].value as? String, "")
+        XCTAssertFalse(app.buttons["decrypt.submit"].isEnabled)
     }
 
     // MARK: - E9

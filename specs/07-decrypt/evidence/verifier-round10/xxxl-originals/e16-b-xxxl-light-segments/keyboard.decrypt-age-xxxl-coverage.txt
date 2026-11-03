@@ -1,0 +1,1 @@
+age height=116.5, visible relative segments=[ClosedRange(0.0...25.5), ClosedRange(0.0...77.5), ClosedRange(0.0...116.5)]

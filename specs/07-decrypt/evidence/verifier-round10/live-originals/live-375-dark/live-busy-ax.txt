@@ -1,0 +1,87 @@
+Attributes: Application, 0x106248b40, pid: 63545, label: 'TypingHost'
+Element subtree:
+ →Application, 0x106248b40, pid: 63545, label: 'TypingHost'
+    Window (Main), 0x106248f00, {{0.0, 0.0}, {375.0, 667.0}}
+      Other, 0x10624a6c0, {{0.0, 0.0}, {375.0, 667.0}}
+        Other, 0x106249b80, {{0.0, 0.0}, {375.0, 667.0}}
+          Other, 0x10624a080, {{0.0, 0.0}, {375.0, 667.0}}
+            Other, 0x106248780, {{0.0, 0.0}, {16.5, 16.5}}
+            Other, 0x106249040, {{16.0, 24.0}, {343.0, 99.5}}
+              StaticText, 0x106248c80, {{16.0, 24.0}, {343.0, 20.5}}, label: 'Тестовый хозяин · только Debug'
+              Other, 0x10624a440, {{16.0, 46.5}, {343.0, 32.0}}
+                Button, 0x106248140, {{16.0, 46.5}, {50.5, 32.0}}, label: 'Пустое'
+                  StaticText, 0x106248640, {{17.5, 53.5}, {48.0, 18.0}}, label: 'Пустое'
+                Button, 0x106248000, {{74.5, 46.5}, {50.5, 32.0}}, label: 'С выделением'
+                  StaticText, 0x106248dc0, {{78.5, 53.5}, {43.0, 18.0}}, label: 'С выделением'
+                Button, 0x106248a00, {{133.0, 46.5}, {50.5, 32.0}}, label: 'Скрыть'
+                  StaticText, 0x106248280, {{135.5, 53.5}, {46.0, 18.0}}, label: 'Скрыть'
+                Button, 0x1062488c0, {{191.5, 46.5}, {50.5, 32.0}}, label: 'Открыть'
+                  StaticText, 0x106248500, {{194.0, 53.5}, {46.0, 18.0}}, label: 'Открыть'
+                Button, 0x106249180, {{250.0, 46.5}, {50.5, 32.0}}, label: 'Курсор'
+                  StaticText, 0x106249400, {{252.0, 53.5}, {47.0, 18.0}}, label: 'Курсор'
+                Button, 0x106249e00, {{308.5, 46.5}, {50.5, 32.0}}, label: 'Поле2'
+                  StaticText, 0x1062497c0, {{311.0, 53.5}, {46.0, 18.0}}, label: 'Поле2'
+              StaticText, 0x10624a1c0, {{16.0, 80.5}, {343.0, 29.0}}, identifier: 'host.diagnostics', label: 'Текст: До встречи!
+Выделение UTF-16: 3, 7'
+              Other, 0x10624b840, {{16.0, 111.5}, {343.0, 12.0}}
+                StaticText, 0x106249cc0, {{16.0, 111.5}, {111.5, 12.0}}, identifier: 'host.focus', label: 'show=true; focused=true'
+                StaticText, 0x10624a300, {{131.5, 111.5}, {112.0, 12.0}}, identifier: 'host.controlsGeometry', label: 'width=375.0;height=667.0;field=16.0,178.0,343.0,48.0;keyboardTop=230.0;Курсор=275.25,62.5;Открыть=216.75,62.5;Поле2=333.75,62.5;Пустое=41.25,62.5;С выделением=99.75,62.5;Скрыть=158.25,62.5'
+                StaticText, 0x106249f40, {{247.5, 111.5}, {111.5, 12.0}}, identifier: 'host.trace'
+            TextView, 0x10624a580, {{16.0, 178.0}, {343.0, 48.0}}, identifier: 'host.editor', value: До встречи!, Keyboard Focused
+              Other, 0x1062483c0, {{16.0, 178.0}, {343.0, 48.0}}, identifier: '_UITextSelectionRangeAdjustmentContainerView'
+                Other, 0x106249a40, {{47.5, 185.0}, {16.5, 22.0}}, identifier: 'com.apple.text.grabber.leading'
+                  Other, 0x106249540, {{40.2, 171.5}, {16.5, 16.5}}
+                  Other, 0x106249900, {{47.5, 185.0}, {2.0, 22.0}}
+                Other, 0x106249680, {{110.5, 185.0}, {16.5, 22.0}}, identifier: 'com.apple.text.grabber.trailing'
+                  Other, 0x1062492c0, {{110.5, 185.0}, {2.0, 22.0}}
+                  Other, 0x1062503c0, {{103.2, 204.0}, {16.5, 16.5}}
+              Other, 0x106250dc0, {{326.0, 178.0}, {30.0, 48.0}}, label: 'Vertical scroll bar, 1 page', value: 0 %
+                Other, 0x106250a00, {{353.0, 139.0}, {3.0, 36.0}}
+              Other, 0x106250780, {{16.0, 199.0}, {343.0, 24.0}}, label: 'Horizontal scroll bar, 1 page', value: 0 %
+                Other, 0x106250000, {{-26.0, 220.0}, {36.0, 3.0}}
+    Window, 0x1062508c0, {{0.0, 0.0}, {375.0, 667.0}}
+      Other, 0x106250640, {{0.0, 0.0}, {375.0, 667.0}}
+        Other, 0x106250280, {{0.0, 0.0}, {375.0, 667.0}}
+        Other, 0x106250b40, {{0.0, 230.0}, {375.0, 437.0}}
+          Other, 0x106250140, {{0.0, 230.0}, {375.0, 437.0}}, identifier: 'inputView'
+    Window, 0x106250c80, {{0.0, 0.0}, {375.0, 667.0}}
+      Other, 0x106250f00, {{0.0, 0.0}, {375.0, 667.0}}
+        Other, 0x106250500, {{0.0, 0.0}, {375.0, 667.0}}
+        Other, 0x102a88b40, {{0.0, 230.0}, {375.0, 437.0}}
+          Other, 0x102a8b980, {{0.0, 230.0}, {375.0, 438.0}}
+            Other, 0x102a8b700, {{0.0, 230.0}, {375.0, 438.0}}
+              Other, 0x102a8b0c0, {{0.0, 230.0}, {375.0, 438.0}}
+          Other, 0x102a8bac0, {{0.0, 247.0}, {375.0, 420.0}}
+            Other, 0x102a892c0, {{0.0, 247.0}, {375.0, 420.0}}
+              Other, 0x102a8b5c0, {{0.0, 0.0}, {187.5, 210.0}}
+                Other, 0x102a8b200, {{0.0, 247.0}, {375.0, 420.0}}
+                  Other, 0x102a8b840, {{0.0, 247.0}, {375.0, 420.0}}
+                    Other, 0x102a8bc00, {{0.0, 247.0}, {375.0, 420.0}}
+                      Other, 0x102a8b340, {{0.0, 247.0}, {375.0, 420.0}}
+                        Other, 0x105aff480, {{0.0, 247.0}, {375.0, 420.0}}
+                          Other, 0x105aff0c0, {{0.0, 247.0}, {375.0, 420.0}}, identifier: 'keyboard.panel'
+                            Other, 0x105afe800, {{6.0, 253.0}, {363.0, 408.0}}, identifier: 'keyboard.decrypt.panel'
+                              StaticText, 0x105afdf40, {{20.0, 265.0}, {304.0, 20.5}}, identifier: 'keyboard.decrypt.title', label: 'Расшифровка'
+                              Other, 0x105aff200, {{6.0, 291.0}, {363.0, 0.5}}
+                              Other, 0x105afe6c0, {{20.0, 297.5}, {335.0, 291.5}}
+                                ScrollView, 0x105aff340, {{20.0, 297.5}, {335.0, 291.5}}
+                                  Other, 0x105afea80, {{20.0, 297.5}, {335.0, 291.5}}
+                                    Other, 0x105afe940, {{30.0, 404.5}, {315.0, 78.0}}
+                                      ActivityIndicator, 0x105afebc0, {{177.5, 404.5}, {20.0, 20.0}}, label: 'Идет выполнение операции', value: 1
+                                      StaticText, 0x105afe300, {{116.5, 436.5}, {142.0, 18.0}}, identifier: 'keyboard.decrypt.status', label: 'Расшифровываем…'
+                                      StaticText, 0x105affe80, {{95.0, 466.5}, {185.0, 16.0}}, label: 'Сообщение ещё не показано'
+                                  Other, 0x105afee40, {{322.0, 297.5}, {30.0, 291.5}}, label: 'Вертикальная полоса прокрутки, 1 страница', value: 0 %
+                                    Other, 0x105affc00, {{349.0, 258.5}, {3.0, 36.0}}
+                                  Other, 0x105afed00, {{322.0, 297.5}, {30.0, 291.5}}, label: 'Вертикальная полоса прокрутки, 1 страница', value: 0 %
+                                    Other, 0x105afda40, {{349.0, 258.5}, {3.0, 36.0}}
+                              Other, 0x105aff700, {{6.0, 594.5}, {363.0, 0.5}}
+                              Button, 0x105afe440, {{20.0, 601.0}, {335.0, 48.0}}, identifier: 'keyboard.decrypt.close', label: 'Закрыть'
+                                StaticText, 0x105affac0, {{152.0, 614.5}, {71.0, 21.0}}, label: 'Закрыть'
+                            Button, 0x105affd40, {{331.0, 247.0}, {44.0, 44.0}}, identifier: 'keyboard.debugFixtures', label: 'Debug fixtures;build=1282833911;fixture=hold-live-decrypt;', value: {"byteCount":0,"ca...
+Path to element:
+ →Application, 0x106248b40, pid: 63545, label: 'TypingHost'
+Query chain:
+ →Find: Application 'dev.cipherkeyboard.typinghost'
+  Output: {
+    Application, 0x105afcc80, pid: 63545, label: 'TypingHost'
+  }

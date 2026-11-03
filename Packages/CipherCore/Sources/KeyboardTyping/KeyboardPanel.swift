@@ -217,6 +217,39 @@
             coordinator.onChange = { [weak self] in self?.refresh() }
             refresh()
         }
+        public private(set) var decryption: DecryptCoordinator?
+        private let decryptButton = UIButton(type: .system)
+        private let decryptNotice = UILabel()
+        private let decryptPanel = PrivateDecryptPanel(prefix: "keyboard.decrypt")
+        public func enableDecryption(_ model: DecryptCoordinator) {
+            decryption?.deactivate()
+            decryption = model
+            decryptButton.removeAction(identifiedBy: UIAction.Identifier("decrypt.start"), for: .touchUpInside)
+            decryptButton.setTitle("Расшифровать", for: .normal)
+            decryptButton.accessibilityIdentifier = "keyboard.decrypt"
+            decryptButton.titleLabel?.font = .systemFont(ofSize: 15, weight: .semibold)
+            decryptButton.layer.cornerRadius = 9; decryptButton.layer.borderWidth = 1
+            decryptButton.addAction(
+                UIAction(identifier: UIAction.Identifier("decrypt.start")) { [weak model] _ in model?.start() },
+                for: .touchUpInside)
+            decryptNotice.numberOfLines = 0; decryptNotice.font = .systemFont(ofSize: 11)
+            decryptNotice.textColor = .secondaryLabel
+            decryptPanel.onClose = { [weak self, weak model] in
+                model?.close()
+                if let button = self?.decryptButton {
+                    UIAccessibility.post(notification: .screenChanged, argument: button)
+                }
+            }
+            addSubview(decryptButton); addSubview(decryptNotice); addSubview(decryptPanel)
+            encryption?.externallyBlocked = { [weak model] in model?.presenting == true }
+            model.onChange = { [weak self, weak model] in
+                guard let self else { return }
+                self.adapter.cancelGesture()
+                self.adapter.interactionEnabled = model?.presenting != true && self.encryption?.busy != true
+                self.refresh()
+            }
+            refresh()
+        }
         public let nextKeyboardButton = UIButton(type: .system)
         public var heightChanged: ((CGFloat) -> Void)?
         public var statusText = "" { didSet { refresh() } }
@@ -229,6 +262,7 @@
             let debugFaults = KeyboardEncryptFaults()
             weak var debugHost: (any CiphertextHost)?
             var debugAccess: (() -> Bool)?
+            var debugArmDecryptOpen: (() -> Bool)?
             var debugEncryptionContext: KeyboardEncryptFixture.Context?
             public var debugFixture = "" { didSet { updateDebugMetadata() } }
             public var debugBuild = "unversioned" { didSet { updateDebugMetadata() } }
@@ -242,6 +276,9 @@
                 picker.backgroundColor = .secondarySystemGroupedBackground
                 picker.accessibilityIdentifier = "keyboard.fixtureGrid"
                 let names = [
+                    "dec-idle", "dec-busy", "dec-contact", "dec-self", "dec-unknown", "dec-long", "dec-no-message",
+                    "dec-corrupt", "dec-foreign", "dec-version", "dec-paste-error", "dec-no-access", "dec-no-key",
+                    "dec-key-error", "dec-contacts-warning", "dec-changed", "dec-oversize", "dec-generic",
                     "ru-empty", "ru-text", "shift", "caps", "en", "numbers", "symbols", "alternate-e",
                     "alternate-softsign", "multiline", "limit", "preview", "no-access", "no-key",
                     "key-error", "contacts-error", "clear", "canary",
@@ -251,6 +288,8 @@
                     "enc-sending",
                     "enc-success", "enc-limit", "enc-no-key", "enc-key-error", "enc-contacts-error", "enc-no-access",
                     "enc-changed", "enc-selection", "enc-failure", "enc-document-changed", "enc-long-name",
+                    "enc-proof-decrypt",
+                    "hold-live-decrypt",
                 ]
                 debugChoices = names.map { name in
                     let button = UIButton(type: .system)
@@ -277,6 +316,8 @@
                 debugChoices.removeAll()
             }
             public func disableEncryptionForTesting() {
+                decryption?.deactivate(); decryptPanel.clear(); decryptPanel.isHidden = true
+                decryptButton.isHidden = true; decryptNotice.isHidden = true
                 encryption?.hide(); encryption = nil
                 encryptionControls?.removeFromSuperview(); encryptionControls = nil
                 error.isHidden = false; status.isHidden = false; caption.isHidden = false; editor.isHidden = false;
@@ -305,6 +346,13 @@
                     "encryptionStatus": encryption?.status ?? "typing-only",
                 ]
                 values["encryption"] = encryptionControls?.captureMetadata
+                values["decryptClipboardMetadataReads"] = DecryptDebugMetrics.metadataReads
+                values["decryptClipboardContentReads"] = DecryptDebugMetrics.contentReads
+                values["decryptLiveCoordinators"] = DecryptDebugLifetime.liveCoordinators
+                values["decryptLiveOperations"] = DecryptDebugLifetime.liveOperations
+                values["decryptBusy"] = decryption?.busy ?? false
+                values["decryptHeldOpenCount"] = decryption?.debugHeldOpenCount ?? 0
+                values["decryptPresenting"] = decryption?.presenting ?? false
                 values["counterMaxY"] = meter.frame.maxY
                 values["editorViewportWidth"] = editor.bounds.width
                 values["editorViewportHeight"] = editor.bounds.height
@@ -407,6 +455,7 @@
             #if DEBUG
                 dismissDebugFixtures()
             #endif
+            decryption?.deactivate(); decryptPanel.clear()
             if let encryption { encryption.hide() } else { adapter.hide() }
         }
         /// One post-transition reconciliation, cancelled by a new session/transition or manual scroll intent.
@@ -576,6 +625,39 @@
             bringSubviewToFront(popup)
             setNeedsLayout()
         }
+        private func layoutDecryptCompose(
+            _ decrypt: DecryptCoordinator, x: CGFloat, width: CGFloat, keyX: CGFloat, keyWidth: CGFloat
+        ) -> CGFloat {
+            let buttonHeight: CGFloat = 44
+            let titleWidth =
+                decryptButton.titleLabel?.intrinsicContentSize.width ?? decryptButton.intrinsicContentSize.width
+            let buttonWidth = max(44, ceil(titleWidth) + 14)
+            decryptButton.frame = CGRect(x: x, y: 0, width: min(buttonWidth, width), height: buttonHeight)
+            decryptNotice.text = decrypt.permitted ? "Только по нажатию" : DecryptCoordinator.accessMessage
+            if !decrypt.identityAvailable && decrypt.permitted { decryptNotice.text = decrypt.error }
+
+            let metadataX = landscape ? x + 4 : decryptButton.frame.maxX + 8
+            let metadataWidth = landscape ? width - 8 : x + width - metadataX - 4
+            let statusHeight = ceil(
+                status.sizeThatFits(CGSize(width: metadataWidth, height: .greatestFiniteMagnitude)).height)
+            if landscape {
+                let metadataY = buttonHeight + 6
+                status.frame = CGRect(x: metadataX, y: metadataY, width: metadataWidth, height: statusHeight)
+                caption.frame = CGRect(x: metadataX, y: status.frame.maxY + 1, width: metadataWidth, height: 13)
+                decryptNotice.frame = CGRect(x: keyX, y: 0, width: keyWidth, height: 28)
+                return caption.frame.maxY + 2
+            }
+
+            let hintHeight = ceil(
+                decryptNotice.sizeThatFits(CGSize(width: metadataWidth, height: .greatestFiniteMagnitude)).height)
+            let textHeight = statusHeight + 1 + hintHeight
+            let headerHeight = max(buttonHeight, textHeight)
+            status.frame = CGRect(
+                x: metadataX, y: (headerHeight - textHeight) / 2, width: metadataWidth, height: statusHeight)
+            decryptNotice.frame = CGRect(
+                x: metadataX, y: status.frame.maxY + 1, width: metadataWidth, height: hintHeight)
+            return headerHeight
+        }
         private func layoutEncryption(_ model: EncryptInsertCoordinator, controls: EncryptionControls) {
             backgroundColor = .systemGroupedBackground
             // Internal CSS padding; the system already frames this panel in the native input surface.
@@ -584,27 +666,35 @@
             // 11 Russian keys retain at least 26pt even on the narrow 667pt landscape profile.
             let keyWidth: CGFloat = landscape ? max(352, (available - 12) / 1.75) : available
             let composeWidth = landscape ? available - keyWidth - 12 : available
-            let height: CGFloat = landscape ? 198 : 420
-            let metadataY: CGFloat = landscape ? 12 : 6
+            let hasDecrypt = decryption != nil
+            let height: CGFloat = landscape ? (hasDecrypt ? 240 : 198) : 420
+            let keyX = landscape ? side + composeWidth + 12 : side
             status.font = .systemFont(ofSize: landscape ? 10 : 11)
             status.textColor = Self.encryptionSecondary
-            status.numberOfLines = 1
-            status.frame = CGRect(x: side + 4, y: metadataY, width: composeWidth - 8, height: 13)
-            caption.frame = CGRect(x: side + 4, y: metadataY + 13, width: composeWidth - 8, height: 13)
-            let rowY = metadataY + 28
+            status.numberOfLines = hasDecrypt ? 0 : 1
+            let rowY: CGFloat
+            if let decrypt = decryption {
+                rowY = layoutDecryptCompose(decrypt, x: side, width: composeWidth, keyX: keyX, keyWidth: keyWidth)
+            } else {
+                let metadataY: CGFloat = landscape ? 12 : 6
+                status.frame = CGRect(x: side + 4, y: metadataY, width: composeWidth - 8, height: 13)
+                caption.frame = CGRect(x: side + 4, y: metadataY + 13, width: composeWidth - 8, height: 13)
+                rowY = metadataY + 28
+            }
             controls.frame = bounds
             controls.layoutToolbar(x: side, y: rowY, width: composeWidth, landscape: landscape)
             let previousViewport = editor.bounds.size
             let initialHeight = previousViewport.height > 0 ? previousViewport.height : (landscape ? 38 : 48)
             editor.frame = CGRect(x: side, y: rowY + 46, width: composeWidth, height: initialHeight)
             let draftHeight: CGFloat
-            if controls.showsRetry {
+            if controls.showsRetry && (!hasDecrypt || landscape) {
                 draftHeight = 40
             } else if landscape {
                 draftHeight = 38
             } else {
                 let measured = editor.measuredHeight
-                draftHeight = editor.requiresFourLineViewport ? 100 : min(100, max(48, measured))
+                draftHeight =
+                    editor.requiresFourLineViewport ? 100 : min(100, max(48, measured))
             }
             editor.frame.size.height = draftHeight
             if editor.bounds.size != previousViewport {
@@ -614,14 +704,25 @@
                 editor.setNeedsLayout()
                 editor.layoutIfNeeded()
             }
-            let noticeY = rowY + 48 + draftHeight
-            controls.layoutNotice(x: side, y: noticeY, width: composeWidth, height: landscape ? 52 : 44)
-            // Counter has a permanent slot in the notice, regardless of byte count.
+            let noticeY = editor.frame.maxY + (hasDecrypt ? 0 : 2)
+            let noticeHeight: CGFloat = landscape ? 52 : 44
+            let sharesCaption = hasDecrypt && !landscape
+            let serviceWidth = controls.layoutNotice(
+                x: side, y: noticeY, width: composeWidth, height: noticeHeight, sharesCaption: sharesCaption)
             meter.frame = CGRect(x: side + 4, y: noticeY, width: composeWidth - 8, height: 12)
+            if sharesCaption {
+                let counterWidth = max(0, ceil(meter.intrinsicContentSize.width))
+                // The right edge belongs to Retry when present. Reserve the byte counter beside the caption.
+                meter.frame.origin.x += serviceWidth - counterWidth
+                meter.frame.size.width = counterWidth
+                caption.frame = CGRect(
+                    x: side + 4, y: noticeY, width: serviceWidth - counterWidth - 4, height: 12)
+            }
             error.isHidden = true
             let keyHeight: CGFloat = landscape ? 32 : 44
-            let keyX = landscape ? side + composeWidth + 12 : side
             var y: CGFloat = landscape ? 30 : height - 6 - 185
+            if sharesCaption { y = max(y, noticeY + noticeHeight) }
+            let rowGap: CGFloat = landscape ? 3 : min(3, max(0, floor((height - y - 4 * keyHeight) / 3)))
             for (index, row) in rows.enumerated() {
                 let bottom = index == 3
                 let hasGlobe = bottom && showsNextKeyboard
@@ -643,10 +744,12 @@
                     key.isHidden = model.pickerOpen
                     x = key.frame.maxX + 3
                 }
-                y += keyHeight + 3
+                y += keyHeight + rowGap
             }
             nextKeyboardButton.isHidden = !showsNextKeyboard || model.pickerOpen
-            for view in [status, caption, editor, meter] { view.isHidden = model.pickerOpen }
+            for view in [status, caption, editor, meter] {
+                view.isHidden = model.pickerOpen
+            }
             controls.layoutPicker(
                 in: CGRect(x: side, y: 6, width: available, height: height - 12), landscape: landscape)
             if let alternate = adapter.alternative,
@@ -660,10 +763,39 @@
             // Controls only intercept their own buttons/list; the draft and keys remain directly interactive.
             bringSubviewToFront(popup)
             #if DEBUG
-                debugFixtureButton.frame = status.frame
+                debugFixtureButton.frame =
+                    hasDecrypt ? CGRect(x: bounds.width - side - 44, y: 0, width: 44, height: 28) : status.frame
                 bringSubviewToFront(debugFixtureButton)
                 layoutDebugPicker()
                 updateCaptureMetadata(lineHeight: status.font.lineHeight)
+            #endif
+            if let decrypt = decryption {
+                decryptButton.isEnabled = decrypt.canStart && !model.pickerOpen
+                decryptButton.tintColor = Self.accent
+                decryptButton.layer.borderColor = Self.accent.cgColor
+                decryptButton.isHidden = decrypt.presenting || model.pickerOpen
+                decryptNotice.isHidden = decrypt.presenting || model.pickerOpen
+                decryptPanel.isHidden = !decrypt.presenting
+                if decrypt.presenting {
+                    for view in [status, caption, editor, meter, error, popup, nextKeyboardButton] {
+                        view.isHidden = true
+                    }
+                    for key in rows.flatMap({ $0 }) { key.isHidden = true }
+                    controls.isHidden = true
+                    decryptPanel.frame = CGRect(x: side, y: 6, width: available, height: height - 12)
+                    decryptPanel.display(decrypt)
+                    bringSubviewToFront(decryptPanel)
+                    #if DEBUG
+                        debugFixtureButton.frame = CGRect(x: bounds.width - 44, y: 0, width: 44, height: 44)
+                        bringSubviewToFront(debugFixtureButton)
+                    #endif
+                } else {
+                    controls.isHidden = false; decryptPanel.clear()
+                }
+            }
+            #if DEBUG
+                // The design picker must stay above a currently presented decrypt panel.
+                layoutDebugPicker()
             #endif
             if panelHeight != height { panelHeight = height; heightChanged?(height) }
         }

@@ -1,0 +1,2 @@
+2026-11-03T20:41:54+03:00 65730 /Users/segei/Library/Developer/CoreSimulator/Devices/1A29E451-25ED-4EF6-A322-608AAD27032D/data/Containers/Bundle/Application/C07EEAB6-409C-41FC-97BE-E981BADE7C66/CipherKeyboard.app/CipherKeyboard
+2026-11-03T20:41:58+03:00 65730 /Users/segei/Library/Developer/CoreSimulator/Devices/1A29E451-25ED-4EF6-A322-608AAD27032D/data/Containers/Bundle/Application/C07EEAB6-409C-41FC-97BE-E981BADE7C66/CipherKeyboard.app/CipherKeyboard

@@ -11,9 +11,9 @@ def extract_host_ciphertext(text: str) -> str:
     if not text.startswith(HOST_PREFIX) or not text.endswith(HOST_SUFFIX):
         raise ValueError("Host prefix/suffix were not preserved")
     ciphertext = text[len(HOST_PREFIX):len(text) - len(HOST_SUFFIX)]
-    match = re.fullmatch(r"ckmsg1:([A-Za-z0-9_-]+)", ciphertext)
+    match = re.fullmatch(r"ckmsg2:([A-Za-z0-9_-]+)", ciphertext)
     if match is None:
-        raise ValueError("Host insertion is not a single canonical ckmsg1 string")
+        raise ValueError("Host insertion is not a single canonical ckmsg2 string")
     body = match.group(1)
     try:
         decoded = base64.b64decode(body + "=" * (-len(body) % 4), altchars=b"-_", validate=True)

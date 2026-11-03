@@ -51,7 +51,7 @@ struct ByteTamperTests {
         for index in decoded.indices {
             var corrupted = decoded
             corrupted[index] ^= 0x01
-            let text = "ckmsg1:" + base64url(corrupted)
+            let text = "ckmsg2:" + base64url(corrupted)
             for (name, identity) in [("B", b), ("A", a)] {
                 do {
                     _ = try CipherMessage.open(text, as: identity, contacts: [])
@@ -66,12 +66,12 @@ struct ByteTamperTests {
         #expect(checked == decoded.count)
     }
 
-    @Test("Каждый символ после ckmsg1:, заменённый следующим символом base64url, → ошибка")
+    @Test("Каждый символ после ckmsg2:, заменённый следующим символом base64url, → ошибка")
     func everyCharacterReplaced() throws {
         let a = Identity.generate()
         let b = Identity.generate()
         let m = try CipherMessage.seal("Переведи 100 рублей Пете", from: a, to: [b.publicKey])
-        let prefixLength = "ckmsg1:".count
+        let prefixLength = "ckmsg2:".count
         let chars = Array(m)
         var checked = 0
         for offset in prefixLength..<chars.count {
@@ -163,7 +163,8 @@ struct SenderSpoofTests {
             [UInt8(plaintext.count >> 8), UInt8(plaintext.count & 0xFF)] + plaintext
             + [UInt8](repeating: 0, count: paddedCount - plaintext.count)
         var forged = Envelope(
-            senderKey: senderKey, ephemeralKey: ephemeralRaw, entries: entries, commitment: commitment,
+            version: .legacy, senderKey: senderKey, ephemeralKey: ephemeralRaw, entries: entries,
+            commitment: commitment,
             nonce: Array(ChaChaPoly.Nonce()), ciphertext: [], signature: [])
         let aad =
             [1, 1, UInt8(paddedCount >> 8), UInt8(paddedCount & 0xFF)] + senderKey + ephemeralRaw + entries[0]
@@ -326,7 +327,8 @@ struct KeyCommitmentTests {
         #expect(k1 != k2)
 
         var forged = Envelope(
-            senderKey: try #require(rawKey(a.publicKey)), ephemeralKey: Array(ephemeral.publicKey.rawRepresentation),
+            version: .legacy, senderKey: try #require(rawKey(a.publicKey)),
+            ephemeralKey: Array(ephemeral.publicKey.rawRepresentation),
             entries: [
                 try Forge.entry(k1, ephemeral: ephemeral, to: b.publicKey),
                 try Forge.entry(k2, ephemeral: ephemeral, to: c.publicKey),

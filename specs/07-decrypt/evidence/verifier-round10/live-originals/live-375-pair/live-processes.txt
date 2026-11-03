@@ -1,0 +1,3 @@
+2026-11-03T20:36:54+03:00 61403 /Users/segei/Library/Developer/CoreSimulator/Devices/4720C857-927D-4DFE-B173-4A1C30D8F7C0/data/Containers/Bundle/Application/2813FB4F-CC33-4E40-B816-0BCE33B7B3A6/CipherKeyboard.app/CipherKeyboard
+2026-11-03T20:36:57+03:00 61403 /Users/segei/Library/Developer/CoreSimulator/Devices/4720C857-927D-4DFE-B173-4A1C30D8F7C0/data/Containers/Bundle/Application/2813FB4F-CC33-4E40-B816-0BCE33B7B3A6/CipherKeyboard.app/CipherKeyboard
+2026-11-03T20:36:59+03:00 61403 /Users/segei/Library/Developer/CoreSimulator/Devices/4720C857-927D-4DFE-B173-4A1C30D8F7C0/data/Containers/Bundle/Application/2813FB4F-CC33-4E40-B816-0BCE33B7B3A6/CipherKeyboard.app/CipherKeyboard

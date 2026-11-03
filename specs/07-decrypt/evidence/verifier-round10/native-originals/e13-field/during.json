@@ -1,0 +1,26 @@
+{
+  "source": "4f7ed8552a4c56d392c77f9d7b9abe712bd47d85",
+  "metadataHead": "71fbc891e6337e224fbe70155f2b6dde73b20ec2",
+  "revision": "1282833911",
+  "artifact": "/Users/segei/Library/Developer/CoreSimulator/Devices/1A29E451-25ED-4EF6-A322-608AAD27032D/data/Containers/Bundle/Application/EAF9F830-D3E6-401E-AB7D-56C24A3B7FDD/CipherKeyboard.app",
+  "configuration": "Debug",
+  "sha256": {
+    "Info.plist": "01ce8a4f20722935722d48df69560f416438281fca650c35c5a5040ad1f456d7",
+    "CipherKeyboard": "e7358d5fee3073370a6140f08a0c3fddb75c1d613b9f2fc74891c6d077c13987",
+    "CipherKeyboard.debug.dylib": "f508e1f3d5f221fde639e9a7161649cb7cc354f0051260c96f9fd0f2b8f1e022",
+    "PlugIns/CipherKeyboardExtension.appex/Info.plist": "75a83767cbb6673fee1ae4d7711dece2deed6ede893b732fd21fb177ad42e78b",
+    "PlugIns/CipherKeyboardExtension.appex/CipherKeyboardExtension": "3321d47f0347d2134eaa7000ed3557fc6876e61617cbb59e8b9cfd7045006a9f",
+    "PlugIns/CipherKeyboardExtension.appex/CipherKeyboardExtension.debug.dylib": "a6c9d8921640c165ee8c67666a28294f87770f7b982f8abf4292f8defa423f0c"
+  },
+  "versions": {
+    "dev.cipherkeyboard.app": "1282833911",
+    "dev.cipherkeyboard.app.keyboard": "1282833911"
+  },
+  "udid": "1A29E451-25ED-4EF6-A322-608AAD27032D",
+  "liveProcesses": [
+    "14388 /Users/segei/Library/Developer/CoreSimulator/Devices/1A29E451-25ED-4EF6-A322-608AAD27032D/data/Containers/Bundle/Application/EAF9F830-D3E6-401E-AB7D-56C24A3B7FDD/CipherKeyboard.app/CipherKeyboard",
+    "14536 /Users/segei/Library/Developer/CoreSimulator/Devices/1A29E451-25ED-4EF6-A322-608AAD27032D/data/Containers/Bundle/Application/EAF9F830-D3E6-401E-AB7D-56C24A3B7FDD/CipherKeyboard.app/PlugIns/CipherKeyboardExtension.appex/CipherKeyboardExtension"
+  ],
+  "reference": "/Users/segei/Documents/CipherKeyboard/.build/DecryptR10Candidate/.build/VerifierR10/setup-build.json",
+  "matching": true
+}

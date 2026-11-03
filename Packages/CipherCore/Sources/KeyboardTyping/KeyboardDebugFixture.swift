@@ -5,9 +5,22 @@
     /// Synthetic, process-local design fixtures. No defaults/container/clipboard transport.
     /// Select fixed states with the Debug status-strip grid. Absent in Release.
     @MainActor public enum KeyboardDebugFixture {
+        /// Exact design anchor. Runtime stress cases use DecryptSeedProbe.long's separate 4096-byte message.
+        public static var decryptionDesignLongText: String {
+            let prose = "Встречаемся завтра у метро. Возьми документы, обсудим детали на месте."
+            return (1...21).map { "\($0). \(prose)" }.joined(separator: "\n\n")
+                + "\nПоследняя строка: до встречи!"
+        }
         private static let referenceExcerpt =
             "Привет, Анна!\nВстречаемся завтра.\nЯ буду у входа.\nНапиши, когда придёшь.\nДо встречи!"
         public static func apply(to panel: KeyboardPanel, name: String) {
+            if name == "hold-live-decrypt" {
+                if panel.debugArmDecryptOpen?() == true { panel.debugFixture = "fixture=\(name);" }
+                return
+            }
+            if name.hasPrefix("dec-") {
+                KeyboardDecryptFixture.apply(to: panel, state: String(name.dropFirst(4))); return
+            }
             if ["enc-delay", "enc-fault", "enc-normal", "enc-canary"].contains(name) {
                 panel.debugFaults.delay = name == "enc-delay" ? 2 : 0
                 panel.debugFaults.fails = name == "enc-fault"
@@ -18,6 +31,10 @@
                 // A fixed synthetic draft only: never replace the actual coordinator or identity.
                 panel.adapter.seedForTesting("  Привет, Анна! 👨‍👩‍👧‍👦\nе\u{301}  \n")
                 panel.debugFixture = "fixture=enc-proof-unicode;"; return
+            }
+            if name == "enc-proof-decrypt" {
+                panel.adapter.seedForTesting("  Привет, Анна!\nЗавтра в 19:30 👨‍👩‍👧‍👦  ")
+                panel.debugFixture = "fixture=enc-proof-decrypt;"; return
             }
             if name == "enc-bytes4096" {
                 panel.adapter.seedForTesting(String(repeating: "a", count: 4096));

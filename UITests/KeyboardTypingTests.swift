@@ -48,7 +48,7 @@ final class KeyboardTypingTests: XCTestCase {
     }
     @MainActor func testProductionControllerIsolation() {
         let app = XCUIApplication()
-        app.launchArguments = ["-keystore", "memory", "-typing-isolation"]
+        app.launchArguments = ["-keystore", "memory", "-contacts", "memory", "-typing-isolation"]
         app.launch()
         let result = app.staticTexts["typing.isolationResult"]
         XCTAssertTrue(result.waitForExistence(timeout: 10))

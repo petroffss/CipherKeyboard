@@ -1,0 +1,1 @@
+secondsAfterTap=6.329054951667786;state=busy;event=hide

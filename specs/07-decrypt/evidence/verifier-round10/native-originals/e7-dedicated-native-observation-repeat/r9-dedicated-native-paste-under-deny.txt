@@ -1,0 +1,1 @@
+Selected system Deny; dedicated native Paste; denial prompt=false; priorInputPreserved=false; externalPayloadDelivered=false; exactCaretInsertion=true; priorBytes=575; payloadBytes=533; afterBytes=1108; payloadAtStart=false; payloadAtEnd=true; status=<none>; noOpen=true
