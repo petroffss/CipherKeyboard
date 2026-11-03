@@ -38,5 +38,7 @@ last_reviewed_commit: "4887d8a"
 
 Собственные тестовые устройства: 402 `1A29E451-25ED-4EF6-A322-608AAD27032D`, 375 `85994D82-49FB-43D0-A3C6-D116C9FA12C5`, 440 `24C9770C-C336-439D-996A-B547A3A60DE8`. Другие устройства и остановленный цикл 06 не используются.
 
+2026-11-03: implementation snapshot `a92caf2` + app UI tests `58c6094` сохранены отдельными [wip] коммитами. Повторный core135/23 и lint89 — exit0, повторная Release-сборка — exit0. Первый завершённый полный UI: exit65, 37 PASS / 3 FAIL / 0 SKIP, `.build/TestResults/ui-20261103-053840.xcresult`. Сбои: `ContactsUITests.testRejectsNonKeyAndNewerVersion` (helper не очистил поле), `DecryptUITests.testSenderVariants` (AX UILabel нормализует перенос строки), `MyKeyUITests.testFirstLaunchShowsMyKey` (ожидание старой заглушки вместо AC11). Это диагностический builder-прогон по исходному бинарнику; все исходные failures сохраняются. Builder исправляет причины и выполняет узкий нативный design smoke; независимых вердиктов по evals ещё нет.
+
 ## Отчёт для человека
 Цикл выполняется; продукт ещё не проверен.
