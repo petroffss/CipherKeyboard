@@ -40,5 +40,7 @@ last_reviewed_commit: "4887d8a"
 
 2026-11-03: implementation snapshot `a92caf2` + app UI tests `58c6094` сохранены отдельными [wip] коммитами. Повторный core135/23 и lint89 — exit0, повторная Release-сборка — exit0. Первый завершённый полный UI: exit65, 37 PASS / 3 FAIL / 0 SKIP, `.build/TestResults/ui-20261103-053840.xcresult`. Сбои: `ContactsUITests.testRejectsNonKeyAndNewerVersion` (helper не очистил поле), `DecryptUITests.testSenderVariants` (AX UILabel нормализует перенос строки), `MyKeyUITests.testFirstLaunchShowsMyKey` (ожидание старой заглушки вместо AC11). Это диагностический builder-прогон по исходному бинарнику; все исходные failures сохраняются. Builder исправляет причины и выполняет узкий нативный design smoke; независимых вердиктов по evals ещё нет.
 
+2026-11-03: root устранил противоречие двух эталонов по предварительному разрешению пользователя принимать верные решения. В двух `07/keyboard-idle` reference notice теперь «Готово к шифрованию», поскольку там уже выбран получатель и допустимый непустой черновик, как в согласованном 06 ready. Реальный06 status не подменяется общей памяткой «Черновик · стирается при закрытии». Requirements поясняют это соответствие; eval steps/expectations, 33 состояния/94 рамки и все гарантии очистки/приватности не менялись. Исправление согласованности reference не является основанием ставить pass без native доказательства.
+
 ## Отчёт для человека
 Цикл выполняется; продукт ещё не проверен.
