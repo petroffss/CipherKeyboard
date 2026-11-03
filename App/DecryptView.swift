@@ -6,19 +6,22 @@ import UIKit
 struct DecryptView: View {
     @State private var model: DecryptCoordinator
     @Environment(\.scenePhase) private var phase
+    @Environment(\.verticalSizeClass) private var verticalSizeClass
     @AccessibilityFocusState private var focusSubmit: Bool
     @AccessibilityFocusState private var focusError: Bool
 
     init() { _model = State(initialValue: DecryptLaunch.makeCoordinator()) }
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Расшифровать").font(.largeTitle.bold()).padding(.top, 8)
+            Text("Расшифровать")
+                .font(verticalSizeClass == .compact ? .title2.bold() : .largeTitle.bold())
+                .padding(.top, verticalSizeClass == .compact ? 3 : 8)
             if model.result != nil || model.busy {
                 DecryptResultView(model: model)
             } else {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 16) {
-                        Text("Вставьте зашифрованное сообщение").font(.body)
+                        Text("Вставьте зашифрованное сообщение").font(.subheadline)
                         DecryptInput(model: model).frame(height: 212)
                         if model.busy {
                             ProgressView("Расшифровываем…")
@@ -32,6 +35,11 @@ struct DecryptView: View {
                         }
                         if let error = model.error {
                             Text(error).foregroundStyle(.red).font(.subheadline)
+                                .padding(12).frame(maxWidth: .infinity, alignment: .leading)
+                                .background(
+                                    Color(uiColor: .secondarySystemGroupedBackground),
+                                    in: RoundedRectangle(cornerRadius: 10)
+                                )
                                 .accessibilityIdentifier("decrypt.status")
                                 .accessibilityAddTraits(.updatesFrequently)
                                 .accessibilityFocused($focusError)
@@ -96,9 +104,12 @@ private struct DecryptInput: UIViewRepresentable {
     func makeCoordinator() -> Delegate { Delegate(model: model) }
     func makeUIView(context: Context) -> UIStackView {
         let editor = CiphertextEntryView(frame: .zero, textContainer: nil)
-        editor.font = .preferredFont(forTextStyle: .body)
+        editor.font = UIFontMetrics(forTextStyle: .body).scaledFont(
+            for: .monospacedSystemFont(ofSize: 14, weight: .regular))
+        editor.adjustsFontForContentSizeCategory = true
+        editor.textContainerInset = UIEdgeInsets(top: 12, left: 10, bottom: 12, right: 10)
         editor.backgroundColor = .secondarySystemGroupedBackground
-        editor.layer.cornerRadius = 12
+        editor.layer.cornerRadius = 10; editor.layer.borderWidth = 1
         editor.accessibilityIdentifier = "decrypt.input"; editor.accessibilityLabel = "ckmsg1:…"
         editor.autocorrectionType = .no; editor.spellCheckingType = .no
         editor.autocapitalizationType = .none; editor.smartQuotesType = .no; editor.smartDashesType = .no
@@ -111,16 +122,21 @@ private struct DecryptInput: UIViewRepresentable {
         editor.delegate = context.coordinator
         let config = UIPasteControl.Configuration()
         config.displayMode = .iconAndLabel
+        config.baseBackgroundColor = .clear; config.baseForegroundColor = KeyboardPanel.accent
         let paste = UIPasteControl(configuration: config)
         paste.target = editor
         paste.accessibilityIdentifier = "decrypt.paste"; paste.accessibilityLabel = "Вставить"
-        paste.heightAnchor.constraint(equalToConstant: 44).isActive = true
+        paste.layer.cornerRadius = 14; paste.layer.borderWidth = 1.5
+        paste.heightAnchor.constraint(equalToConstant: 50).isActive = true
         let stack = UIStackView(arrangedSubviews: [editor, paste]); stack.axis = .vertical; stack.spacing = 12
         return stack
     }
     func updateUIView(_ stack: UIStackView, context: Context) {
         guard let editor = stack.arrangedSubviews.first as? UITextView else { return }
         if editor.text != model.input { editor.text = model.input }
+        editor.layer.borderColor = UIColor.separator.resolvedColor(with: stack.traitCollection).cgColor
+        stack.arrangedSubviews.last?.layer.borderColor =
+            KeyboardPanel.accent.resolvedColor(with: stack.traitCollection).cgColor
         editor.isEditable = !model.busy
         stack.arrangedSubviews.last?.isUserInteractionEnabled = !model.busy
         if model.busy { editor.resignFirstResponder() }

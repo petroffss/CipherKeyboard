@@ -9,6 +9,12 @@ public enum ClipboardText: Sendable { case text(String), empty, denied }
     func readText() async -> ClipboardText
 }
 
+/// A system reader can preserve the current UI action's user-intent context.
+/// Delayed readers remain asynchronous for cancellation and race verification.
+@MainActor public protocol DecryptClipboardSnapshotReading: DecryptClipboardReading {
+    func readTextSnapshot() -> ClipboardText
+}
+
 public struct DecryptResult: Equatable, Sendable {
     public let text: String
     public let sender: String
@@ -25,6 +31,8 @@ public struct DecryptResult: Equatable, Sendable {
     public static let accessMessage = "Включите «Полный доступ» в Настройках, чтобы расшифровывать"
     public static let changedMessage = "Данные изменились — повторите расшифровку"
     public static let clipboardMessage = "Нет доступа к буферу обмена"
+    public static let clipboardRecovery =
+        "Настройки → Приложения → CipherKeyboard → Вставка из других приложений → Разрешить. Чтение — только по нажатию."
     public static let contactsMessage = "Не удалось прочитать контакты — имя отправителя не определено"
     public static let unknownHint = "Добавьте контакт в приложении, чтобы видеть имя"
     public static let failureMessage = "Не удалось расшифровать сообщение. Повторите попытку"
@@ -114,6 +122,14 @@ public struct DecryptResult: Equatable, Sendable {
         operation = token; busy = true; presenting = true; shownDocument = currentDocument; changed()
         let field = surface == .app ? input : nil
         let reader = clipboard, open = opener
+        let snapshot: ClipboardText?
+        if field == nil, let synchronous = reader as? any DecryptClipboardSnapshotReading {
+            guard valid(token, generation, currentDocument) else { return }
+            snapshot = synchronous.readTextSnapshot()
+            guard valid(token, generation, currentDocument) else { return }
+        } else {
+            snapshot = nil
+        }
         #if DEBUG
             let lifetime = DecryptDebugLifetime.beginOperation()
         #endif
@@ -122,7 +138,13 @@ public struct DecryptResult: Equatable, Sendable {
                 defer { withExtendedLifetime(lifetime) {} }
             #endif
             let value: ClipboardText
-            if let field { value = .text(field) } else { value = await reader?.readText() ?? .empty }
+            if let field {
+                value = .text(field)
+            } else if let snapshot {
+                value = snapshot
+            } else {
+                value = await reader?.readText() ?? .empty
+            }
             guard self?.valid(token, generation, currentDocument) == true else { return }
             do {
                 switch value {

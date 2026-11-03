@@ -3,9 +3,10 @@
     import UniformTypeIdentifiers
 
     /// No polling, observation or writes. Metadata and the single value read are inside the user action.
-    @MainActor public final class SystemDecryptClipboard: DecryptClipboardReading {
+    @MainActor public final class SystemDecryptClipboard: DecryptClipboardSnapshotReading {
         public init() {}
-        public func readText() async -> ClipboardText {
+        public func readText() async -> ClipboardText { readTextSnapshot() }
+        public func readTextSnapshot() -> ClipboardText {
             let board = UIPasteboard.general
             #if DEBUG
                 DecryptDebugMetrics.metadataReads += 1
@@ -205,7 +206,10 @@
             warning.text = result?.contactsWarning == true ? DecryptCoordinator.contactsMessage : nil
             status.text = model.status
             status.textColor = model.busy ? .secondaryLabel : KeyboardPanel.danger
-            statusHint.text = model.busy ? "Сообщение ещё не показано" : "Закройте панель и повторите попытку."
+            statusHint.text =
+                model.busy ? "Сообщение ещё не показано"
+                : model.error == DecryptCoordinator.clipboardMessage
+                    ? DecryptCoordinator.clipboardRecovery : "Закройте панель и повторите попытку."
             spinner.isHidden = !model.busy
             model.busy ? spinner.startAnimating() : spinner.stopAnimating()
             close.backgroundColor = hasResult ? KeyboardPanel.accent : .clear

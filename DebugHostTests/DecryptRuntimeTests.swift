@@ -26,6 +26,54 @@ final class DecryptRuntimeTests: XCTestCase {
         let raw = try XCTUnwrap(host.buttons["keyboard.debugFixtures"].value as? String)
         return try XCTUnwrap(JSONSerialization.jsonObject(with: Data(raw.utf8)) as? [String: Any])
     }
+    @MainActor func testSystemPastePermissionAllow() throws {
+        let app = XCUIApplication(bundleIdentifier: "dev.cipherkeyboard.app")
+        app.launchArguments = []; app.launch()
+        XCTAssertTrue(app.staticTexts["mykey.fingerprint"].waitForExistence(timeout: 15))
+        app.tabBars.buttons.matching(NSPredicate(format: "label == %@", "Настройка")).firstMatch.tap()
+        if app.buttons["setup.showSteps"].exists { app.buttons["setup.showSteps"].tap() }
+        let open = app.buttons["setup.openSettings"]
+        for _ in 0..<3 { if open.exists && open.isHittable { break }; app.scrollViews["setup.scroll"].swipeUp() }
+        XCTAssertTrue(open.waitForExistence(timeout: 5)); if !open.isHittable { app.swipeUp() }; open.tap()
+        let settings = XCUIApplication(bundleIdentifier: "com.apple.Preferences")
+        settings.activate()
+        // Some Simulator Settings builds retain the keyboard pane after the public deep link.
+        // Navigate the visible Apps list rather than treating that pane as the app's permission page.
+        for _ in 0..<8 {
+            if settings.buttons["com.apple.settings.general"].exists { break }
+            let back = settings.navigationBars.buttons.firstMatch
+            if back.exists { back.tap() } else { break }
+        }
+        let apps = settings.buttons.matching(NSPredicate(format: "label IN %@", ["Apps", "Приложения"])).firstMatch
+        for _ in 0..<6 { if apps.exists && apps.isHittable { break }; settings.swipeUp() }
+        XCTAssertTrue(apps.exists && apps.isHittable, settings.debugDescription); apps.tap()
+        let cipher = settings.descendants(matching: .any).matching(NSPredicate(format: "label == %@", "CipherKeyboard"))
+            .firstMatch
+        for _ in 0..<6 { if cipher.exists && cipher.isHittable { break }; settings.swipeUp() }
+        XCTAssertTrue(cipher.exists && cipher.isHittable, settings.debugDescription); cipher.tap()
+        let hierarchy = XCTAttachment(string: settings.debugDescription)
+        hierarchy.name = "system-paste-settings-before"; hierarchy.lifetime = .keepAlways; add(hierarchy)
+        let row = settings.descendants(matching: .any).matching(
+            NSPredicate(
+                format: "label CONTAINS[c] %@ OR (label BEGINSWITH %@ AND label CONTAINS[c] %@)",
+                "Paste from Other Apps", "Вставка", "приложений"
+            )
+        ).firstMatch
+        XCTAssertTrue(row.waitForExistence(timeout: 5), settings.debugDescription); row.tap()
+        let allow = settings.cells.matching(
+            NSPredicate(
+                format: "label IN %@", ["Allow", "Разрешить", "Разрешать"]
+            )
+        ).firstMatch
+        XCTAssertTrue(allow.waitForExistence(timeout: 5), settings.debugDescription); allow.tap()
+        let proof = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
+        proof.name = "system-paste-settings-allow"; proof.lifetime = .keepAlways; add(proof)
+        let ciphertext = try prepare()
+        let host = self.host(ciphertext)
+        host.buttons["keyboard.decrypt"].tap()
+        XCTAssertTrue(host.staticTexts["keyboard.decrypt.text"].waitForExistence(timeout: 5), host.debugDescription)
+        XCTAssertEqual(host.staticTexts["keyboard.decrypt.sender"].label, "От: Анна07")
+    }
     /// One retained ciphertext crosses actual 06 insertion, explicit host copying and both shipping 07 surfaces.
     @MainActor func testActualInsertedCiphertextSelfRoundTrip() throws {
         let app = XCUIApplication(bundleIdentifier: "dev.cipherkeyboard.app")

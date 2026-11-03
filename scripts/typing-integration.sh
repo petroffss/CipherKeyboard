@@ -18,7 +18,8 @@ if [ -n "${TYPING_APPEARANCE:-}" ]; then
     echo "Actual Simulator OS appearance: $actual_appearance"
 fi
 result="${TYPING_RESULT:-$ROOT/.build/TestResults/typing-$(date +%Y%m%d-%H%M%S).xcresult}"
-args=(-project "$PROJECT" -scheme TypingIntegration -destination "platform=iOS Simulator,id=$TYPING_SIMULATOR" -derivedDataPath "$DERIVED" "CURRENT_PROJECT_VERSION=$(typing_revision)" -parallel-testing-enabled NO)
+revision="$(typing_revision)"
+args=(-project "$PROJECT" -scheme TypingIntegration -destination "platform=iOS Simulator,id=$TYPING_SIMULATOR" -derivedDataPath "$DERIVED" "CURRENT_PROJECT_VERSION=$revision" -parallel-testing-enabled NO)
 xcodebuild build-for-testing "${args[@]}" "$@"
 xcrun simctl terminate "$TYPING_SIMULATOR" dev.cipherkeyboard.typinghost 2>/dev/null || true
 xcrun simctl terminate "$TYPING_SIMULATOR" dev.cipherkeyboard.app.keyboard 2>/dev/null || true
@@ -27,5 +28,7 @@ installed="$(xcrun simctl get_app_container "$TYPING_SIMULATOR" dev.cipherkeyboa
 relative='PlugIns/CipherKeyboardExtension.appex/CipherKeyboardExtension.debug.dylib'
 cmp "$APP_PATH/$relative" "$installed/$relative"
 echo "Verified installed extension SHA256: $(shasum -a 256 "$installed/$relative")"
-echo "Runtime source revision: $(typing_revision); simulator: $TYPING_SIMULATOR; installed: $installed"
+installed_revision="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' "$installed/Info.plist")"
+[[ "$installed_revision" == "$revision" ]] || { echo 'Installed source revision mismatch' >&2; exit 1; }
+echo "Runtime source revision: $revision; simulator: $TYPING_SIMULATOR; installed: $installed"
 xcodebuild test-without-building "${args[@]}" -resultBundlePath "$result" "$@"

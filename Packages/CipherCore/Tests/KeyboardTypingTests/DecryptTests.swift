@@ -26,6 +26,12 @@ private actor DecryptOpenGate {
     }
     func release(_ index: Int = 0) { continuations.remove(at: index).resume() }
 }
+@MainActor private final class DecryptSnapshotSpy: DecryptClipboardSnapshotReading {
+    var value: ClipboardText = .empty
+    var snapshots = 0, asyncReads = 0
+    func readTextSnapshot() -> ClipboardText { snapshots += 1; return value }
+    func readText() async -> ClipboardText { asyncReads += 1; return value }
+}
 @MainActor private final class DecryptRig {
     let a = Identity.generate(), b = Identity.generate(), c = Identity.generate()
     let clipboard = DecryptClipboardSpy()
@@ -67,6 +73,28 @@ private actor DecryptOpenGate {
 }
 
 @Suite @MainActor struct DecryptTests {
+    @Test func synchronousSnapshotStillHonorsGates() async throws {
+        let own = Identity.generate(), sender = Identity.generate(), reader = DecryptSnapshotSpy()
+        reader.value = .text(try CipherMessage.seal("  Проверено\n🙂  ", from: sender, to: [own.publicKey]))
+        var permitted = false, blocked = false
+        var identity: IdentityReadResult = .missing
+        let model = DecryptCoordinator(
+            surface: .keyboard, access: { permitted }, identity: { identity }, contacts: { .contacts([]) },
+            clipboard: reader, blocked: { blocked })
+        model.activate(); model.start(); #expect(reader.snapshots == 0)
+        permitted = true; model.refresh(); model.start(); #expect(reader.snapshots == 0)
+        identity = .identity(own); model.refresh(); blocked = true; model.start()
+        #expect(reader.snapshots == 0)
+        blocked = false; model.start()
+        #expect(reader.snapshots == 1); #expect(reader.asyncReads == 0)
+        model.start(); #expect(reader.snapshots == 1)
+        for _ in 0..<2000 {
+            if !model.busy { break }; try await Task.sleep(for: .milliseconds(1))
+        }
+        #expect(model.result?.text == "  Проверено\n🙂  ")
+        #expect(reader.snapshots == 1); #expect(reader.asyncReads == 0)
+        model.close(); model.deactivate(); model.start(); #expect(reader.snapshots == 1)
+    }
     @Test func explicitReadOnly() async throws {
         let r = DecryptRig(); try r.ready()
         r.model.refresh(); r.model.activate()
