@@ -188,7 +188,8 @@
                 let titleHeight = ceil(
                     ((title.text ?? "") as NSString).boundingRect(
                         with: CGSize(width: max(1, bounds.width - 14 - 45), height: .greatestFiniteMagnitude),
-                        options: [.usesLineFragmentOrigin, .usesFontLeading], attributes: [.font: inherited]
+                        options: [.usesLineFragmentOrigin, .usesFontLeading], attributes: [.font: inherited],
+                        context: nil
                     ).height)
                 let closeHeight = max(48, inherited.lineHeight + 20)
                 let bodyHeight = bounds.height - titleHeight - closeHeight - 4 * 12
