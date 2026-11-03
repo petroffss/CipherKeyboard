@@ -219,9 +219,20 @@ private struct DecryptInput: UIViewRepresentable {
                 model.setInput(view.text.replacingCharacters(in: swiftRange, with: attributedString.string))
             else { return range }
             // Only mutate UIKit after the complete replacement passes the UTF-8 bound and stamp.
+            let generation = model.inputGeneration
+            let selection = NSRange(location: replacement.location + attributedString.length, length: 0)
             view.text = model.input
-            view.selectedRange = NSRange(location: replacement.location + attributedString.length, length: 0)
+            view.selectedRange = selection
             view.setNeedsLayout()
+            // Let UIKit consume the returned range before dismissing the keyboard it focused for paste.
+            DispatchQueue.main.async { [weak self, weak view] in
+                guard let self, let view, self.acceptsInput,
+                    self.model.inputGeneration == generation, self.model.error == nil,
+                    view.text == self.model.input, view.selectedRange == selection,
+                    view.window != nil, view.isFirstResponder
+                else { return }
+                view.resignFirstResponder()
+            }
             return view.selectedTextRange ?? range
         }
         func textView(_ view: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
@@ -230,7 +241,7 @@ private struct DecryptInput: UIViewRepresentable {
         }
         func textViewDidChange(_ view: UITextView) {
             guard acceptsInput else { view.text = ""; view.setNeedsLayout(); return }
-            if !model.setInput(view.text) { view.text = model.input }
+            if view.text != model.input, !model.setInput(view.text) { view.text = model.input }
             view.setNeedsLayout()
         }
     }
