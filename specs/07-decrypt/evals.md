@@ -10,7 +10,7 @@
 - **Ожидается:** до действия 0 чтений; после 1 попытка получения текста, без опроса/автоповтора. Чтений контекста хозяина ради сообщения нет. Действие доступно без выбранного адресата и с пустым черновиком; учебное превью буфер не читает. AC1.
 - **Почему провалит плохую работу:** ловит чтение при открытии/таймере и кнопку, ошибочно зависимую от получателя шифрования.
 - **Статус:** pass
-- **Доказательство:** Core explicitReadOnly PASS; реальный A402: draft 0, metadata/content 0/0 через смену раскладки, поворот и 5 секунд, затем 1/1 по одному действию и без роста после Close. Host selection intact; приложение testExplicitClipboardRead PASS, preview UI прошёл и в preview отсутствует подключение clipboard reader. specs/07-decrypt/evidence/verifier-round3/native-explicit-read-counters.log.
+- **Доказательство:** R4 4664388/182858484, core explicitReadOnly и полный app testExplicitClipboardRead PASS. Реальный A402: 85 строк диагностики подтверждают пустой черновик и 0/0 content/metadata до действия, при смене раскладки, повороте и ожидании 5 секунд, затем 1/1 по одному tap и после Close. Preview и сохранение поля хозяина проверены. specs/07-decrypt/evidence/verifier-round4/native-explicit-read-counters.log.
 
 ## E2 · Получатель видит точный проверенный текст
 - **Тип:** ui
@@ -18,7 +18,7 @@
 - **Ожидается:** точные пробелы/Unicode/перевод строки, «Расшифровано», «От: Анна», «✓ Подпись верна», «Закрыть». Исходная строка соответствует полному ключу A. Никаких клавиш редактирования результата. AC4/15.
 - **Почему провалит плохую работу:** ловит заглушку, обрезку whitespace и проверку лишь fake-opener вместо пути от 06.
 - **Статус:** pass
-- **Доказательство:** Независимый обмен реальными публичными Keychain keys A402/B375; actual06 вставил C в TypingHost один раз, A прочитал self на двух поверхностях. B прочитал тот же 565-байтный C на расширении и в приложении, точные пробелы/newline/emoji, «От: Анна», подпись и Close. cmp и совпавший SHA-256 28ea34ab9c8ca5c5fffb0c0eed15bc65f2cd319300f63f6419eaf55963e09bb2. specs/07-decrypt/evidence/verifier-round3/E2-exact-C-hashes.txt; E2-B375-receive-exact-C.xcresult.
+- **Доказательство:** R4 4664388/182858484, реальные публичные Keychain A402/B375 и actual 06 insertion одного C565. A открыл self в обоих интерфейсах. B обе поверхности фактически открыли тот же C через Device Hub и затем независимый XCTest 1/1 после штатного восстановления клавиатуры. Exact plaintext в обеих, имя Анна, подпись, Close, неизменный host. App actual paste AX Value и C исходной вставки cmp/SHA совпали. Negative readiness сохранены. specs/07-decrypt/evidence/verifier-round4/E2-exact-C-hashes.txt и E2-B375-receive-C-after-public-keyboard-mode.xcresult.
 
 ## E3 · Собственный и неизвестный отправитель [security]
 - **Тип:** test
@@ -26,7 +26,7 @@
 - **Ожидается:** self → «От: вы»; unknown → «От неизвестного ключа <2 группы>», подсказка добавить контакт и верная подпись. Сравниваются обе части PublicKey; чужое имя не назначается. AC4/5.
 - **Почему провалит плохую работу:** ловит совпадение по короткому отпечатку/имени и ложное подтверждение личности.
 - **Статус:** pass
-- **Доказательство:** Own core senderIdentity и displayFingerprintCollision PASS (сопоставление обеих частей полного ключа). Full app testSenderVariants PASS; реальные self A keyboard/app в E2; установленный extension controlled contact/self/unknown, unknown hint и подпись в testLiveExtensionBranches PASS. specs/07-decrypt/evidence/verifier-round3/core-scoped.log; native-A402-lifecycle-compose.xcresult.
+- **Доказательство:** R4 4664388/182858484, core senderIdentity и collision полного PublicKey PASS, app SenderVariants в 40/40. A402 actual self на обоих интерфейсах. Нативный extension показал unknown «40CF 4FD9», точную подсказку добавить контакт и проверенную подпись. specs/07-decrypt/evidence/verifier-round4/E3-E4-E6-runtime-branches-attachments/.
 
 ## E4 · Контакты перечитываются, ошибки не дают старого имени [negative] [security]
 - **Тип:** test
@@ -34,7 +34,7 @@
 - **Ожидается:** переименование видно, удаление/замена → unknown, ошибка → unknown с предупреждением AC5; self остаётся self. Старый кеш и UUID не определяют отправителя, текст подлинного сообщения доступен. AC5.
 - **Почему провалит плохую работу:** ловит имя из устаревшего списка или полный отказ читать подлинное сообщение при сбое контактов.
 - **Статус:** pass
-- **Доказательство:** Own core contactsRefresh PASS (переименование/удаление/смена ключа/недоступность reader, self). На установленном app и extension контроль warning: неизвестный ключ, точное предупреждение и проверенный текст с подписью; contact и unknown также проверены. specs/07-decrypt/evidence/verifier-round3/native-A402-lifecycle-compose.xcresult (testAppContactsWarning/testLiveExtensionBranches).
+- **Доказательство:** R4 4664388/182858484, core contactsRefresh PASS для rename/remove/replaced full key/unavailable/self. App и extension в установленном Debug показали проверенный текст с unknown и точным контактовым предупреждением при управляемой недоступности, без старого имени. specs/07-decrypt/evidence/verifier-round4/E3-E4-E6-runtime-branches.xcresult.
 
 ## E5 · Первый конверт и вход с текстом вокруг [negative]
 - **Тип:** test
@@ -42,7 +42,7 @@
 - **Ожидается:** одинаковые результат/ошибка с ядром, второе сообщение не подменяет первое; noMessage даёт точный текст AC6 для соответствующей поверхности. AC3/6.
 - **Почему провалит плохую работу:** ловит самостоятельный regex, поиск только ckmsg1 и пропуск неуспешного первого сообщения.
 - **Статус:** pass
-- **Доказательство:** Core 187/29 PASS, firstEnvelopeMatchesCore и parser regression: контекст, whitespace и первое повреждённое/чужое/ckmsg2, noMessage обеих поверхностей. specs/07-decrypt/evidence/verifier-round3/core-scoped.log.
+- **Доказательство:** R4 4664388/182858484, независимый scoped core 187/29, firstEnvelopeMatchesCore и MessageParsingTests PASS. Контекст/whitespace, первое повреждённое/чужое/ckmsg2, noMessage обеих моделей. specs/07-decrypt/evidence/verifier-round4/core-scoped.log.
 
 ## E6 · Подделка, чужой получатель и версия [negative] [security]
 - **Тип:** test
@@ -50,7 +50,7 @@
 - **Ожидается:** точные ошибки AC6; нет старого/нового открытого текста и значка успешной подписи ни в визуальном, ни в accessibility дереве. AC4/6.
 - **Почему провалит плохую работу:** ловит показ текста до верификации, неверный mapping и оставшийся успешный экран после ошибки.
 - **Статус:** pass
-- **Доказательство:** Core rejectedMessagesNeverPublishText и TamperTests PASS; все app error-after-success в полном UI, native extension после успеха проверил corrupt/foreign/version/generic/changed с точными ошибками и отсутствием текста/подписи. specs/07-decrypt/evidence/verifier-round3/core-scoped.log; full-ui-summary.json; native-A402-lifecycle-compose.xcresult.
+- **Доказательство:** R4 4664388/182858484, core rejectedMessagesNeverPublishText и TamperTests PASS. Полный UI testErrorsAfterSuccess PASS. Установленное расширение после success проверило corrupt/foreign/version/generic/changed с управляемыми входами и точными ошибками, старый текст и подпись отсутствуют. specs/07-decrypt/evidence/verifier-round4/E3-E4-E6-runtime-branches-attachments/.
 
 ## E7 · Нативное разрешение и отказ clipboard [negative] [security]
 - **Тип:** ui
@@ -58,7 +58,7 @@
 - **Ожидается:** разрешение даёт сообщение, пустой/нетекстовый → noMessage; объявленный текст без полученного значения → «Нет доступа к буферу обмена». Отказ не обходит защиту и не повторяет запрос. Системная вставка приложения без callback/значения сохраняет ввод и не запускает open, сообщённая ошибка показывает AC7. Невозможность вызвать реальный отказ на данной среде фиксируется как непроверенная часть, не pass по fake. AC7.
 - **Почему провалит плохую работу:** ловит несуществующий callback отказа, скрытые повторные чтения и фиктивное нативное доказательство.
 - **Статус:** pass
-- **Доказательство:** Реальный A402: public Allow/Deny/Ask, 1 denied read, подсказка и отсутствие повтора, пустой/image дают noMessage. В приложении явный системный Paste разрешён iOS даже при Deny; отдельно реальный внешний text provider отказал через production UIPasteControl с точной ошибкой и сохранением непустого прежнего ciphertext, без open/result. Независимый production UIKit boundary 5/5. Ask body доказан, отдельный сбой Settings Back при cleanup сохранён, Allow readback и следующий native Allow PASS. specs/07-decrypt/evidence/verifier-round3/shipping-permission-A402.xcresult; shipping-provider-old-input-attachments/; native-paste-results.json.
+- **Доказательство:** R4 4664388/182858484, actual original TypingHost Allow/Deny/Ask, одна попытка и точная подсказка, empty/image дают noMessage. Deny body завершён до отдельного AX-сбоя Settings cleanup. Ask и последующий public Allow с успешным real read прошли. App: явное системное Paste под Deny доставлено без open; отдельно настоящий внешне объявленный text provider отказал в production UIPasteControl, показана точная ошибка, прежний ciphertext сохранён, результата нет. UIKit boundary 5/5. specs/07-decrypt/evidence/verifier-round4/E7-final-allow-restored.xcresult и E7-empty-image-and-native-unavailable-provider-attachments/.
 
 ## E8 · Полный доступ и личный ключ [negative] [security]
 - **Тип:** test
@@ -66,7 +66,7 @@
 - **Ожидается:** сообщения AC8/9, без доступа 0 вызовов reader/Keychain/contacts ради действия, 0 создания/записи ключей; смена identity не публикует результат. Повтор после восстановления работает. AC8/9.
 - **Почему провалит плохую работу:** ловит утечку до проверки права и самовольное восстановление ключа.
 - **Статус:** pending
-- **Доказательство:** Core accessAndIdentity/identityFailureAfterSuccessClearsBothSurfaces PASS, app key error PASS. Нативные no-access/no-key и восстановление на установленном extension целиком не повторены в known-red R3. specs/07-decrypt/evidence/verifier-round3/core-scoped.log; full-ui-summary.json.
+- **Доказательство:** Ожидает независимого прогона R4 на frozen 4664388/182858484. История R3 (pending): specs/07-decrypt/evidence/verifier-round3/report.md.
 
 ## E9 · Двойное нажатие и взаимоисключение операций [negative]
 - **Тип:** test
@@ -74,7 +74,7 @@
 - **Ожидается:** один вход/один open; вход зафиксирован; «Расшифровываем…»; закрытие работает; старое завершение не убирает/не меняет новый результат; 0 вставок. AC2/9/10.
 - **Почему провалит плохую работу:** ловит гонку старого callback и параллельное шифрование.
 - **Статус:** pass
-- **Доказательство:** Core singleFlightAndCancel PASS: управляемые reader/opener, зафиксированный вход, взаимное исключение и stale completion. Full app testBusyAndCancel PASS, подтверждена реальная busy→Close/отмена без публикации. Установленный extension отдельно показал busy и освобождение при проверенном hide. specs/07-decrypt/evidence/verifier-round3/core-scoped.log; full-ui-summary.json; E11-A402-confirmed-hide.xcresult.
+- **Доказательство:** R4 4664388/182858484, core singleFlightAndCancel и app BusyAndCancel PASS. Настоящий A402 double tap: одна clipboard попытка, liveOps1, реальное шифрование доступно до действия и блокируется на busy. Close освобождает, новое действие читает ещё 1 раз и публикует, trace без вставки. specs/07-decrypt/evidence/verifier-round4/E9-E10-real-compose-and-single-flight-attachments/.
 
 ## E10 · Закрытие возвращает прежний черновик [regression]
 - **Тип:** ui
@@ -82,15 +82,15 @@
 - **Ожидается:** прежний черновик/курсор/получатель сохранены, поле хозяина/выделение не изменены; 0 insert/delete/adjust. После окончания сессии черновик очищается по 05. AC10/12.
 - **Почему провалит плохую работу:** ловит потерю черновика и восстановление его вставкой в мессенджер.
 - **Статус:** pass
-- **Доказательство:** Core preservesComposeAndHost PASS; native testComposeHostPreservation PASS: тот же многострочный draft, внутренний курсор, выбранный получатель, host text/caret/selection и proxy trace после success/error; завершение сессии очищает draft. specs/07-decrypt/evidence/verifier-round3/native-A402-lifecycle-compose.xcresult.
+- **Доказательство:** R4 4664388/182858484, A402 отдельные реальные открытия валидного и изменённого ciphertext. После success/error и Close точный многострочный черновик, курсор внутри слова, получатель, текст хозяина и caret/selection остались прежними, host trace прежний. Реальное окончание сессии очищает draft. Core preservesComposeAndHost PASS с 0 proxy insert/delete/adjust. specs/07-decrypt/evidence/verifier-round4/E9-E10-real-compose-and-single-flight.xcresult и E10-real-error-compose.xcresult.
 
 ## E11 · Жизненный цикл стирает просмотр [negative] [security]
 - **Тип:** ui
 - **Шаги:** `DecryptUITests › testLifecycle` на успехе и задержанной операции: закрыть клавиатуру, глобус, фон хозяина, смена документа; приложение — другая вкладка/фон. Возврат и новая операция. Проверить actual lifecycle и disappearance, не только тестовый флаг; модель `DecryptTests › lifecycleInvalidatesGeneration` покрывает все переходы и отзыв доступа.
 - **Ожидается:** результат/вход/ошибка отсутствуют после возврата; поздний callback не возвращает текст, старая операция освобождена, новой не мешает. AC9/11.
 - **Почему провалит плохую работу:** ловит сохранение состояния в модели после исчезновения view и перенос текста в другой документ.
-- **Статус:** pending
-- **Доказательство:** App success/busy × tab/background reset/recovery PASS. Native extension actual success on stable hide/document/background/globe cleared visible text and signature, operations=0 and next read recovered. Busy stable hide PASS; busy document remained visibly busy only in separate dec-busy fixture (panel model replaced, production lifecycle resets another instance), so production delayed cancellation and remaining busy controls are pending. specs/07-decrypt/evidence/verifier-round3/E11-A402-confirmed-hide.xcresult; E11-A402-native-transitions.xcresult; E11-native-transition-attachments/.
+- **Статус:** pass
+- **Доказательство:** R4 4664388/182858484, native extension real result и удержанный реальный open на том же координаторе: hide/globe/background/document; переходы на 6.766/6.610/3.660/5.613 с до 15 с, liveOps 1→0, очистка и новый read +1 после истечения hold. App success/busy × tab/background, пустой экран/operations0/новое чтение прошли. Core lifecycleInvalidatesGeneration PASS. specs/07-decrypt/evidence/verifier-round4/E11-extension-held-counters-and-timing.json и E11-E13-app-lifecycle-and-field.xcresult.
 
 ## E12 · Приватность результата и системный снимок [security]
 - **Тип:** ui
@@ -98,15 +98,15 @@
 - **Ожидается:** нет меню/копирования/записи/сети/новых Keychain записей; буфер побайтно прежний; canary только в активной памяти/UI и синтетических test artifacts, не в проверенных persisted источниках/системном снимке. Отсутствие доступа к источнику не считается отсутствием утечки. AC9/12.
 - **Почему провалит плохую работу:** ловит стандартный выделяемый TextEditor для результата, утечки в snapshots и пустой аудит недоступного контейнера.
 - **Статус:** pending
-- **Доказательство:** Нативные gestures и обе поверхности с реальным canary PASS; clipboard source 522 байта unchanged, доступные nonempty app/group/ext/host и Keychain metadata1 unchanged, 6881 non-XCTest log rows без canary. Синтетические 184 совпадения происходят только из XCTest injected AX diagnostics. В App Switcher карточка host полностью проверена, видимая часть карточки app непрозрачна; целиком карточка app не зафиксирована. specs/07-decrypt/evidence/verifier-round3/privacy-comparison.json; privacy-A402-original-host-attachments/; privacy-app-switcher-devicehub.png.
+- **Доказательство:** Ожидает независимого прогона R4 на frozen 4664388/182858484. История R3 (pending): specs/07-decrypt/evidence/verifier-round3/report.md.
 
 ## E13 · Полный сценарий вкладки приложения
 - **Тип:** ui
 - **Шаги:** `DecryptUITests › testAppPasteEditClose`: пустой/пробельный ввод, системная вставка, ручная правка, ошибка→редактирование→успех→закрыть, смена вкладки/фон. Изменить clipboard после заполнения поля до запуска.
 - **Ожидается:** submit disabled для пустого/пробельного; расшифровывается поле, не новый clipboard; ошибка сохраняет ввод, редактирование убирает ошибку; успех скрывает ввод/системную клавиатуру; закрытие/уход стирают состояние. AC11.
 - **Почему провалит плохую работу:** ловит сохранение введённого сообщения между вкладками и запуск по другому clipboard.
-- **Статус:** pending
-- **Доказательство:** Full app testAppPasteEditClose PASS; actual native paste в E2 и app lifecycle, error preserves OLD в E7. Дополнительный shipping сценарий с заменой clipboard после заполнения поля остановился до ввода на мгновенной проверке stock keyboard; нужен полный actual run. specs/07-decrypt/evidence/verifier-round3/full-ui-summary.json; native-A402-lifecycle-compose.xcresult.
+- **Статус:** pass
+- **Доказательство:** R4 4664388/182858484, live A402 stock keyboard и focus, пусто/пробелы disabled, ошибка сохраняет поле, ручная правка очищает ошибку. Реальный UIPasteControl доставил точное поле, отдельный XCTest runner заменил clipboard пока app foreground, результат из прежнего поля. Успех скрывает ввод/клавиатуру, Close/вкладка/фон очищают. AppPasteEditClose PASS в полном UI. specs/07-decrypt/evidence/verifier-round4/E11-E13-app-lifecycle-and-field.xcresult.
 
 ## E14 · Предел входа и максимальный результат [negative]
 - **Тип:** test
@@ -114,7 +114,7 @@
 - **Ожидается:** 65536 допускается к ядру, 65537 — ошибка AC3/0 open; старое поле сохранено. 4096 точно расшифровано, 4097 не создаётся seal. UI не обрезает и не смешивает два предела. AC3/15.
 - **Почему провалит плохую работу:** ловит подсчёт Character вместо UTF-8 и лимит шифротекста 4096.
 - **Статус:** pass
-- **Доказательство:** Core utf8Bounds и LimitsTests PASS: 65536/65537 UTF-8 и atomic preservation old input, 4096 exact plaintext, 4097 seal reject. specs/07-decrypt/evidence/verifier-round3/core-scoped.log.
+- **Доказательство:** R4 4664388/182858484, независимый scoped core 187/29. utf8Bounds и LimitsTests: 65536/65537 UTF-8, прежний непустой ввод сохранён при превышении, точные 4096 и запрет seal 4097. specs/07-decrypt/evidence/verifier-round4/core-scoped.log.
 
 ## E15 · Макет всех состояний [design]
 - **Тип:** design
@@ -122,15 +122,15 @@
 - **Ожидается:** те же блоки/порядок/тексты/смысловые цвета, все состояния присутствуют; нет скрытого текста ошибки/имени, перекрытий и горизонтального overflow. Отличия системного растрирования шрифта не являются дефектом; точные RGB переходной анимации не часть контракта. AC4/6/7/8/13.
 - **Почему провалит плохую работу:** ловит пропущенные состояния и макет результата, фактически не помещающийся в расширение.
 - **Статус:** pending
-- **Доказательство:** Независимо визуально открыт оригинальный A402 sender кадр: «От: Анна07» читается полностью, Close и выделение на месте. Полная матрица 94+4 не запускалась на known-red R3 и остаётся обязательной. specs/07-decrypt/evidence/verifier-round3/native-A402-sender-attachments/.
+- **Доказательство:** Ожидает независимого прогона R4 на frozen 4664388/182858484. История R3 (pending): specs/07-decrypt/evidence/verifier-round3/report.md.
 
 ## E16 · Живые переходы, прокрутка и поворот [design] [regression]
 - **Тип:** ui
 - **Шаги:** обе темы, 375/402/440: idle→busy→длинное имя/4096 байт→прокрутка до последней строки→поворот в альбом и назад→закрытие; приложение также со стандартной клавиатурой при вводе. Повторить крайний 375 с accessibility XXXL. Геометрия и исходные screenshots до/после, без подмены статической матрицей.
 - **Ожидается:** панель ≤420/240 pt без safe area, поле хозяина видно, «Закрыть» закреплена и ≥44×44, последний фрагмент доступен; поворот без нового чтения/потери результата, клавиши после возврата работают. В приложении ввод/действия/таб-бар доступны, без overflow. AC10/13.
 - **Почему провалит плохую работу:** ловит ошибки реальной смены layout, которых не видно на отдельных картинках.
-- **Статус:** pending
-- **Доказательство:** Живой A402 поворот на чтении, sender/Close и возврат раскладки проверены. Полная 4096-byte динамика трёх размеров/двух тем/375 XXXL с прокруткой и stock keyboard остаётся обязательной после исправления. specs/07-decrypt/evidence/verifier-round3/native-A402-ask-and-identity.xcresult.
+- **Статус:** fail
+- **Доказательство:** R4 4664388/182858484. B375 XXXL реальный 4096 busy→result и поворот. В 667×375 панель 240pt, Close закреплена 83pt, но message/identity scrollports лишь 33.5pt: на оригинале верхняя половина глифов, имя/подпись и последний фрагмент не читаются. Portrait/return выводит конец. AX текст не доказывает видимость. DecryptUIKit.swift:136–150,182–198. Отдельная ошибка harness .491 Й/й сохранена. specs/07-decrypt/evidence/verifier-round4/E16-B375-XXXL-landscape-regression.md.
 
 ## E18 · Десять циклов без падений и накопления
 - **Тип:** ui
@@ -138,7 +138,7 @@
 - **Ожидается:** все циклы рабочие, нет старого текста/зависания/живых завершённых координаторов и устойчивого роста удерживаемых операций; приложить измерения и runtime. Разовая аллокация кешей не объявляется утечкой без удержания/тренда. AC15.
 - **Почему провалит плохую работу:** ловит retain cycle и деградацию расширения после нескольких просмотров.
 - **Статус:** pending
-- **Доказательство:** Полные 10×4096-byte циклы на каждой поверхности, idle RSS/weak probes и crash/jetsam ещё не запускались на known-red R3. План/инструменты сохранены. specs/07-decrypt/evidence/verifier-round3/preflight.md.
+- **Доказательство:** Ожидает независимого прогона R4 на frozen 4664388/182858484. История R3 (pending): specs/07-decrypt/evidence/verifier-round3/report.md.
 
 ## E19 · Регрессия, сборки и Release [regression]
 - **Тип:** command
@@ -146,7 +146,7 @@
 - **Ожидается:** все exit 0, полный UI без failing/skipped обязательных сценариев; клавиатура собирается без модулей записи ключей; учебное превью/набор/контакты/шифрование сохранены; SHA/runtime/счётчики в отчёте. Focused не заменяет полный suite; E18/E20 этапа 06 не меняются. Архитектура/AC14/15.
 - **Почему провалит плохую работу:** ловит работающее превью при сломанном extension, Debug-only реализацию и регрессию шифрования.
 - **Статус:** fail
-- **Доказательство:** Own core187/29, lint89, Debug/Release и release audit PASS. Новый unfiltered full UI 39 PASS/1 FAIL/0 SKIP exit65: ContactsUITests.testCardAndRename .711 увидел «Бори» через 166мс после одного typeText; следующий AX через 74мс и оригинал кадра показывают «Борис». Save не вызван. Без нового полного прогона и legacy native gates E19 не закрыт. specs/07-decrypt/evidence/verifier-round3/full-ui-summary.json; full-ui-card-rename-staged-excerpt.log.
+- **Доказательство:** R4 4664388/182858484. Независимый полный UI 40/40 без skips, core187/29, lint89, Debug/Release и аудит PASS. Нативный legacy05 testEditingMatrixWithoutFullAccess FAIL на .57: реальная панель есть, старый keyboard.identityStatus отсутствует. Отдельный testFullAccessPreflight FAIL на .27 с подтверждённым Full Access ON, тот же ID. В 06 KeyboardPanel.swift:649 status скрывался только при picker; 07 :702 дополнительно скрывает его при hasDecrypt, нарушая AC14. Другой legacy readiness timeout сохранён отдельно. specs/07-decrypt/evidence/verifier-round4/E19-legacy-identity-status-regression.md.
 
 ## E20 · Независимая security review [security]
 - **Тип:** command
@@ -154,7 +154,7 @@
 - **Ожидается:** нет открытых «Важно»; прошлые findings и исправления сохранены, фактический риск high подтверждён. Reviewer не builder/verifier. Приёмка не основывается на одном автотесте/компиляции.
 - **Почему провалит плохую работу:** ловит формально зелёные тесты с неверными гарантиями/непроверенными адаптерами.
 - **Статус:** pass
-- **Доказательство:** Fresh independent reviewer на exact 47fa9a2/runtime583745497: high risk, 0 Important/Minor/Preexisting. Полный статический отчёт с путями/строками; non-VO scope далее изменён пользователем без product diff. specs/07-decrypt/evidence/reviewer-round3/report.md.
+- **Доказательство:** R4 4664388/182858484, отдельный независимый security reviewer. Риск high, 0 «Важно», 2 мелких Debug-only замечания, R9/R10 и Release проверены отдельно от verifier. specs/07-decrypt/evidence/reviewer-round4/report.md.
 
 ## E21 · Первый пользователь на Release
 - **Тип:** ui
@@ -162,7 +162,7 @@
 - **Ожидается:** находит путь, читает и понимает contact/unknown/подделку, возвращается к вводу без утечки/тупика. Все обязательные evals подтверждены отдельно; отчёт не заменяет технические проверки. Перед merge результат принимает пользователь.
 - **Почему провалит плохую работу:** ловит работоспособность только под тестовым runner и непонятный пользователю сценарий.
 - **Статус:** pending
-- **Доказательство:** Exact independent Release построен и сохранён с подписью/хешами; свежий независимый Release first-user и пользовательская приёмка ожидают закрытия остальных gates. specs/07-decrypt/evidence/verifier-round3/release-recovery-artifacts.json.
+- **Доказательство:** Ожидает отдельного свежего UI-only прогона установленного Release R4 после технических проверок. История R3 (pending): specs/07-decrypt/evidence/verifier-round3/report.md.
 
 ## Покрытие требований
 AC1→E1; AC2→E9; AC3→E5/E14; AC4→E2/E3/E6; AC5→E3/E4; AC6→E5/E6; AC7→E7; AC8→E8; AC9→E8/E9/E11/E12; AC10→E9/E10/E16; AC11→E7/E11/E13; AC12→E1/E10/E12/E20; AC13→E15/E16; AC14→E19; AC15→E2/E14/E18/E19. Все состояния макета→E15, живые переходы→E16. Независимая проверка→E20/E21.
