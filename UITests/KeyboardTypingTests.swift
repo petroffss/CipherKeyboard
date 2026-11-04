@@ -37,11 +37,22 @@ final class KeyboardTypingTests: XCTestCase {
         app.navigationTab("tab.setup").tap()
         XCTAssertEqual(editor.value as? String, "")
         app.buttons["keyboard.key.п"].tap()
+        let back = app.navigationBars.buttons.element(boundBy: 0)
+        let foregroundBackFrame = back.frame
         XCUIDevice.shared.press(.home)
         app.activate()
         XCTAssertEqual(editor.value as? String, "")
-        app.navigationBars.buttons.element(boundBy: 0).tap()
-        app.scrollViews["setup.scroll"].swipeDown()
+        // AX can expose the moving app-switcher frame while activate() returns.
+        // Wait for the same settled geometry before synthesizing the back tap.
+        let settled = NSPredicate { _, _ in
+            back.exists && back.isHittable && back.frame == foregroundBackFrame
+        }
+        XCTAssertEqual(
+            XCTWaiter.wait(for: [expectation(for: settled, evaluatedWith: nil)], timeout: 5), .completed)
+        back.tap()
+        let setupScroll = app.scrollViews["setup.scroll"]
+        XCTAssertTrue(setupScroll.waitForExistence(timeout: 5))
+        setupScroll.swipeDown()
         if let actualStatus { XCTAssertTrue(app.staticTexts[actualStatus].exists) }
         app.navigationTab("tab.myKey").tap()
         XCTAssertEqual(app.staticTexts["mykey.fingerprint"].label, fingerprint)
