@@ -15,7 +15,7 @@ public struct KeyboardInput: Sendable {
     private var lastShiftTap: TimeInterval?
     public init() {}
     public var byteCount: Int { text.utf8.count }
-    public var counter: String? { byteCount > 3500 ? "\(byteCount) / 4096 байт" : nil }
+    public var counter: String? { byteCount >= 2000 ? "\(byteCount) / 4096 байт" : nil }
     public static let limitMessage = "Сообщение не должно превышать 4096 байт"
     public var uppercase: Bool {
         switch shift {

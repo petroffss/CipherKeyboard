@@ -97,6 +97,9 @@ import Foundation
         if let success { return success }
         if contacts.isEmpty { return "Добавьте контакт в приложении CipherKeyboard" }
         if selected == nil { return "Выберите получателя" }
+        if adapter.input.byteCount > CipherMessage.singleMessageBytes {
+            return "Для Telegram сократите до \(CipherMessage.singleMessageBytes) байт"
+        }
         return adapter.input.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
             ? "Текст будет зашифрован только после нажатия" : "Готово к шифрованию"
     }

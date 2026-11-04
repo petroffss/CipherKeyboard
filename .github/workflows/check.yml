@@ -1,0 +1,25 @@
+name: Checks
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+concurrency:
+  group: checks-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  core-and-lint:
+    runs-on: macos-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Toolchain
+        run: xcodebuild -version && swift --version
+      - name: Lint and privacy boundaries
+        run: scripts/lint.sh
+      - name: Boundary guard regressions
+        run: python3 scripts/test-network-boundaries.py
+      - name: Core and coordinator tests
+        run: scripts/test.sh core

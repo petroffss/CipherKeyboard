@@ -13,6 +13,31 @@ final class ContactsUITests: XCTestCase {
         continueAfterFailure = false
     }
 
+    @MainActor func testMixedAgreementKeyIsRejected() throws {
+        func bytes(_ key: TestKeys.Key) throws -> Data {
+            let body = key.body.replacingOccurrences(of: "-", with: "+").replacingOccurrences(of: "_", with: "/")
+            return try XCTUnwrap(Data(base64Encoded: body + "=="))
+        }
+        let mixed = try bytes(TestKeys.k1).prefix(32) + bytes(TestKeys.k2).suffix(32)
+        let text =
+            "ckpub1:"
+            + mixed.base64EncodedString().replacingOccurrences(of: "+", with: "-")
+            .replacingOccurrences(of: "/", with: "_").replacingOccurrences(of: "=", with: "")
+        let app = launch(["-keystore", "memory", "-contacts", "memory"])
+        openContacts(app)
+        addContact(name: "Анна", key: TestKeys.k1.publicKey, in: app)
+        openAddSheet(app)
+        enterKey(text, in: app)
+        let error = app.staticTexts["addcontact.keyError"]
+        XCTAssertTrue(error.waitForExistence(timeout: 5))
+        XCTAssertTrue(error.label.contains("Возможна подмена"))
+        XCTAssertFalse(app.buttons["addcontact.save"].isEnabled)
+        let shot = XCTAttachment(screenshot: app.screenshot())
+        shot.name = "mixed-key-rejected"; shot.lifetime = .keepAlways; add(shot)
+        app.buttons["addcontact.cancel"].tap()
+        XCTAssertEqual(contactRows(app).count, 1)
+    }
+
     // MARK: - E8
 
     @MainActor

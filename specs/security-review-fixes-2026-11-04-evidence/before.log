@@ -1,0 +1,61 @@
+== CipherCore: swift test
+Building for debugging...
+[1 / 19] KeyboardTypingTests-product
+[3 / 20] KeyboardTypingTests-product
+[14 / 36] KeyboardTypingTests-product
+[15 / 36] KeyboardTypingTests-product
+[21 / 34] CipherCoreTests-product
+[22 / 34] CipherCoreTests-product
+[24 / 34] CipherCoreTests-product
+[28 / 34] KeyboardTypingTests-product
+[31 / 37] KeyboardTypingTests-product
+[33 / 37] KeyboardTypingTests-product
+Build complete! (2,96 с)
+◇ Test run started.
+↳ Testing Library Version: 2403
+↳ Target Platform: arm64e-apple-macos14.0
+◇ Suite "Security review typing regressions" started.
+◇ Test counterAppearsBeforeSingleMessageBoundary() started.
+◇ Test unknownSenderUsesFullFingerprintByDefault() started.
+✘ Test counterAppearsBeforeSingleMessageBoundary() recorded an issue at SecurityReviewTypingTests.swift:31:9: Expectation failed: input.counter == "2000 / 4096 байт"
+↳ input.counter == "2000 / 4096 байт" → false
+↳   input.counter → nil
+↳     some → "2000 / 4096 байт"
+✘ Test counterAppearsBeforeSingleMessageBoundary() failed after 0.001 seconds with 1 issue.
+✘ Test unknownSenderUsesFullFingerprintByDefault() recorded an issue at SecurityReviewTypingTests.swift:20:9: Expectation failed: model.result?.sender == "От неизвестного ключа " + sender.publicKey.fingerprint.description
+↳ model.result?.sender == "От неизвестного ключа " + sender.publicKey.fingerprint.description → false
+↳   model.result?.sender → "От неизвестного ключа 56DD 76FB"
+↳     some → "От неизвестного ключа 56DD 76FB"
+↳   "От неизвестного ключа " + sender.publicKey.fingerprint.description → "От неизвестного ключа 56DD 76FB 10B5 63F7 CD6A 520F 36F6 ACE5"
+✘ Test unknownSenderUsesFullFingerprintByDefault() failed after 0.003 seconds with 1 issue.
+✘ Suite "Security review typing regressions" failed after 0.003 seconds with 2 issues.
+✘ Test run with 2 tests in 1 suite failed after 0.003 seconds with 2 issues.
+◇ Test run started.
+↳ Testing Library Version: 2403
+↳ Target Platform: arm64e-apple-macos14.0
+◇ Suite "Security review regressions" started.
+◇ Test rejectsMixedAgreementKeysWithoutMutatingContacts() started.
+◇ Test singleMessageBoundaryUsesRealTimestampedCiphertext() started.
+◇ Test existingMixedKeyBookRemainsReadableAndRepairable() started.
+✘ Test rejectsMixedAgreementKeysWithoutMutatingContacts() recorded an issue at SecurityReviewTests.swift:17:9: Expectation failed: an error was expected but none was thrown and "Contact(id: F91A424A-271B-4239-AB59-0CDE0F95FEF7, name: "Подмена", publicKey: ckpub1:pzKrH6gtpyUwJhEas0H_vqcBvYqNQOsutX9_BBZ7XACXI2O9DLxXwezaY1x7g1XQhAsL-g3Hn4b318aaqrCWUA)" was returned
+↳ ContactError.ownKey → <not evaluated>
+↳   ContactError → <not evaluated>
+↳   ownKey → <not evaluated>
+✘ Test rejectsMixedAgreementKeysWithoutMutatingContacts() recorded an issue at SecurityReviewTests.swift:19:9: Expectation failed: an error was expected but none was thrown and "Contact(id: 42182966-7B57-46A5-A68F-457F86AA21C9, name: "Подмена Анны", publicKey: ckpub1:KbKnWbIS4pbeuSTlsOwSEqD7YzWOHZvzmr-qi9qR2zOXI2O9DLxXwezaY1x7g1XQhAsL-g3Hn4b318aaqrCWUA)" was returned
+↳ (any Error).self → <not evaluated>
+↳   (any Error) → <not evaluated>
+↳   self → <not evaluated>
+✔ Test existingMixedKeyBookRemainsReadableAndRepairable() passed after 0.002 seconds.
+✘ Test rejectsMixedAgreementKeysWithoutMutatingContacts() recorded an issue at SecurityReviewTests.swift:20:9: Expectation failed: book == before
+↳ book == before → false
+↳   book → ContactBook(contacts: [CipherCore.Contact(id: 7C19E4FC-CFC8-4418-8BAB-478C8183FF85, name: "Анна", publicKey: ckpub1:KbKnWbIS4pbeuSTlsOwSEqD7YzWOHZvzmr-qi9qR2zPlhMQ2I19Wi9TnZT54D7Yq3HH7iHJQgWkC2o-VMylIoA), CipherCore.Contact(id: F91A424A-271B-4239-AB59-0CDE0F95FEF7, name: "Подмена", publicKey: ckpub1:pzKrH6gtpyUwJhEas0H_vqcBvYqNQOsutX9_BBZ7XACXI2O9DLxXwezaY1x7g1XQhAsL-g3Hn4b318aaqrCWUA), CipherCore.Contact(id: 42182966-7B57-46A5-A68F-457F86AA21C9, name: "Подмена Анны", publicKey: ckpub1:KbKnWbIS4pbeuSTlsOwSEqD7YzWOHZvzmr-qi9qR2zOXI2O9DLxXwezaY1x7g1XQhAsL-g3Hn4b318aaqrCWUA)])
+↳     contacts → [CipherCore.Contact(id: 7C19E4FC-CFC8-4418-8BAB-478C8183FF85, name: "Анна", publicKey: ckpub1:KbKnWbIS4pbeuSTlsOwSEqD7YzWOHZvzmr-qi9qR2zPlhMQ2I19Wi9TnZT54D7Yq3HH7iHJQgWkC2o-VMylIoA), CipherCore.Contact(id: F91A424A-271B-4239-AB59-0CDE0F95FEF7, name: "Подмена", publicKey: ckpub1:pzKrH6gtpyUwJhEas0H_vqcBvYqNQOsutX9_BBZ7XACXI2O9DLxXwezaY1x7g1XQhAsL-g3Hn4b318aaqrCWUA), CipherCore.Contact(id: 42182966-7B57-46A5-A68F-457F86AA21C9, name: "Подмена Анны", publicKey: ckpub1:KbKnWbIS4pbeuSTlsOwSEqD7YzWOHZvzmr-qi9qR2zOXI2O9DLxXwezaY1x7g1XQhAsL-g3Hn4b318aaqrCWUA)]
+↳   before → ContactBook(contacts: [CipherCore.Contact(id: 7C19E4FC-CFC8-4418-8BAB-478C8183FF85, name: "Анна", publicKey: ckpub1:KbKnWbIS4pbeuSTlsOwSEqD7YzWOHZvzmr-qi9qR2zPlhMQ2I19Wi9TnZT54D7Yq3HH7iHJQgWkC2o-VMylIoA)])
+↳     contacts → [CipherCore.Contact(id: 7C19E4FC-CFC8-4418-8BAB-478C8183FF85, name: "Анна", publicKey: ckpub1:KbKnWbIS4pbeuSTlsOwSEqD7YzWOHZvzmr-qi9qR2zPlhMQ2I19Wi9TnZT54D7Yq3HH7iHJQgWkC2o-VMylIoA)]
+✘ Test rejectsMixedAgreementKeysWithoutMutatingContacts() failed after 0.003 seconds with 3 issues.
+✔ Test singleMessageBoundaryUsesRealTimestampedCiphertext() passed after 0.004 seconds.
+✘ Suite "Security review regressions" failed after 0.004 seconds with 3 issues.
+✘ Test run with 3 tests in 1 suite failed after 0.004 seconds with 3 issues.
+Note: Some test targets reported failures:
+  - KeyboardTypingTests (Swift Testing)
+  - CipherCoreTests (Swift Testing)

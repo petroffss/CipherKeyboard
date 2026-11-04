@@ -202,3 +202,11 @@
 
 ## Покрытие требований
 AC1→E1; AC2→E9; AC3→E5/E14; AC4→E2/E3/E6; AC5→E3/E4; AC6→E5/E6; AC7→E7; AC8→E8; AC9→E8/E9/E11/E12; AC10→E9/E10/E16; AC11→E7/E11/E13; AC12→E1/E10/E12/E20; AC13→E15/E16; AC14→E19; AC15→E2/E14/E18/E19. Все состояния макета→E15, живые переходы→E16. Независимая проверка→E20/E21.
+
+## E22 · Полный отпечаток неизвестного отправителя [regression] [security]
+- **Тип:** test
+- **Шаги:** `scripts/test.sh core --filter SecurityReviewTypingTests/unknownSenderUsesFullFingerprintByDefault`
+- **Ожидается:** Default coordinator без подмены форматтера выдаёт полный fingerprint.description неизвестного отправителя, unknown=true.
+- **Почему провалит плохую работу:** закрепляет воспроизведение из security review 2026-11-04; старое поведение не удовлетворяет проверке.
+- **Статус:** pass
+- **Доказательство:** Independent verifier 2026-11-04: unknownSenderUsesFullFingerprintByDefault PASS — coordinator без подмены fingerprintText после реального seal/open вернул полный fingerprint.description и unknown=true. specs/security-review-fixes-2026-11-04-evidence/targeted-swift.log; SHA256 проверенных файлов в source-sha256.json. Вёрстка полного отпечатка и физический iPhone этим unit-тестом не подтверждены.

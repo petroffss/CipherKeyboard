@@ -22,6 +22,13 @@ final class DecryptUITests: XCTestCase {
             let app = launch(state); submit(app)
             let sender = app.staticTexts["decrypt.sender"]
             XCTAssertTrue(sender.waitForExistence(timeout: 5)); XCTAssertTrue(sender.label.hasPrefix(expected))
+            if state == "unknown" {
+                let fingerprint = String(sender.label.dropFirst("От неизвестного ключа ".count))
+                XCTAssertEqual(fingerprint.count, 39)
+                XCTAssertEqual(fingerprint.split(separator: " ").count, 8)
+                let shot = XCTAttachment(screenshot: app.screenshot())
+                shot.name = "unknown-full-fingerprint"; shot.lifetime = .keepAlways; add(shot)
+            }
             XCTAssertEqual(app.staticTexts["decrypt.signature"].label, "✓ Подпись верна")
             XCTAssertTrue(app.staticTexts["decrypt.date"].label.hasPrefix("Дата по часам отправителя: "))
             XCTAssertFalse(app.staticTexts["decrypt.ageWarning"].exists)

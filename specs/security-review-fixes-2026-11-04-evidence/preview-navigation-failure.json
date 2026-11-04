@@ -1,0 +1,34 @@
+{
+  "full_suite": ".build/TestResults/ui-20261104-062846.xcresult",
+  "failed_test": "KeyboardTypingTests/testPreviewTyping()",
+  "last_tap": {
+    "configurationName": "Test Scheme Action",
+    "deviceId": "6204E8C8-5701-474A-8C90-903595CCD678",
+    "deviceName": "CipherKeyboard-Typing-SecurityReview-375",
+    "exportedFileName": "92C061E3-A1E4-4638-8592-386331340E68",
+    "isAssociatedWithFailure": false,
+    "suggestedHumanReadableName": "Synthesized Event 2026-11-04 at 06.47.34 AM",
+    "timestamp": 1793764054.999
+  },
+  "coordinates": [
+    {
+      "x": 36.592473858538895,
+      "y": 116.25799710082308
+    },
+    {
+      "x": 36.592473858538895,
+      "y": 116.25799710082308
+    }
+  ],
+  "back_button_final_hierarchy": [
+    "Button, 0x10939b5c0, {{16.0, 20.0}, {44.0, 44.0}}, identifier: 'BackButton', label: 'Назад' <AX element pid: 79833, elementOrHash.elementID: 4779201792.111>"
+  ],
+  "tap_parent_window_size": {
+    "Width": 317.54768702130986,
+    "Height": 564.8114859819032
+  },
+  "failure_hierarchy_window_size": {
+    "Width": 375,
+    "Height": 667
+  }
+}

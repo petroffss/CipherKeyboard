@@ -10,6 +10,8 @@ public enum ContactError: Error, Equatable, Sendable {
     case ownKey
     /// Такой ключ уже есть в книге под другим именем.
     case duplicateKey(existingName: String)
+    /// Та же часть шифрования, но другая подпись: возможна подмена ключа.
+    case sharedAgreementKey(existingName: String)
     /// Такое имя (без учёта регистра) уже есть у другого контакта.
     case duplicateName
     /// Имя пустое после обрезки пробелов и переносов.
@@ -75,8 +77,11 @@ public struct ContactBook: Equatable, Sendable {
         } catch {
             throw .notAKey
         }
-        if let own, key == own { throw .ownKey }
+        if let own, key.agreementRaw == own.agreementRaw { throw .ownKey }
         if let existing = contact(publicKey: key) { throw .duplicateKey(existingName: existing.name) }
+        if let existing = contacts.first(where: { $0.publicKey.agreementRaw == key.agreementRaw }) {
+            throw .sharedAgreementKey(existingName: existing.name)
+        }
         return key
     }
 

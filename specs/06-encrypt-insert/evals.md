@@ -29,7 +29,7 @@
 ## E4 · Настоящее расширение вставляет одну строку в курсор [security]
 - **Тип:** ui
 - **Шаги:** Установить замороженную Debug-сборку, сопоставить SHA/хеш встроенного и установленного extension и runtime revision. Debug-хозяин: «До |встречи!» с пустым выделением. Набрать внутри «Привет, Анна!», выбрать Анну, нажать «Зашифровать». Записать proxy trace и итог хозяина. Повторить короткий сценарий в обычном поле приложения симулятора, например поиске Настроек.
-- **Ожидается:** Единственная вставка C начинается ckmsg1:, является полной строкой без пробелов/CR/LF/многоточия и открывается ядром. Итог «До »+C+«встречи!»; префикс/суффикс сохранены. Нет deleteBackward/adjustTextPosition/первоначальной вставки открытого текста, автоматической отправки или clipboard. Сначала поле хозяина неизменно при наборе. Черновик пуст после возврата insertText. AC5, AC6.
+- **Ожидается:** Единственная вставка C начинается ckmsg2:, является полной строкой без пробелов/CR/LF/многоточия и открывается ядром. Итог «До »+C+«встречи!»; префикс/суффикс сохранены. Нет deleteBackward/adjustTextPosition/первоначальной вставки открытого текста, автоматической отправки или clipboard. Сначала поле хозяина неизменно при наборе. Черновик пуст после возврата insertText. AC5, AC6.
 - **Почему провалит плохую работу:** Ловит успех только в учебном превью/spy, старую установленную сборку и перезапись поля.
 - **Статус:** pass
 - **Доказательство:** R5 frozen19abc786/runtime442244589; FULLnative10/10,FULLlegacy7/7,FULLsupplement7/7,0fail/skip/warnings; all14app/ext+host3beforeafterbytes. Actualextension literalinsertion at hostcursor gives exactly До +C+встречи!, hosttrace1insert/0delete/0replace/no contextreads/no plaintext attyping; emptydraftafterreturn. Separately actualSettings C15 retainedcanonical/opened byactualKeychainA+B. evidence/verifier-round5-functional/{encrypt-runtime-reconciliation.json,supplemental-reconciliation.json,native-fifteen-proof-manifest.json}.
@@ -161,3 +161,11 @@
 - **Почему провалит плохую работу:** Ловит самоприёмку builder, скрытую помощь и преждевременный merge high-risk фичи.
 - **Статус:** pending
 - **Доказательство:** Frozen 19abc786d9a4d1cb86a1b478808470f01b6a0e09 / runtime442244589: независимые functional/design/reviewer отчёты R5 сохранены, 18/20 PASS; nativeAX часть E18 не завершена, отдельный UI-only Release first-time-user не запускался. Пользователь остановил приёмку и прямо указал «Делай слияние». Это разрешение слияния при неполных проверках, а не основание для pass E20 или verified/done; E20 остаётся pending. Решение и ограничения записаны в state.md.
+
+## E21 · Предупреждение о длине сообщения Telegram [regression] [security]
+- **Тип:** test
+- **Шаги:** `scripts/test.sh core --filter EncryptInsertTests/singleMessageWarningDoesNotOverrideErrorsOrChangeDraft; scripts/test.sh core --filter SecurityReviewTests/singleMessageBoundaryUsesRealTimestampedCiphertext`
+- **Ожидается:** 2720 байт дают не более 4096 символов ckmsg2, 2721 и 4096 — больше; реальный round-trip проходит. После 2720 появляется подсказка, ошибки приоритетнее; черновик не обрезается, шифрование доступно, удаление снимает предупреждение.
+- **Почему провалит плохую работу:** закрепляет воспроизведение из security review 2026-11-04; старое поведение не удовлетворяет проверке.
+- **Статус:** pass
+- **Доказательство:** Independent verifier 2026-11-04: singleMessageWarningDoesNotOverrideErrorsOrChangeDraft и singleMessageBoundaryUsesRealTimestampedCiphertext PASS — границы 2720/2721/4096, реальный round-trip, предупреждение, доступность шифрования, сохранение черновика, приоритет no-access, удаление. Дополнительный utf8Boundaries PASS подтвердил приоритет limitError и шифрование 4096 байт. specs/security-review-fixes-2026-11-04-evidence/{targeted-swift.log,utf8-priority-swift.log}; SHA256 в source-sha256.json. UI/Release/приёмка сюда не включены.

@@ -23,6 +23,10 @@ public enum Sender: Sendable, Equatable {
 /// Создаёт сообщения `ckmsg2`, открывает `ckmsg1` и `ckmsg2` (раскладка — FORMAT.md).
 public enum CipherMessage: Sendable {
     public static let maxPlaintextBytes = 4096
+    /// ckmsg2 для одного контакта и себя: 7 + ceil(4 * (330 + paddedBytes) / 3) символов.
+    /// При 2720 байтах это 4074 символа; следующий блок (2752) даёт 4117, больше 4096.
+    /// Ориентир для обычного сообщения Telegram, не лимит формата и не для подписей к медиа.
+    public static let singleMessageBytes = 2720
     /// Вместе с отправителем.
     public static let maxRecipients = 16
 

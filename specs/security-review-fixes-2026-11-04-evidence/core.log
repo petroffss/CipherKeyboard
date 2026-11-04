@@ -1,0 +1,4 @@
+Completion lines from .build/security-review/core.log (full raw log retained locally):
+Build complete! (4,45 с)
+✔ Test run with 59 tests in 7 suites passed after 0.347 seconds.
+✔ Test run with 145 tests in 24 suites passed after 0.269 seconds.

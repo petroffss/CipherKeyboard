@@ -1,0 +1,22 @@
+[
+  {
+    "name": "security-review-warning-3_0_2B057B41-72F4-4BB5-9477-F244FB6A1E70.png",
+    "path": ".build/security-review/native-dark-attachments/FA7BA244-FACE-4A8D-A4F0-17EF257D1521.png",
+    "sha256": "8e3241de1f44b78c7627c70eaec1c4fbb3e35fee1bc49c9686419cccf098def8"
+  },
+  {
+    "name": "security-review-unknown-3_0_09CBED04-C005-4FA9-BE19-2B188091A449.png",
+    "path": ".build/security-review/native-dark-attachments/2B461BE5-6B8F-40A4-AFE2-08F9B424BECC.png",
+    "sha256": "51ce15034b0e5a7f0acef283aa97fb4cf6bc12e69563aaa4149cc4915551f5c9"
+  },
+  {
+    "name": "security-review-warning-1_0_B7430E75-D180-406B-B653-3E880DAC5F7E.png",
+    "path": ".build/security-review/native-dark-attachments/9EADB69A-3F46-4027-8D7E-301656C5FE94.png",
+    "sha256": "706852720f862c5452ff25232533a2c10137414fc7db64f43c0aff4005ca0c3f"
+  },
+  {
+    "name": "security-review-unknown-1_0_E3B64F8E-8B7B-40F1-AE7A-8ED933262CDF.png",
+    "path": ".build/security-review/native-dark-attachments/D648D2DB-669B-49E1-B63A-78CE1B6FAF80.png",
+    "sha256": "f1ee118d3b865670c6193c9960080d9d13bb31f72653e5819429dc6eca40e6d5"
+  }
+]

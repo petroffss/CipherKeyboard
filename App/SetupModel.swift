@@ -52,14 +52,13 @@ final class SetupModel {
         #endif
         return SetupModel(
             presence: {
-                // AppleKeyboards is undocumented, not a reliable public API. Only the observed format is accepted.
-                // Refresh the global preferences after returning from Settings; nil / new formats stay unknown.
-                UserDefaults.standard.synchronize()
-                return KeyboardPresence.parse(UserDefaults.standard.object(forKey: "AppleKeyboards"))
+                // Public APIs do not identify our extension reliably. Do not read global system preferences
+                // or mistake another multilingual keyboard for ours; retain the explicit manual setup fallback.
+                .unknown
             },
             storage: FileKeyboardSetupStorage.appGroup,
             invalidation: localInvalidationStorage(),
-            opener: { await UIApplication.shared.open($0) }
+            opener: { _ in await SystemSettings.open() }
         )
     }
 }

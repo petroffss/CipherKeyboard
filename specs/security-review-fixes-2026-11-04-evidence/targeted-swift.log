@@ -1,0 +1,29 @@
+== CipherCore: swift test
+Building for debugging...
+Build complete! (0,27 с)
+◇ Test run started.
+↳ Testing Library Version: 2403
+↳ Target Platform: arm64e-apple-macos14.0
+◇ Suite EncryptInsertTests started.
+◇ Suite "Security review typing regressions" started.
+◇ Test singleMessageWarningDoesNotOverrideErrorsOrChangeDraft() started.
+◇ Test unknownSenderUsesFullFingerprintByDefault() started.
+◇ Test counterAppearsBeforeSingleMessageBoundary() started.
+✔ Test singleMessageWarningDoesNotOverrideErrorsOrChangeDraft() passed after 0.001 seconds.
+✔ Suite EncryptInsertTests passed after 0.001 seconds.
+✔ Test counterAppearsBeforeSingleMessageBoundary() passed after 0.002 seconds.
+✔ Test unknownSenderUsesFullFingerprintByDefault() passed after 0.004 seconds.
+✔ Suite "Security review typing regressions" passed after 0.005 seconds.
+✔ Test run with 3 tests in 2 suites passed after 0.005 seconds.
+◇ Test run started.
+↳ Testing Library Version: 2403
+↳ Target Platform: arm64e-apple-macos14.0
+◇ Suite "Security review regressions" started.
+◇ Test rejectsMixedAgreementKeysWithoutMutatingContacts() started.
+◇ Test singleMessageBoundaryUsesRealTimestampedCiphertext() started.
+◇ Test existingMixedKeyBookRemainsReadableAndRepairable() started.
+✔ Test rejectsMixedAgreementKeysWithoutMutatingContacts() passed after 0.001 seconds.
+✔ Test existingMixedKeyBookRemainsReadableAndRepairable() passed after 0.002 seconds.
+✔ Test singleMessageBoundaryUsesRealTimestampedCiphertext() passed after 0.004 seconds.
+✔ Suite "Security review regressions" passed after 0.004 seconds.
+✔ Test run with 3 tests in 1 suite passed after 0.004 seconds.
