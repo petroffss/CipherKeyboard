@@ -147,4 +147,4 @@ AC1: E1,E9,E14; AC2: E2,E10; AC3: E3; AC4: E4,E10; AC5: E5,E6; AC6: E8,E10,E12; 
 - **Ожидается:** При 1998 байтах счётчика нет; при 2000 байтах кириллицы счётчик равен 2000 / 4096 байт.
 - **Почему провалит плохую работу:** закрепляет воспроизведение из security review 2026-11-04; старое поведение не удовлетворяет проверке.
 - **Статус:** pass
-- **Доказательство:** Independent verifier 2026-11-04: counterAppearsBeforeSingleMessageBoundary PASS — 1998 байт кириллицы без счётчика, 2000 байт дают «2000 / 4096 байт». specs/security-review-fixes-2026-11-04-evidence/targeted-swift.log; SHA256 проверенных файлов в source-sha256.json. Исторические evals не перепроверялись.
+- **Доказательство:** Independent verifier 2026-11-04: counterAppearsBeforeSingleMessageBoundary PASS — 1998 байт кириллицы без счётчика, 2000 байт дают «2000 / 4096 байт». specs/_security-review-fixes-2026-11-04-evidence/targeted-swift.log; SHA256 проверенных файлов в source-sha256.json. Исторические evals не перепроверялись.

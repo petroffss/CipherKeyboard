@@ -1,6 +1,7 @@
 name: Checks
 on:
   push:
+    branches: [main]
   pull_request:
 permissions:
   contents: read
@@ -15,8 +16,16 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
-      - name: Toolchain
-        run: xcodebuild -version && swift --version
+      - name: Select Xcode 27
+        # The project needs Xcode 27+ (Swift 6, swift-format). Fail loudly instead of linting with an older toolchain.
+        run: |
+          xcode="$(ls -d /Applications/Xcode_27*.app 2>/dev/null | sort -V | tail -1)"
+          if [ -z "$xcode" ]; then
+            echo "::error::Xcode 27 не найден на раннере; доступны: $(ls -d /Applications/Xcode*.app | tr '\n' ' ')"
+            exit 1
+          fi
+          sudo xcode-select -s "$xcode"
+          xcodebuild -version && swift --version
       - name: Lint and privacy boundaries
         run: scripts/lint.sh
       - name: Boundary guard regressions

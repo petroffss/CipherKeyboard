@@ -1,6 +1,6 @@
 0 находок — исправлять нечего в проверенном объёме.
 
-Независимый verifier проверил только новые регрессионные evals: **4/4 pass**. Рабочая копия `/private/tmp/cipher-review-fixes-20261104`, ветка `fix/security-review-20261104`, базовый HEAD `309c9f3e6327a49d950da2f7e3a9cc963e21eced` с незакоммиченными исправлениями. Состав проверенных исходников и тестов зафиксирован в [source-sha256.json](security-review-fixes-2026-11-04-evidence/source-sha256.json). Production-код verifier не менял; в evals изменены только статус и доказательство новых E29/E18/E21/E22.
+Независимый verifier проверил только новые регрессионные evals: **4/4 pass**. Рабочая копия `/private/tmp/cipher-review-fixes-20261104`, ветка `fix/security-review-20261104`, базовый HEAD `309c9f3e6327a49d950da2f7e3a9cc963e21eced` с незакоммиченными исправлениями. Состав проверенных исходников и тестов зафиксирован в [source-sha256.json](_security-review-fixes-2026-11-04-evidence/source-sha256.json). Production-код verifier не менял; в evals изменены только статус и доказательство новых E29/E18/E21/E22.
 
 | Eval | Результат | Наблюдение |
 |---|---|---|
@@ -11,9 +11,9 @@
 
 Команды независимого прогона:
 
-- `scripts/test.sh core --filter 'SecurityReviewTests|SecurityReviewTypingTests|EncryptInsertTests/singleMessageWarningDoesNotOverrideErrorsOrChangeDraft'` — exit 0, 6/6 тестов. [Лог](security-review-fixes-2026-11-04-evidence/targeted-swift.log).
-- `scripts/test.sh core --filter EncryptInsertTests/utf8Boundaries` — exit 0, 1/1; дополнительная проверка приоритета ошибки максимальной длины. [Лог](security-review-fixes-2026-11-04-evidence/utf8-priority-swift.log).
-- `python3 scripts/test-network-boundaries.py` — exit 0, 3/3. `scripts/lint.sh` — exit 0, 95 Swift-файлов; сетевые границы и границы расширения OK. [Вывод](security-review-fixes-2026-11-04-evidence/command-results.txt).
+- `scripts/test.sh core --filter 'SecurityReviewTests|SecurityReviewTypingTests|EncryptInsertTests/singleMessageWarningDoesNotOverrideErrorsOrChangeDraft'` — exit 0, 6/6 тестов. [Лог](_security-review-fixes-2026-11-04-evidence/targeted-swift.log).
+- `scripts/test.sh core --filter EncryptInsertTests/utf8Boundaries` — exit 0, 1/1; дополнительная проверка приоритета ошибки максимальной длины. [Лог](_security-review-fixes-2026-11-04-evidence/utf8-priority-swift.log).
+- `python3 scripts/test-network-boundaries.py` — exit 0, 3/3. `scripts/lint.sh` — exit 0, 95 Swift-файлов; сетевые границы и границы расширения OK. [Вывод](_security-review-fixes-2026-11-04-evidence/command-results.txt).
 
 При просмотре кода подтверждено: проверка X25519 добавлена только в `validatedKey`, декодирование старых книг не ужесточено; app и extension используют default formatter с 8 группами/128 битами. Предупреждение находится после ошибок, busy, success и выбора получателя; лимит формата остаётся 4096 байт. Криптографический формат, единственная вставка шифротекста и границы хранения открытого текста не менялись. Новый сетевой guard покрывает перечисленные в исходном review API, переносы строк и внешние URL; разрешение открытия Настроек привязано к полному телу функции без входного URL. Это статическая проверка, а не изоляция сети средствами ОС.
 

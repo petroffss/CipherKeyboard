@@ -13,19 +13,39 @@ struct SetupStateTests {
         let corrupt = Data("broken".utf8)
         for record in [nil, valid, corrupt, future, unsupported] as [Data?] {
             #expect(KeyboardSetupState.resolve(presence: .absent, record: record, now: now) == .absent)
-            #expect(KeyboardSetupState.resolve(presence: .unknown, record: record, now: now) == .unknown)
+            // Only the extension's own record confirms a past opening; an unknown list without it stays unknown.
+            #expect(
+                KeyboardSetupState.resolve(presence: .unknown, record: record, now: now)
+                    == (record == valid ? .confirmed(old) : .unknown))
             #expect(
                 KeyboardSetupState.resolve(presence: .present, record: record, now: now)
                     == (record == valid ? .confirmed(old) : .needsOpening))
         }
-        let identifier = KeyboardPresence.extensionIdentifier
-        #expect(KeyboardPresence.parse(["en_US@sw=QWERTY;hw=Automatic", identifier]) == .present)
-        #expect(KeyboardPresence.parse([identifier + ".other"]) == .absent)
-        #expect(KeyboardPresence.parse(["prefix." + identifier]) == .absent)
-        #expect(KeyboardPresence.parse(["emoji@sw=Emoji"]) == .absent)
-        for unknown: Any? in [nil, [], "", [17], ["new-format"], [identifier, "???"]] {
-            #expect(KeyboardPresence.parse(unknown) == .unknown)
-        }
+    }
+
+    @Test func unknownListTrustsExtensionRecordButNotOldEvidence() throws {
+        let now = Date(timeIntervalSince1970: 1_800_000_000)
+        let shared = RecordingSetupStorage()
+        let local = RecordingSetupStorage()
+        let tracker = KeyboardSetupTracker(shared: shared, invalidation: local)
+        #expect(tracker.refresh(presence: .unknown, now: now) == .unknown)
+        shared.data = try KeyboardAccessRecord(date: now.addingTimeInterval(-60)).encoded()
+        #expect(tracker.refresh(presence: .unknown, now: now) == .confirmed(now.addingTimeInterval(-60)))
+        // A durable cutoff from an earlier confirmed removal still rejects the older record.
+        local.data = try KeyboardAccessRecord(date: now.addingTimeInterval(-30)).encoded()
+        #expect(tracker.refresh(presence: .unknown, now: now) == .needsOpening)
+        shared.data = nil
+        #expect(tracker.refresh(presence: .unknown, now: now) == .unknown)
+        shared.data = try KeyboardAccessRecord(date: now.addingTimeInterval(-10)).encoded()
+        #expect(tracker.refresh(presence: .unknown, now: now) == .confirmed(now.addingTimeInterval(-10)))
+        #expect(local.data == nil)
+        local.data = Data("broken".utf8)
+        #expect(tracker.refresh(presence: .unknown, now: now) == .unknown)
+        // An in-session removal followed by an unknown list must not revive the deleted evidence.
+        local.data = nil
+        #expect(tracker.refresh(presence: .absent, now: now) == .absent)
+        #expect(shared.data == nil)
+        #expect(tracker.refresh(presence: .unknown, now: now.addingTimeInterval(1)) == .unknown)
     }
 
     @Test func recordsOnlySuccessfulAccess() throws {

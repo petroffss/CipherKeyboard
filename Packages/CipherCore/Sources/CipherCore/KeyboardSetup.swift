@@ -1,38 +1,20 @@
 import Foundation
 
-/// The system list is best-effort: missing or unfamiliar data is never evidence of removal.
+/// The system keyboard list has no public API: production always reports `.unknown`.
+/// `.absent` / `.present` remain for tests and for a future reliable source; missing data is never evidence of removal.
 public enum KeyboardPresence: Equatable, Sendable {
     case absent, present, unknown
-
-    public static let extensionIdentifier = "dev.cipherkeyboard.app.keyboard"
-
-    public static func parse(_ value: Any?) -> Self {
-        guard let identifiers = value as? [String], !identifiers.isEmpty else { return .unknown }
-        for identifier in identifiers {
-            // Observed iOS 27 formats: bundle identifiers, or language@sw=Layout;hw=Hardware.
-            let bundle = identifier.range(of: #"^[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)+$"#, options: .regularExpression)
-            let system = identifier.range(
-                of: #"^[A-Za-z0-9_-]+@sw=[A-Za-z0-9_-]+(?:;hw=[A-Za-z0-9_-]+)?$"#,
-                options: .regularExpression)
-            guard bundle != nil || system != nil else { return .unknown }
-        }
-        return identifiers.contains(extensionIdentifier) ? .present : .absent
-    }
 }
 
 public enum KeyboardSetupState: Equatable, Sendable {
     case absent, needsOpening, confirmed(Date), unknown
 
+    /// The extension writes its record only with `hasFullAccess`, so a valid record confirms a past opening even
+    /// when the system list is unavailable. Without a record an unknown list stays unknown, not "not added".
     public static func resolve(presence: KeyboardPresence, record: Data?, now: Date) -> Self {
-        switch presence {
-        case .unknown: return .unknown
-        case .absent: return .absent
-        case .present:
-            guard let record, let date = KeyboardAccessRecord.validDate(in: record, now: now) else {
-                return .needsOpening
-            }
-            return .confirmed(date)
-        }
+        if presence == .absent { return .absent }
+        if let record, let date = KeyboardAccessRecord.validDate(in: record, now: now) { return .confirmed(date) }
+        return presence == .present ? .needsOpening : .unknown
     }
 }
 
@@ -128,7 +110,6 @@ public final class KeyboardSetupTracker {
 
     public func refresh(presence: KeyboardPresence, now: Date) -> KeyboardSetupState {
         do {
-            if presence == .unknown { return .unknown }
             if presence == .absent {
                 volatileCutoff = now
                 var savedCutoff = false
@@ -150,18 +131,22 @@ public final class KeyboardSetupTracker {
             }
             let record = try shared.read()
             let state = KeyboardSetupState.resolve(presence: presence, record: record, now: now)
-            if let cutoff = volatileCutoff {
-                guard case .confirmed(let date) = state, date > cutoff else {
-                    return persistenceFailed ? .unknown : .needsOpening
-                }
-            }
+            var barrierCutoff: Date?
             if let barrier = try invalidation.read() {
                 guard let cutoff = KeyboardAccessRecord.validDate(in: barrier, now: now) else { return .unknown }
-                guard case .confirmed(let date) = state, date > cutoff else { return .needsOpening }
-                // A newer successful opening is sufficient even if cleanup fails: the cutoff still rejects older evidence.
+                barrierCutoff = cutoff
+            }
+            // Cutoffs only reject old evidence; they never turn uncertainty into a claim about the keyboard.
+            guard case .confirmed(let date) = state else {
+                return volatileCutoff != nil && persistenceFailed ? .unknown : state
+            }
+            if let cutoff = volatileCutoff, date <= cutoff { return persistenceFailed ? .unknown : .needsOpening }
+            if let cutoff = barrierCutoff {
+                guard date > cutoff else { return .needsOpening }
+                // A newer opening is sufficient even if cleanup fails: the cutoff still rejects older evidence.
                 try? invalidation.remove()
             }
-            if case .confirmed = state { volatileCutoff = nil }
+            volatileCutoff = nil
             return state
         } catch {
             return .unknown
