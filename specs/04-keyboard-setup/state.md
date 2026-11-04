@@ -43,3 +43,4 @@ last_reviewed_commit: 65f48659875f24f060a09c826e61f3cf0710e539
 
 Ветка feature/04-keyboard-setup готова к приёмке; в main не влита. Доказательства: specs/04-keyboard-setup/evidence/verifier/.
 - 2026-11-04: ревью правок security review нашло, что `presence` всегда `.unknown` и `refresh` выходил до чтения отметки — «Подключение проверено» стало недостижимым. Исправлено в KeyboardSetup.swift (unknown + действительная отметка → confirmed, отсечки по-прежнему отвергают старую отметку), `KeyboardPresence.parse` удалён, добавлены unit-тест и E11. Swift-тесты в среде ревью (Linux) не запускались — нужен `scripts/test.sh` на Mac и verifier.
+- 2026-11-04 (Mac пользователя): core 205/205, lint OK (95), SetupUITests 3/3 на iPhone 17 (ui-20261104-092329.xcresult). Осталось: прогон verifier для E11 и реальная проверка расширения с полным доступом.
