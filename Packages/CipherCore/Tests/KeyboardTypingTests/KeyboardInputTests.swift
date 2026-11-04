@@ -67,7 +67,7 @@ struct KeyboardInputTests {
     }
     @Test func utf8Limit() {
         for value in [String(repeating: "a", count: 3500), String(repeating: "я", count: 1750)] {
-            var m = KeyboardInput(); m.insert(value); #expect(m.counter == nil)
+            var m = KeyboardInput(); m.insert(value); #expect(m.counter == "3500 / 4096 байт")
             m.insert("a"); #expect(m.counter == "3501 / 4096 байт")
             m.insert(String(repeating: "x", count: 595)); #expect(m.byteCount == 4096)
             m.moveCursor(to: 10)

@@ -25,6 +25,14 @@ struct SetupView: View {
                         .accessibilityIdentifier("setup.openSettings")
                 }
                 explanation
+                Text(
+                    "При переносе на новый iPhone ключ и контакты не переносятся. После восстановления из резервной копии контакты нужно добавить заново."
+                )
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+                NavigationLink("Конфиденциальность") { PrivacyPolicyView() }
+                    .buttonStyle(SecondaryButtonStyle())
+                    .accessibilityIdentifier("setup.privacy")
                 NavigationLink("Попробовать клавиатуру") { KeyboardPreviewView() }
                     .buttonStyle(SecondaryButtonStyle())
                     .accessibilityIdentifier("setup.tryKeyboard")

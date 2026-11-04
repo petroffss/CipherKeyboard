@@ -1,0 +1,13 @@
+python3 scripts/test-network-boundaries.py
+...
+----------------------------------------------------------------------
+Ran 3 tests in 0.000s
+
+OK
+exit 0
+
+scripts/lint.sh
+Сеть и внешние URL: OK
+Границы расширения: OK
+Линтер: OK (95 файлов)
+exit 0

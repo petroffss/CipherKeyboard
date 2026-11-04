@@ -43,7 +43,7 @@ private actor DecryptOpenGate {
     var model: DecryptCoordinator!
     init(
         surface: DecryptCoordinator.Surface = .keyboard,
-        fingerprintText: @escaping (PublicKey) -> String = { $0.fingerprint.short },
+        fingerprintText: @escaping (PublicKey) -> String = { $0.fingerprint.description },
         opener: DecryptCoordinator.Opener? = nil
     ) {
         own = .identity(b); book = .contacts([Contact(name: "Анна", publicKey: a.publicKey)])
@@ -182,7 +182,7 @@ private actor DecryptOpenGate {
         r.model.deactivate(); r.own = .identity(r.b); r.model.activate()
         r.book = .contacts([Contact(name: "Анна", publicKey: r.c.publicKey)])
         r.model.start(); await r.settle()
-        #expect(r.model.result?.sender == "От неизвестного ключа " + r.a.publicKey.fingerprint.short)
+        #expect(r.model.result?.sender == "От неизвестного ключа " + r.a.publicKey.fingerprint.description)
         #expect(r.model.result?.unknown == true)
         // Same agreement part with a different signing key must not acquire the contact's name.
         let changed = try PublicKey(string: "ckpub1:" + String(r.a.publicKey.string.dropFirst(7)))

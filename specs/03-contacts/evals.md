@@ -241,3 +241,11 @@
 - **Почему провалит плохую работу:** ловит кнопку в `safeAreaInset`, которая лежит поверх поля и сообщения при открытой клавиатуре (так было в r2: `evidence/r2-sheet-duplicate-name-light.png`), и тест, который «проходит» без экранной клавиатуры
 - **Статус:** pass
 - **Доказательство:** r3: assertions testNameFieldVisibleAboveSaveWithKeyboard прочитаны: обязательны keyboard.count>0, полные bounds имени/ошибки выше Save и keyboard, отсутствие пересечений. 402 pt r3-final-402.xcresult Passed (4/4); 375 pt r3-e28-375-fixed.xcresult Passed (1/1, окончательный helper focus-before-coordinate). Извлечены и визуально проверены реальные screenshots обеих ошибок/ширин: evidence/r3-e28-add-duplicate-{402,375}.png и r3-e28-rename-empty-{402,375}.png; дополнительно свежий FTUE402 и settled rename light/dark.
+
+## E29 · Смешанные ключи отклоняются, старая книга читается [regression] [security]
+- **Тип:** test
+- **Шаги:** `scripts/test.sh core --filter SecurityReviewTests`
+- **Ожидается:** Свой X25519 с чужой подписью даёт ownKey; X25519 контакта с другой подписью даёт sharedAgreementKey; книга не меняется; старые записи читаются, переименовываются и удаляются.
+- **Почему провалит плохую работу:** закрепляет воспроизведение из security review 2026-11-04; старое поведение не удовлетворяет проверке.
+- **Статус:** pass
+- **Доказательство:** Independent verifier 2026-11-04: SecurityReviewTests 3/3 PASS; rejectsMixedAgreementKeysWithoutMutatingContacts и existingMixedKeyBookRemainsReadableAndRepairable подтверждают ownKey/sharedAgreementKey, неизменность книги и чтение/rename/remove старых записей. specs/security-review-fixes-2026-11-04-evidence/targeted-swift.log; SHA256 проверенных файлов в source-sha256.json. Исторические evals не перепроверялись.

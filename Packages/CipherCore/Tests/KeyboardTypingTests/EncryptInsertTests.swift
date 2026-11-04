@@ -82,6 +82,22 @@ private actor SealGate {
 }
 
 @Suite @MainActor struct EncryptInsertTests {
+    @Test func singleMessageWarningDoesNotOverrideErrorsOrChangeDraft() async throws {
+        let r = Rig()
+        r.ready(String(repeating: "я", count: 1360))
+        #expect(r.coordinator.status == "Готово к шифрованию")
+        r.input.activate(.character("a"))
+        #expect(r.coordinator.status == "Для Telegram сократите до 2720 байт")
+        #expect(r.coordinator.canEncrypt)
+        let draft = r.input.input.text
+        r.permitted = false
+        #expect(r.coordinator.status == EncryptInsertCoordinator.accessMessage)
+        #expect(r.input.input.text == draft)
+        r.permitted = true
+        r.input.activate(.delete)
+        #expect(r.coordinator.status == "Готово к шифрованию")
+        #expect(r.input.input.byteCount == 2720)
+    }
     @Test func rememberedRecipientID() {
         let r = Rig(); r.coordinator.open()
         #expect(r.coordinator.selected == nil)
@@ -197,7 +213,7 @@ private actor SealGate {
             ] {
                 let r = Rig(); r.ready(text)
                 #expect(r.input.input.byteCount == count)
-                #expect(r.input.input.counter == (count > 3500 ? "\(count) / 4096 байт" : nil))
+                #expect(r.input.input.counter == (count >= 2000 ? "\(count) / 4096 байт" : nil))
             }
         }
         let r = Rig(); r.ready(String(repeating: "😀", count: 1024)); r.input.activate(.character("a"))

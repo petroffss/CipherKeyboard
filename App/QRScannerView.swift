@@ -116,9 +116,7 @@ struct QRScannerView: View {
                 .accessibilityIdentifier("scanner.noAccessText")
             if showSettings {
                 Button("Открыть Настройки") {
-                    if let url = URL(string: UIApplication.openSettingsURLString) {
-                        UIApplication.shared.open(url)
-                    }
+                    Task { await SystemSettings.open() }
                 }
                 .buttonStyle(PrimaryButtonStyle(fullWidth: false))
                 .accessibilityIdentifier("scanner.openSettings")

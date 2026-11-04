@@ -43,6 +43,9 @@ struct AddContactSheet: View {
             return "Это ваш собственный ключ. Добавьте ключ собеседника."
         case .duplicateKey(let existingName):
             return "Этот ключ уже сохранён как «\(existingName)»"
+        case .sharedAgreementKey(let existingName):
+            return
+                "Часть шифрования совпадает с ключом «\(existingName)», но подпись другая. Возможна подмена — сверьте полный отпечаток с собеседником."
         default:
             return "Это не ключ CipherKeyboard. Вставьте строку целиком — она начинается с ckpub1:"
         }

@@ -1,0 +1,31 @@
+{
+  "base_head": "309c9f3e6327a49d950da2f7e3a9cc963e21eced",
+  "files": {
+    ".github/workflows/check.yml": "eb1abe588b4d585e14e631bf516f5dd029a0f509b1be0c096303e1d102d7d366",
+    "App/AddContactSheet.swift": "c1beed751a4f25a5256f0cc9afdda148c742dab81ecd22018e121213353a4b0f",
+    "App/PrivacyInfo.xcprivacy": "f953ba99994eddf8fe1c7d1723ca44a2da3df5ac96b05f09f375fa3d76f465cc",
+    "App/PrivacyPolicyView.swift": "ee431826fc583ba6d0fe8e5aebf6dba84fe63d18e565572b3f09bee23ce0bce5",
+    "App/QRScannerView.swift": "613cb1bc0b9ea567f083938f531f7a26e28f2e666f6631196e9a0c75a7d03d68",
+    "App/SetupModel.swift": "a720bcb420f3499ed6bc4f1891eea18f4dbd3fae2a17ef0b1205db961ae6b168",
+    "App/SetupView.swift": "56d3721f211b363d8a5867a8c91c933036903645b3dd0f01e364df185ca38807",
+    "App/SystemSettings.swift": "8e847fcfa1b4e23c262deeaff5e552b9f307c46809015371182bdf4926bf83ab",
+    "CipherKeyboard.xcodeproj/project.pbxproj": "edcda50119b02011651a4619642abeb1dd14bcf8a157449035bf34d7ca248084",
+    "DebugHostTests/SecurityReviewRuntimeTests.swift": "e4a6c05fc831bd7b43f47dd47d549d14c1e90abe954fd3a9ea88d6b67c5ed103",
+    "Keyboard/PrivacyInfo.xcprivacy": "f953ba99994eddf8fe1c7d1723ca44a2da3df5ac96b05f09f375fa3d76f465cc",
+    "Packages/CipherCore/Sources/CipherCore/CipherMessage.swift": "2f506472d3cff95da18777c5e1283513caf3cef317bfd8c2f6c76a1a3788aaed",
+    "Packages/CipherCore/Sources/CipherCore/ContactBook.swift": "b734b11c8a98a8a634593c369ed50a24e7cdd50be86b7218d2ed3c520926e45e",
+    "Packages/CipherCore/Sources/KeyboardTyping/Decrypt.swift": "b431550ce0643bad00e0946fdf038989774d4e1d4eaa072fe83140d59e909f26",
+    "Packages/CipherCore/Sources/KeyboardTyping/EncryptInsert.swift": "0e96867b90408edbd54d518b879b2805fe547db2d3d42eb532fcd184a976c49c",
+    "Packages/CipherCore/Sources/KeyboardTyping/KeyboardInput.swift": "07aac6a73fa135676c5ead0d3c07a287d3d9225245afa65607d4de31f8e684e8",
+    "Packages/CipherCore/Tests/CipherCoreTests/SecurityReviewTests.swift": "a3ab076b46195b7a1c3cc72ee6b19ae633cb3022a6861f813412bbf1d199d79f",
+    "Packages/CipherCore/Tests/KeyboardTypingTests/DecryptTests.swift": "9b840d6221ec297c7c683d962866032d34d1e007c657644a5b8124c0ab8a2698",
+    "Packages/CipherCore/Tests/KeyboardTypingTests/EncryptInsertTests.swift": "e788f14a43cd3b0f23b30bbb471f328b164a13c5d146f613dd6928b23c6c1058",
+    "Packages/CipherCore/Tests/KeyboardTypingTests/KeyboardInputTests.swift": "083fa2961fb03d13400f140ddc3d2d0aa468fb39df0a13e931fe2ce600beabdb",
+    "Packages/CipherCore/Tests/KeyboardTypingTests/SecurityReviewTypingTests.swift": "5228d8818a2e8bf56654b9b7adfae14c79e2969b59c9eac33b876ee11835db00",
+    "UITests/ContactsUITests.swift": "9493f29ac10c21bb7d904b6aaf69deb76c79567523068d5c59c1d21084cecb5d",
+    "UITests/DecryptUITests.swift": "35168d63620c92600e051f263d39b57a52ade7f59938ee6a819c4d5728ad441d",
+    "scripts/check-network-boundaries.py": "6fa40f082034eed4c9f4c4399d47c62a86a579c6a5b2b3f60993a7f3a185b9b9",
+    "scripts/lint.sh": "92e07da6ebbabdbcb666e47a1babb1350df38391ebefb8be1713b246fe64abb0",
+    "scripts/test-network-boundaries.py": "4baf7d8f9fd9b39ccebf783d3bcb967e9a331a6ba7657aee0704adc31471296e"
+  }
+}

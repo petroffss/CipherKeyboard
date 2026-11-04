@@ -89,7 +89,7 @@ public struct DecryptResult: Equatable, Sendable {
         contacts: @escaping () -> ContactsReadResult = { ContactsReader.appGroup.read() },
         clipboard: (any DecryptClipboardReading)? = nil, blocked: @escaping () -> Bool = { false },
         document: @escaping () -> UUID = { UUID(uuid: (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)) },
-        fingerprintText: @escaping (PublicKey) -> String = { $0.fingerprint.short },
+        fingerprintText: @escaping (PublicKey) -> String = { $0.fingerprint.description },
         opener: @escaping Opener = { text, identity, contacts in
             try await Task.detached { try CipherMessage.open(text, as: identity, contacts: contacts) }.value
         }
