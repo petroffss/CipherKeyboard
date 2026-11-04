@@ -52,8 +52,8 @@ final class SetupModel {
         #endif
         return SetupModel(
             presence: {
-                // Public APIs do not identify our extension reliably. Do not read global system preferences
-                // or mistake another multilingual keyboard for ours; retain the explicit manual setup fallback.
+                // Public APIs do not identify our extension reliably, and CA92.1 does not cover reading the
+                // system keyboard list. "Confirmed" comes only from the record the extension writes with full access.
                 .unknown
             },
             storage: FileKeyboardSetupStorage.appGroup,

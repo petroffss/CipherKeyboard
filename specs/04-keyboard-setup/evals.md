@@ -5,7 +5,7 @@
 ## E1 · Модель состояний [negative, security]
 - **Тип:** test
 - **Шаги:** SetupStateTests.swift › resolvesStates: absent/present/unknown список × missing/valid/corrupt/future отметка; exact id и похожий id.
-- **Ожидается:** Absent → инструкции; present+valid → проверено ранее; present+missing → нужен показ; unknown → неопределённость; corrupt/future не дают успех.
+- **Ожидается:** Absent → инструкции; present+valid и unknown+valid → проверено ранее; present+missing → нужен показ; unknown+missing → неопределённость; corrupt/future не дают успех (уточнение 2026-11-04: список клавиатур недоступен, отметка расширения — единственный источник).
 - **Почему провалит плохую работу:** Ловит ложное подтверждение и совпадения по подстроке.
 - **Статус:** pass
 - **Доказательство:** SetupStateTests: independent 5/5 pass, including 3x5 presence/record matrix, exact/prefix/suffix IDs and both durable-cutoff failure regressions; evidence/verifier/cipher-setup-verifier-core-final.log. Core unchanged in final 65f4865.
@@ -81,3 +81,11 @@
 - **Почему провалит плохую работу:** Ловит сломанные предыдущие сценарии и тестовые обходы в релизе.
 - **Статус:** pass
 - **Доказательство:** Core 135/135; final Debug build and lint48 PASS; independent final65f4865 Release build exit0 and all 5 debug markers absent in app+extension. Full402:25 old+2 new PASS, sole ancestor-ID failure fixed and Setup3/3 rerun PASS; final375 Setup+Smoke4/4, updatedE3 PASS. Extra legacy toast375 FAILED (cause not fully established), separately documented in evidence/verifier/README.md; not claimed all375UI green. Logs/scans in evidence/verifier/.
+
+## E11 · Отметка расширения при недоступном списке клавиатур [regression, security]
+- **Тип:** test
+- **Шаги:** `scripts/test.sh core --filter 'SetupStateTests'` — resolvesStates (матрица unknown × отметка) и unknownListTrustsExtensionRecordButNotOldEvidence; затем `scripts/test.sh ui -only-testing:CipherKeyboardUITests/SetupUITests` и реальная проверка: включить клавиатуру с полным доступом, открыть её, вернуться в приложение.
+- **Ожидается:** При `presence == .unknown` действительная отметка даёт `.confirmed(date)`, отсутствие отметки — `.unknown`; отметка старше сохранённой или сеансовой отсечки удаления даёт `.needsOpening`, нечитаемая отсечка — `.unknown`; удаление в сеансе с последующим unknown не оживляет отметку. В production (без чтения `AppleKeyboards`) приложение после реального показа расширения с полным доступом показывает «Подключение проверено» с исторической пометкой; до показа — «Не удалось проверить подключение». SetupUITests testRefreshOnForeground по-прежнему проходит.
+- **Почему провалит плохую работу:** ловит возврат раннего `return .unknown`, из-за которого одобренное состояние «Подключение проверено» было недостижимо после правок 2026-11-04, и ловит оживление удалённой отметки отсечками.
+- **Статус:** pending
+- **Доказательство:** 2026-11-04 на Mac пользователя (ветка claude/laughing-ride-qqszvs, b701732): `scripts/test.sh core` — 205 тестов pass (59 KeyboardTyping + 146 CipherCore), в т.ч. resolvesStates и unknownListTrustsExtensionRecordButNotOldEvidence; `scripts/lint.sh` — OK, 95 файлов; `scripts/test.sh ui -only-testing:CipherKeyboardUITests/SetupUITests` — Passed 3/0/0, .build/TestResults/ui-20261104-092329.xcresult. Реальная проверка расширения и независимый verifier — pending.
